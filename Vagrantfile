@@ -1,7 +1,7 @@
 Vagrant.configure(2) do |config|
     # config.vm.box = "ContentLoops/server-base"
-    config.vm.box = "server-base-v0.3.0"
-    config.vm.box_url = "http://voyager.home.itappert.de/contentloops/base-v0.3.0.box"
+    config.vm.box = "server-base-v0.3.1"
+    config.vm.box_url = "http://voyager.home.itappert.de/contentloops/base-v0.3.1.box"
     # config.vm.box_check_update = True
 
     config.vm.guest = :linux
