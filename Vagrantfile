@@ -12,7 +12,9 @@ Vagrant.configure(2) do |config|
 
     config.vm.provider "virtualbox" do |vb|
         vb.memory = 512
-        vb.gui = true
+        
+        ## Enable this to get an interactive VirtualBox GUI
+        #vb.gui = true
     end
 
     config.vm.provision "shell", path: "vagrant-config/bootstrap.sh"
