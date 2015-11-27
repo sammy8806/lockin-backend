@@ -1,7 +1,7 @@
 Vagrant.configure(2) do |config|
+    config.vm.box = "ContentLoops/server-base"
     # config.vm.box = "server-base-v0.3.1"
     # config.vm.box_url = "http://voyager.home.itappert.de/contentloops/base-v0.3.1.box"
-    config.vm.box = "ContentLoops/server-base"
     config.vm.box_check_update = true
 
     config.vm.guest = :linux
@@ -12,12 +12,13 @@ Vagrant.configure(2) do |config|
 
     config.vm.provider "virtualbox" do |vb|
         vb.memory = 512
-        
+
         ## Enable this to get an interactive VirtualBox GUI
         #vb.gui = true
     end
 
     config.vm.provision "shell", path: "vagrant-config/bootstrap.sh"
+
     config.vm.synced_folder "src/", "/srv/server/src"
     config.vm.synced_folder "log/", "/srv/server/log", create: true
 
@@ -26,5 +27,10 @@ Vagrant.configure(2) do |config|
 
     config.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true # NodeJS
     config.vm.network "forwarded_port", guest: 27017, host: 8081, auto_correct: true # MongoDB
+
+    # start apache on the guest after the guest starts
+    config.trigger.after :up do
+        run_remote "bash /vagrant/vagrant-config/startup.sh"
+    end
 
 end
