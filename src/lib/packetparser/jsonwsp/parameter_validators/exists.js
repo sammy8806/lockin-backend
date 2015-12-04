@@ -4,7 +4,6 @@
 'use strict';
 
 function validateParameter(_args,_argName){
-    "use strict";
 
     if(_args.hasOwnProperty(_argName)){
         if(_args[_argName] != undefined){
