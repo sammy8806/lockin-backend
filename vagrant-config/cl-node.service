@@ -1,0 +1,16 @@
+[Unit]
+Description=NodeJS for ContentLoops
+Wants=multi-user.target
+Wants=mongod.service
+After=multi-user.target
+After=network.target
+
+[Service]
+ExecStartPre=/bin/bash /vagrant/vagrant-config/startup.sh
+ExecStart=/usr/local/bin/node --harmony_modules --harmony_reflect --harmony_destructuring --harmony_new_target /srv/server/src/server.js >> /srv/server/log/node_server.log
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

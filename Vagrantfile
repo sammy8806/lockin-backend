@@ -6,7 +6,7 @@ Vagrant.configure(2) do |config|
 
     config.vm.guest = :linux
     # config.vm.hostname = "contentloops-server.local"
-    config.vm.provision "shell", inline: "hostname contentloops-server.local && hostname > /etc/hostname"
+    config.vm.provision "shell", inline: "hostname contentloops-server.local && hostname > /etc/hostname && echo '::1 contentloops-server.local' >> /etc/hosts"
 
     config.vm.post_up_message = "Server is online!"
 

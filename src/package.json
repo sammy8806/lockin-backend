@@ -1,4 +1,9 @@
 {
-  "name": "contentloops-backend",
-  "version": "0.1.0"
+  "name": "natter-backend",
+  "version": "0.1.0",
+  "description" : "Server-Backend for natter",
+  "license" : "Apache-2.0",
+  "dependencies" : {
+    "ws": ">=0.8.0"
+  }
 }
