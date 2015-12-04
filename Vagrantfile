@@ -30,7 +30,7 @@ Vagrant.configure(2) do |config|
 
     # start apache on the guest after the guest starts
     config.trigger.after :up do
-        run_remote "bash /vagrant/vagrant-config/startup.sh"
+        run_remote "bash /vagrant/vagrant-config/every_start.sh"
     end
 
 end
