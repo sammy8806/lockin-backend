@@ -3,7 +3,7 @@
  */
 'use strict';
 
-let methodvalidator = require("../method_validator.js");
+let methodvalidator = require('../method_validator.js');
 
 
 let servicename = 'userservice';

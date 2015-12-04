@@ -25,12 +25,12 @@ for (let i = 0; i<servicenames.length ; i++){
 function validateMethodCall(_servicename, _methodname, _args){
     let service = services[_servicename];
     if (service == undefined){
-        throw {string: 'unknown service', code:'Client'};
+        throw {string: 'unknown service', code:'client'};
     }
 
     let method = service[_methodname];
     if (method == undefined){
-        throw {string: 'unknown method', code: 'Client'};
+        throw {string: 'unknown method', code: 'client'};
     }
 
     let parameterVariations = method.parameterVariations;
