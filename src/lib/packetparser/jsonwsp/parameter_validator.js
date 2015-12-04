@@ -3,7 +3,7 @@
  */
 'use strict';
 
-let existsValidator = require(`./parameter_validators/exists.js`);
+let existsValidator = require('./parameter_validators/exists.js');
 
 let paramValidators = {
     'exists' : existsValidator

@@ -5,8 +5,8 @@
 let parameterVariations = new Array();
 
 let parameterVariation = {
-    "user" : "exists",
-    "blockStatus" : "exists"
+    'user' : 'exists',
+    'blockStatus' : 'exists'
 };
 parameterVariations.push(parameterVariation);
 

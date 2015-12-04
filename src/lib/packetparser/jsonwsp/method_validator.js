@@ -3,7 +3,7 @@
  */
 'use strict';
 
-let parameterValidator = require(`./parameter_validator.js`);
+let parameterValidator = require('./parameter_validator.js');
 
 const servicenames = [
     "userservice"
@@ -25,12 +25,12 @@ for (let i = 0; i<servicenames.length ; i++){
 function validateMethodCall(_servicename, _methodname, _args){
     let service = services[_servicename];
     if (service == undefined){
-        throw {string: `unknown service`, code:`Client`};
+        throw {string: 'unknown service', code:'Client'};
     }
 
     let method = service[_methodname];
     if (method == undefined){
-        throw {string: `unknown method`, code: `Client`};
+        throw {string: 'unknown method', code: 'Client'};
     }
 
     let parameterVariations = method.parameterVariations;

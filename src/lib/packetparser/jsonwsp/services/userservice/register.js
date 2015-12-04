@@ -6,8 +6,8 @@
 let parameterVariations = new Array();
 
 let parameterVariation = {
-    "mail" : "exists",
-    "password" : "exists"
+    'mail' : 'exists',
+    'password' : 'exists'
 };
 parameterVariations.push(parameterVariation);
 
