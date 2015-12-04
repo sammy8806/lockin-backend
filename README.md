@@ -15,6 +15,15 @@ If you want to run this, simply run the following command and the nodejs-server 
 vagrant up
 ```
 
+## NPM Modules
+To install the neccessary npm-modules do:
+```bash
+cd src
+npm install
+cd ../client
+npm install
+```
+
 ## Notes for Virtualbox
 
 - If your box don't start properly try to install the
