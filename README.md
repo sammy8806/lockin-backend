@@ -35,13 +35,13 @@ _(Wind**** sucks)_
 
 ## Settings Repository
 
-Enter in your ```File > Settings Repository```:
-```git@git.dark-it.net:content-loops/webstorm-settings.git```
+Enter in your `File > Settings Repository`:
+`git@git.dark-it.net:content-loops/webstorm-settings.git`
 
 ## Plugins
 
 Please install the following Plugins in your Webstorm under:
-```File -> Settings -> Plugins```
+`File > Settings > Plugins`
 
 - bash support
 - .ignore
