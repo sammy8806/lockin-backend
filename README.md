@@ -31,3 +31,29 @@ npm install
 - Do __NOT__ use umlauts in your home-path ($HOME) when using vagrant there
 _(Wind**** sucks)_
 
+# WebStorm
+
+## Settings Repository
+
+Enter in your ```File > Settings Repository```:
+```git@git.dark-it.net:content-loops/webstorm-settings.git```
+
+## Plugins
+
+Please install the following Plugins in your Webstorm under:
+```File -> Settings -> Plugins```
+
+- bash support
+- .ignore
+- gittoolbox
+- gitlab projects
+- latex
+- markdown support
+- mongo plugin
+- nginx support
+- puppet support
+- regexptester
+- settings repository
+- spell checker english
+- spell checker german
+- vagrant
