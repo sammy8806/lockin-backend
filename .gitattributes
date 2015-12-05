@@ -1,0 +1,49 @@
+# default
+* text=auto
+
+# source code
+*.css eol=lf
+*.js eol=lf
+*.json eol=lf
+*.htm eol=lf
+*.html eol=lf
+*.svg eol=lf
+*.txt eol=lf
+*.ini eol=lf
+*.rb eol=lf
+*.py eol=lf
+*.sql eol=lf
+*.sh eol=lf
+*.bat eol=lf
+
+# git config
+.gitattributes eol=lf
+.gitignore eol=lf
+.gitconfig eol=lf
+
+# code analysis config
+.jshintrc eol=lf
+.jscsrc eol=lf
+.jshintignore eol=lf
+.csslintrc eol=lf
+
+# misc config
+*.yaml eol=lf
+*.yml eol=lf
+.editorconfig eol=lf
+
+# build config
+*.npmignore eol=lf
+*.bowerrc eol=lf
+
+# Heroku
+Procfile eol=lf
+.slugignore eol=lf
+
+# Gitlab
+.gitlab-ci.yml eol=lf
+
+# Documentation
+*.md eol=lf
+LICENSE eol=lf
+AUTHORS eol=lf
