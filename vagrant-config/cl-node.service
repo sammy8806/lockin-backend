@@ -11,6 +11,7 @@ ExecStart=/usr/local/bin/node --harmony_modules --harmony_reflect --harmony_dest
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always
+User=vagrant
 
 [Install]
 WantedBy=multi-user.target
