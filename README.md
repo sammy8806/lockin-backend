@@ -15,6 +15,38 @@ If you want to run this, simply run the following command and the nodejs-server 
 vagrant up
 ```
 
+# FAQ
+
+## Provisioning
+
+- If you get unexpected behavior from you virtual mashine while Running:
+    __Restart it__
+- If your mashine starts with tons of unreadable stuff. Try:
+    ```
+    vagrant halt
+    vagrant up --provision
+    ```
+- If this isn't solved do something like this:
+    ```
+    vagrant destroy
+    vagrant up
+    ```
+
+__Please__ don't cry before you used the FAQ!
+
+## Virtualbox
+
+- If your box don't start properly try to install the
+[VirtualBox Extension Pack](https://www.virtualbox.org/wiki/Downloads).
+- Do __NOT__ use umlauts in your home-path ($HOME) when using vagrant there
+_(Wind**** sucks)_
+
+
+---
+!! You __won't__ anything below here unless you develop the backend !!
+---
+# Developer Stuff
+
 ## NPM Modules
 To install the neccessary npm-modules do:
 ```bash
@@ -23,13 +55,6 @@ npm install
 cd ../client
 npm install
 ```
-
-## Notes for Virtualbox
-
-- If your box don't start properly try to install the
-[VirtualBox Extension Pack](https://www.virtualbox.org/wiki/Downloads).
-- Do __NOT__ use umlauts in your home-path ($HOME) when using vagrant there
-_(Wind**** sucks)_
 
 # WebStorm
 
