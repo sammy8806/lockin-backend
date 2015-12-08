@@ -7,7 +7,7 @@ After=network.target
 
 [Service]
 ExecStartPre=/bin/bash /vagrant/vagrant-config/startup.sh
-ExecStart=/usr/local/bin/node --harmony_modules --harmony_reflect --harmony_destructuring --harmony_new_target /srv/server/src/server.js >> /srv/server/log/node_server.log
+ExecStart=/usr/local/bin/node --harmony_modules --harmony_reflect --harmony_destructuring --harmony_new_target /srv/server/src/server.js
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always
