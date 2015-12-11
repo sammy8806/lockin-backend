@@ -58,6 +58,11 @@ npm install
 
 # WebStorm
 
+## NodeJS Support
+`Language and Frameworks > NodeJS and NPM`
+
+Here click the _Enable_ Button. This should automatically change the _Usage Scope_ to NodeJS for the entire Project.
+
 ## Settings Repository
 
 Enter in your `File > Settings Repository`:
@@ -82,3 +87,20 @@ Please install the following Plugins in your Webstorm under:
 - spell checker english
 - spell checker german
 - vagrant
+
+## Code Quality
+
+```bash
+npm install -g jscs
+```
+
+### JSCS
+`Language and Frameworks > JavaScript > Code Quality > JSCS`
+
+Simply check _Enabled_. The other Fields should be filled automatically.
+
+### JSLint
+`Language and Frameworks > JavaScript > Code Quality > JSLink`
+
+Here again: Simply check the _Enabled_. One more tweak is neccessary to use it:
+Check the _Use Config_ in the upper-right corner.
