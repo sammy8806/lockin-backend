@@ -5,11 +5,12 @@
 
 
 let methodValidator = require('./method_validator.js');
-let jsonwspFault = require('./protocol/jsonwsp_fault.js');
+let JsonwspFault = require('./protocol/jsonwsp_fault.js');
+let JsonwspResponse = require('./protocol/jsonwsp_response.js');
 
 let parameterExistsValidator = require('./parameter_validators/exists.js');
 
-function parse(_packet,enviroment){
+function parse(_packet,_env){
     let data;
     try{
         data = JSON.parse(_packet);
@@ -29,14 +30,16 @@ function parse(_packet,enviroment){
 
     try{
         methodValidator.validateMethodCall(servicename,methodname,data.args);
-        return `calling service: ${servicename}; method: ${methodname}; args: ${data.args}`;
+
+        let result = _env.ServiceFactory.getService(servicename).callFunc(methodname,data.args,_env);
+        return new JsonwspResponse(servicename,methodname,result,data.mirror);
     }catch (err){
         return buildFault(err,data.mirror);
     }
 }
 
 function buildFault(_err, _mirror){
-    let response = new jsonwspFault(_err,_mirror);
+    let response = new JsonwspFault(_err,_mirror);
     return response;
 }
 
@@ -54,11 +57,8 @@ function checkParameters(_data){
     }
 
     if(_data.version != '1.0'){
-        throw {string: 'version mismatch. Server requires version 1.0', code:'client'};
+        throw {string: 'version mismatch. Server requires version 1.0', code:'incompatible'};
     }
-
-
-
 }
 
 module.exports = {

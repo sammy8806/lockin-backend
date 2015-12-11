@@ -1,9 +1,13 @@
 /**
  * Created by hendrik on 11.12.2015.
  */
+
+/**
+ * Created by hendrik on 11.12.2015.
+ */
 'use strict';
 
-let jsonwspValidator = require('../jsonwsp_parser.js');
+let packetParser = require('../../packet_parser.js');
 let jsonwspRequest = require('../protocol/jsonwsp_request.js');
 
 let env = {
@@ -12,18 +16,13 @@ let env = {
 
 env.ServiceFactory.setup(env);
 
-let servicename = "userservice";
-let methodname = "register";
+let servicename = "chatservice";
+let methodname = "createRoom";
 let args = {
-    'mail' : 'testmail',
-    'password' : 'testpw'
+    'name' : 'testname'
 };
 let mirror = 'M1RR0R';
 
 let requestExample = new jsonwspRequest(servicename,methodname,args,mirror);
 
-try{
-    console.log(jsonwspValidator.parse(requestExample.toJson(),{}));
-}catch(err){
-    console.log(err);
-}
+console.log(packetParser.parsePacket('JSONWSP',JSON.stringify(requestExample),env));
