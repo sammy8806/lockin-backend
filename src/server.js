@@ -1,4 +1,11 @@
 'use strict';
+
+const _env = {
+    ServiceFactory: require('./lib/servicefactory/servicefactory')
+};
+
+_env.ServiceFactory.setup(_env);
+
 const SERVER_PORT = 8080;
 let WebSocketServer = require('ws').Server;
 
@@ -11,3 +18,5 @@ websock.on('connection', function (ws) {
         ws.send(_msg);
     });
 });
+
+console.log('Server Running');
