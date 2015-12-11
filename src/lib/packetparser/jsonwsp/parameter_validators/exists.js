@@ -5,8 +5,8 @@
 
 function validateParameter(_args,_argName){
 
-    if(_args.hasOwnProperty(_argName)){
-        if(_args[_argName] != undefined){
+    if (_args.hasOwnProperty(_argName)) {
+        if(_args[_argName] != undefined) {
             return true;
         }
     }
@@ -16,4 +16,4 @@ function validateParameter(_args,_argName){
 
 module.exports = {
     validateParameter
-};
+} ;
