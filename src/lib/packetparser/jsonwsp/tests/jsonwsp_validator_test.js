@@ -6,10 +6,16 @@
 let jsonwspValidator = require('../jsonwsp_parser.js');
 let jsonwspRequest = require('../protocol/jsonwsp_request.js');
 
+let env = {
+    ServiceFactory: require('../../../servicefactory/servicefactory.js')
+};
+
+env.ServiceFactory.setup(env);
+
 let servicename = "userservice";
 let methodname = "register";
 let args = {
-    'mail' : null,
+    'mail' : 'testmail',
     'password' : 'testpw'
 };
 let mirror = 'M1RR0R';

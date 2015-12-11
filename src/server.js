@@ -6,6 +6,14 @@ const _env = {
 
 _env.ServiceFactory.setup(_env);
 
+_env.log = function (_type, _tag, _string) {
+    console.log('[%s] [%s] %s', _type, _tag, _string);
+};
+
+_env.debug = function (_tag, _string) {
+    _env.log('DEBUG', _tag, _string);
+};
+
 const SERVER_PORT = 8080;
 let WebSocketServer = require('ws').Server;
 

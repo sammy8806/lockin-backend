@@ -6,7 +6,8 @@
 let parameterValidator = require('./parameter_validator.js');
 
 const servicenames = [
-    "userservice"
+    "userservice",
+    "chatservice"
 ];
 
 let services = {};
@@ -35,12 +36,18 @@ function validateMethodCall(_servicename, _methodname, _args){
 
     let parameterVariations = method.parameterVariations;
 
+    if(parameterVariations.length == 0){
+        return true;
+    }
+
     for (let i = 0; i<parameterVariations.length; i++){
         let parameterVariation = parameterVariations[i];
         if(validateMethodCallOption(parameterVariation, _args)){
             return true;
         }
     }
+
+
     throw {string: 'arguments invalid', code: 'client'};
 
     return false;
