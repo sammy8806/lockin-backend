@@ -14,6 +14,14 @@ let env = {
     ServiceFactory: require('../../../servicefactory/servicefactory.js')
 };
 
+env.log = function (_type, _tag, _string) {
+    console.log('[%s] [%s] %s', _type, _tag, _string);
+};
+
+env.debug = function (_tag, _string) {
+    env.log('DEBUG', _tag, _string);
+};
+
 env.ServiceFactory.setup(env);
 
 let servicename = "chatservice";
