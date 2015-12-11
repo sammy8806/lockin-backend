@@ -5,7 +5,7 @@
 
 module.exports = class JsonWspRequest{
     constructor(_servicename,_methodname,_args,_mirror){
-        this.type = 'jsonwsp/response';
+        this.type = 'jsonwsp/request';
         this.version = '1.0';
         this.methodname = `${_servicename}/${_methodname}`;
         this.args = _args;

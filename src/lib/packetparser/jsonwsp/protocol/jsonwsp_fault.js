@@ -4,11 +4,14 @@
 'use strict';
 
 module.exports = class JsonWspFault{
+
     constructor(_errData, _reflection){
         this.type = 'jsonwsp/fault';
         this.version = '1.0';
         this.fault = _errData;
-        this.reflection = _reflection;
+        if(_reflection != undefined && _reflection != null){
+            this.reflection = _reflection;
+        }
     }
 
     toJson(){

@@ -41,6 +41,8 @@ function validateMethodCall(_servicename, _methodname, _args){
             return true;
         }
     }
+    throw {string: 'arguments invalid', code: 'client'};
+
     return false;
 }
 
