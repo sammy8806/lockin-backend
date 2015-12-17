@@ -3,9 +3,22 @@
  */
 'use strict';
 
-
 var serviceMethods =  [
-    'createRoom'
+    'joinRoom',
+    'partRoom',
+    'createRoom',
+    'deleteRoom',
+    'inviteUserToRoom',
+    'removeUserFromRoom',
+    'setRoomInfo',
+    'assignRole',
+    'replyRoomInvite',
+    'checkRoomInviteStatus',
+    'getRoomInvites',
+    'getRoomInfo',
+    'getRoom',
+    'getMessages',
+    'sendMessage'
 ];
 
 module.exports = {

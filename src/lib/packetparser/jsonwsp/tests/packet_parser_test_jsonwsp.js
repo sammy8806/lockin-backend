@@ -24,8 +24,8 @@ env.debug = function (_tag, _string) {
 
 env.ServiceFactory.setup(env);
 
-let servicename = "chatservice";
-let methodname = "createRoom";
+let servicename = "sessionservice";
+let methodname = "login";
 let args = {
     'name' : 'testname'
 };
