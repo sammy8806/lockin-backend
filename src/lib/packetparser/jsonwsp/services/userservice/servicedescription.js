@@ -5,13 +5,13 @@
 
 
 var serviceMethods =  [
-    'register'
-    //'changeUserInfo',
-    //'getUserInfo',
-    //'blockUser',
-    //'getSessions',
-    //'getNewSessionToken',
-    //'resetPassword'
+    'register',
+    'changeUserInfo',
+    'getUserInfo',
+    'blockUser',
+    'getSessions',
+    'getNewSessionToken',
+    'resetPassword'
 ];
 
 module.exports = {
