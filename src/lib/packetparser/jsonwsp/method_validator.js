@@ -6,8 +6,10 @@
 let parameterValidator = require('./parameter_validator.js');
 
 const servicenames = [
-    "userservice",
-    "chatservice"
+    'chatservice',
+    'userservice',
+    'sessionservice',
+    'fileservice'
 ];
 
 let services = {};
