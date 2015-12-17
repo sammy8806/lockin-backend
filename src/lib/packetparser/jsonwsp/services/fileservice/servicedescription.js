@@ -5,10 +5,10 @@
 
 
 var serviceMethods =  [
-    'login',
-    'logout',
-    'authenticate',
-    'setDeviceActivity'
+    'fileUploadRequest',
+    'fileDownloadRequest',
+    'getFiles',
+    'deleteFile'
 ];
 
 module.exports = {
