@@ -4,7 +4,7 @@
 'use strict';
 
 module.exports = {
-    call : (_args, _env) => {
+    call : (_args, _env, _ws) => {
         console.log(_args.name);
 
         return {greeting: _args.name};
