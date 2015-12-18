@@ -1,0 +1,8 @@
+{
+  "type": "jsonwsp/request",
+  "version": "1.0",
+  "methodname": "chatservice/createRoom",
+  "args": {},
+  "mirror": "TESTMIRROR"
+}
+####################################################

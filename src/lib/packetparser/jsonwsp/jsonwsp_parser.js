@@ -3,11 +3,11 @@
  */
 'use strict';
 
-
-let methodValidator = require('./method_validator.js');
 let JsonwspFault = require('./protocol/jsonwsp_fault.js');
 let JsonwspResponse = require('./protocol/jsonwsp_response.js');
+let JsonwspRequest = require('./protocol/jsonwsp_request.js');
 
+let methodValidator = require('./method_validator.js');
 let parameterExistsValidator = require('./parameter_validators/exists.js');
 
 function parse(_packet,_env,_ws){
@@ -43,6 +43,11 @@ function buildFault(_err, _mirror){
     return response;
 }
 
+function buildRequest(_servicename,_methodname,_args,_mirror){
+    let response = new JsonwspRequest(_servicename,_methodname,_args,_mirror);
+    return response;
+}
+
 function checkParameters(_data){
     let requiredArgs = ['type','version','methodname','args','mirror'];
 
@@ -62,5 +67,6 @@ function checkParameters(_data){
 }
 
 module.exports = {
-  parse
+    parse,
+    buildRequest
 };

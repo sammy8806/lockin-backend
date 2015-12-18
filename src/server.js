@@ -21,7 +21,7 @@ _env.sessionmanager = require('./lib/sessionmanager/sessionmanager.js');
 const SERVER_PORT = 8080;
 const SERVER_HOST = '::';
 
-let websockethandler = require('./lib/websockethandler/websockethandler.js');
-websockethandler.init(_env,SERVER_PORT,SERVER_HOST);
+_env.websockethandler = require('./lib/websockethandler/websockethandler.js');
+_env.websockethandler.init(_env,SERVER_PORT,SERVER_HOST);
 
 
