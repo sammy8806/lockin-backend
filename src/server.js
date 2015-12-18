@@ -14,17 +14,12 @@ _env.debug = function (_tag, _string) {
     _env.log('DEBUG', _tag, _string);
 };
 
+_env.packetParser = require('./lib/packetparser/packet_parser.js');
+
 const SERVER_PORT = 8080;
-let WebSocketServer = require('ws').Server;
+const SERVER_HOST = '::';
 
-let websock = new WebSocketServer({port: SERVER_PORT, host: '::'});
-websock.on('connection', function (ws) {
-    console.info('new connection');
+let websockethandler = require('./lib/websockethandler/websockethandler.js');
+websockethandler.init(_env,SERVER_PORT,SERVER_HOST);
 
-    ws.on('message', function (_msg) {
-        console.info(`-> ${_msg}`);
-        ws.send(_msg);
-    });
-});
 
-console.log('Server Running');
