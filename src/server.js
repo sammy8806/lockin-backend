@@ -1,7 +1,16 @@
 'use strict';
 
 const _env = {
-    ServiceFactory: require('./lib/servicefactory/servicefactory')
+    ServiceFactory: require('./lib/servicefactory/servicefactory'),
+    ObjectFactory: {
+        get(_name) {
+            return require('./objectPrototypes/' + lcfirst(_name));
+        }
+    },
+    lcfirst(_str) {
+        const f = _str.charAt(0).toLowerCase();
+        return f + _str.substr(1);
+    }
 };
 
 _env.ServiceFactory.setup(_env);
