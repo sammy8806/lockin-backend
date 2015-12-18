@@ -16,6 +16,8 @@ _env.debug = function (_tag, _string) {
 
 _env.packetParser = require('./lib/packetparser/packet_parser.js');
 
+_env.sessionmanager = require('./lib/sessionmanager/sessionmanager.js');
+
 const SERVER_PORT = 8080;
 const SERVER_HOST = '::';
 

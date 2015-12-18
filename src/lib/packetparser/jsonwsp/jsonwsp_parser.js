@@ -10,7 +10,7 @@ let JsonwspResponse = require('./protocol/jsonwsp_response.js');
 
 let parameterExistsValidator = require('./parameter_validators/exists.js');
 
-function parse(_packet,_env){
+function parse(_packet,_env,_ws){
     let data;
     try{
         data = JSON.parse(_packet);
@@ -31,7 +31,7 @@ function parse(_packet,_env){
     try{
         methodValidator.validateMethodCall(servicename,methodname,data.args);
         _env.debug('PacketParser',`Calling Service: ${servicename} Method: ${methodname} with args: ${JSON.stringify(data.args)}`);
-        let result = _env.ServiceFactory.getService(servicename).callFunc(methodname,data.args,_env);
+        let result = _env.ServiceFactory.getService(servicename).callFunc(methodname,data.args,_env,_ws);
         return new JsonwspResponse(servicename,methodname,result,data.mirror);
     }catch (err){
         return buildFault(err,data.mirror);

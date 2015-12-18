@@ -5,10 +5,10 @@
 
 let jsonwspParser = require('./jsonwsp/jsonwsp_parser.js');
 
-function parsePacket(_packettype,_packet,_env){
+function parsePacket(_packettype,_packet,_env,_ws){
     switch (_packettype){
         case 'JSONWSP':
-            let response = jsonwspParser.parse(_packet,_env);
+            let response = jsonwspParser.parse(_packet,_env,_ws);
             return JSON.stringify(response);
     }
 
