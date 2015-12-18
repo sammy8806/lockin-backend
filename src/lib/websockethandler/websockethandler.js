@@ -13,7 +13,7 @@ function init(_env,_port,_host){
 
         ws.on('message', function (_msg) {
             _env.debug('Websockethandler',`Recived message from: ${ws.upgradeReq.connection.remoteAddress} message: ${_msg}`);
-            let response = _env.packetParser.parsePacket('JSONWSP',_msg,_env);
+            let response = _env.packetParser.parsePacket('JSONWSP',_msg,_env,ws);
             console.log(response);
             _env.debug('Websockethandler',`responding to: ${ws.upgradeReq.connection.remoteAddress} message: ${response}`);
             ws.send(response);
@@ -22,8 +22,11 @@ function init(_env,_port,_host){
     _env.debug('Websockethandler','WebsocketServer running');
 }
 
+function sendMessage(_websocket, _message){
+    _websocket.send(_message);
+}
 
 module.exports = {
     init,
-    websocket
+    sendMessage
 };
