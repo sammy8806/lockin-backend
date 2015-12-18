@@ -31,7 +31,7 @@ function parse(_packet,_env,_ws){
     try{
         methodValidator.validateMethodCall(servicename,methodname,data.args);
         _env.debug('PacketParser',`Calling Service: ${servicename} Method: ${methodname} with args: ${JSON.stringify(data.args)}`);
-        let result = _env.ServiceFactory.getService(servicename).callFunc(methodname,data.args,_env,_ws);
+        let result = _env.ServiceFactory.getService(servicename).callFunc(methodname,data.args,_env,_ws,data.type);
         return new JsonwspResponse(servicename,methodname,result,data.mirror);
     }catch (err){
         return buildFault(err,data.mirror);
