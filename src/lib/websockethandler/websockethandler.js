@@ -18,6 +18,11 @@ function init(_env,_port,_host){
             _env.debug('Websockethandler',`responding to: ${ws.upgradeReq.connection.remoteAddress} message: ${response}`);
             ws.send(response);
         });
+
+        ws.on('close', function(){
+            _env.sessionmanager.socketClosed(ws);
+            _env.debug('Websockethandler',`Connection closed from ${ws.upgradeReq.connection.remoteAddress}`);
+        });
     });
     _env.debug('Websockethandler','WebsocketServer running');
 }
