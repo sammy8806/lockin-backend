@@ -16,7 +16,7 @@ var serviceMethods =  [
     'checkRoomInviteStatus',
     'getRoomInvites',
     'getRoomInfo',
-    'getRoom',
+    'getRooms',
     'getMessages',
     'sendMessage'
 ];
