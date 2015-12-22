@@ -5,20 +5,20 @@
 
 let connections = {};
 
-function addSocketSession(sessionid, socket){
+function addSocketSession(sessionid, socket) {
     connections[sessionid] = socket;
 }
-function removeSocketSession(sessionid){
+function removeSocketSession(sessionid) {
     delete connections[sessionid];
 }
 
-function getSocketOfSession(sessionid){
+function getSocketOfSession(sessionid) {
     return connections[sessionid];
 }
 
-function socketClosed(socket){
-    for(let attr in connections){
-        if (connections[attr] == socket){
+function socketClosed(socket) {
+    for (let attr in connections) {
+        if (connections.hasOwnProperty(attr) && connections[attr] === socket) {
             delete connections[attr];
         }
     }

@@ -6,11 +6,11 @@
 let existsValidator = require('./parameter_validators/exists.js');
 
 let paramValidators = {
-    'exists' : existsValidator
+    'exists': existsValidator
 };
 
-function validateParameter(_args,_argName,_validatorName){
-    if(paramValidators[_validatorName].validateParameter(_args,_argName)){
+function validateParameter(_args, _argName, _validatorName) {
+    if (paramValidators[_validatorName].validateParameter(_args, _argName)) {
         return true;
     }
     return false;
