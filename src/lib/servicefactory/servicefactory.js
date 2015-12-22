@@ -12,7 +12,7 @@ let _vars = {};
 
 let _services = {};
 
-const getServiceFile = (_name) => `${getVar('SERVICE_PATH')}/${_name}/service.js`;
+const getServiceFile = (_name, _fileName) => `${getVar('SERVICE_PATH')}/${_name}/${_fileName}.js`;
 const getServiceFunction = (_func) => require(`${getVar('SERVICE_PATH')}/_serviceFunctions.js`)[_func];
 
 _vars.SERVICE_PATH = getServicePath();
@@ -25,16 +25,20 @@ module.exports = {
 
     getService,
 
-    SERVICE_PATH : getVar('SERVICE_PATH')
+    SERVICE_PATH: getVar('SERVICE_PATH')
 };
 
-function setup(_env) {
+function setup(_env, _serviceFileName) {
     let files = fs.readdirSync(_vars.SERVICE_PATH);
+
+    if (_serviceFileName === undefined) {
+        _serviceFileName = 'service.js';
+    }
 
     let _serviceList = [];
     files.forEach((name) => {
         try {
-            const path = getServiceFile(name);
+            const path = getServiceFile(name, _serviceFileName);
             const fsStat = fs.statSync(path);
             if (fsStat.isFile()) {
                 _serviceList.push(name);
@@ -46,9 +50,13 @@ function setup(_env) {
 
     _serviceList.forEach((name) => {
         _env.debug(__MODULE_NAME, `Loading Service: ${name}`);
-        _services[name] = require(getServiceFile(name));
-        _services[name].setup(_env);
-        _env.debug(__MODULE_NAME, `Service loaded: ${name}`);
+        try {
+            _services[name] = require(getServiceFile(name, _serviceFileName));
+            _services[name].setup(_env);
+            _env.debug(__MODULE_NAME, `Service loaded: ${name}`);
+        } catch (e) {
+            _env.error(__MODULE_NAME, `Service could not be loaded: ${name}\n${e}`);
+        }
     });
 
     _initialized = true;
