@@ -1,17 +1,23 @@
 'use strict';
 module.exports = class ObjectPrototype {
     constructor(_obj, _whitelistedAttributes) {
-        const keys = Object.keys(_obj);
+        this._whitelistedAttributes = _whitelistedAttributes;
+        this.copyAttributes(_obj, this, this._whitelistedAttributes);
+    }
 
-        if (keys.length == 0)
-            return;
+    toJSON() {
+        let attribs = {};
+        this.copyAttributes(this, attribs, this._whitelistedAttributes);
+        return attribs;
+    }
 
-        for (let it = 0; it < keys.length; it++) {
-            const key = keys[it];
-
-            if (this._whitelistedAttributes[key] !== undefined) {
-                this[key] = _obj[key];
+    copyAttributes(_src, _target, _whitelist) {
+        _whitelist.forEach(
+            (_name) => {
+                if (_src[_name] !== undefined) {
+                    _target[_name] = _src[_name];
+                }
             }
-        }
+        );
     }
 };
