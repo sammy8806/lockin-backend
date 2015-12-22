@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const __MODULE_NAME = 'ServiceFactory';
+
 const fs = require('fs');
 
 let _initialized = false;
@@ -43,10 +45,10 @@ function setup(_env) {
     });
 
     _serviceList.forEach((name) => {
-        console.log(`[DEBUG] Loading Server: ${name}`);
+        _env.debug(__MODULE_NAME, `Loading Service: ${name}`);
         _services[name] = require(getServiceFile(name));
         _services[name].setup(_env);
-        console.log(`[DEBUG] Service loaded: ${name}`);
+        _env.debug(__MODULE_NAME, `Service loaded: ${name}`);
     });
 
     _initialized = true;
