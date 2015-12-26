@@ -1,33 +1,28 @@
 'use strict';
 
 module.exports = {
-    call : login
-};
+    call: (_args, _env, _ws, _type) => {
+        const SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
 
-const SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
-const User = _env.ObjectFactory.get('User');
+        let res = new SimpleResponse({success: false});
+        //let user = db.find(_args.email); // user anhand der email suchen
 
-console.log(login({ email : "peter@parker", passwordHash : "abc" }));
+        if (user != null) {
+            if (_args.passwordHash === user.passwordHash) {
 
-function login(_args, _env) {
-    let res = new SimpleResponse({success: false});
+                // session id erzeugen
+                // prüfen ob diese bereits vorhanden ist (sonst neu erzugen)
+                // session id hinzufügen
+                // session im user speichern
 
-    //let user = db.find(_args.email); // user anhand der email suchen
-
-    let user = new User();
-
-    console.log(user.mail);
-
-    if (user != null) {
-        if (_args.passwordHash === user.passwordHash) {
-            // user einloggen???
-            res.success = true;
+                res.success = true;
+            } else {
+                throw {code: 'client', text: 'wrong password'};
+            }
         } else {
-            throw { code: 'client', text: 'wrong password' };
+            throw {code: 'client', text: 'user not found'};
         }
-    } else {
-        throw { code: 'client', text: 'user not found' };
-    }
 
-    return res.success;
-}
+        return res.success;
+    }
+};

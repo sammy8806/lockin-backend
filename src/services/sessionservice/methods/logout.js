@@ -1,14 +1,14 @@
-"use strict"
+'use strict';
 
 module.exports = {
-    call : logout
+    call: (_args, _env, _ws, _type) => {
+        const SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
+
+        let res = new SimpleResponse({success: false});
+
+        res.success = true;
+        console.log("user logged out");
+
+        return res;
+    }
 };
-
-function logout(_args, _env) {
-    let res = { success: false }; // simpleresponse
-
-    res.success = true;
-    console.log("user logged out");
-
-    return res;
-}
