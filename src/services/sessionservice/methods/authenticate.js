@@ -1,14 +1,14 @@
-"use strict"
+'use strict';
 
 module.exports = {
-    call : authenticate
+    call: (_args, _env, _ws, _type) => {
+        const SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
+
+        let res = new SimpleResponse({success: false});
+
+        res.success = true;
+        console.log("user authenticated");
+
+        return res;
+    }
 };
-
-function authenticate(_args, _env) {
-    let res = { success: false }; // simpleresponse
-
-    res.success = true;
-    console.log("user authenticated");
-
-    return res;
-}
