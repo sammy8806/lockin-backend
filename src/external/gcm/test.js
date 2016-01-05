@@ -6,11 +6,11 @@ var GCM = require('./gcm');
 var gcm = new GCM();
 
 //Set up API-Key.
-var options = {apiKey: 'AIzaSyCTnTdd2RoYKVRG4yDnd1vd_tuznxVH1Pw'};
+var options = {apiKey: 'AIzaSyDIbh0BkcxhoUgHudn-fOw7itCnPnxwuQ8'};
 gcm.setup(options);
 
 //Add the registration tokens of the devices you want to send to.
-var regToken = 'clJowgGFg2o:APA91bHoYHPRbcoKXoJPwUIw7pAhVSamlZUJu485aeGbqZAoEan0uMgBeHZOlbjQISBegUXz82Bgi8IDbc-ECrvPJatqa4KngOOIuHBN0UKIkfrX-DHQYf3X2Qgbpf88j92l7UmYRh9G';
+var regToken = 'APA91bHaitmlvlrWz9u1i5V4jV7e7igcZYQMMGqkkRKSlyZwWgUkOX7urfv7MyutJo5dSh_J6xdzvKtfqbhZCa9OgjySpDeBEze4NVeIhdszrw7KZ2wWpHnC2BcpLuGfs_me4eGC8hVV';
 var receivers = [regToken];
 
 //Create a message.
