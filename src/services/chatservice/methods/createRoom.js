@@ -5,6 +5,8 @@
 
 const __METHOD_NAME = 'createRoom';
 
+const crypto = require('crypto');
+
 module.exports = {
     call: (_args, _env, _ws, _type) => {
         try {
@@ -21,7 +23,6 @@ module.exports = {
                 console.log(err);
             }
 
-            const crypto = require('crypto');
             const randomData = crypto.randomBytes(256);
 
             let hash = crypto.createHash('sha256');

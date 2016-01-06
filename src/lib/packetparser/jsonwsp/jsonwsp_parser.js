@@ -10,6 +10,8 @@ let JsonwspRequest = require('./protocol/jsonwsp_request.js');
 let methodValidator = require('./method_validator.js');
 let parameterExistsValidator = require('./parameter_validators/exists.js');
 
+const Promise = require('promise');
+
 function parse(_packet, _env, _ws) {
     let data;
     try {
@@ -30,19 +32,27 @@ function parse(_packet, _env, _ws) {
     let servicename = data.methodname.split('/')[0];
     let methodname = data.methodname.split('/')[1];
 
-    try {
+    return new Promise((resolve, reject) => {
         methodValidator.validateMethodCall(servicename, methodname, data.args);
         _env.debug(
             'PacketParser',
             `Calling Service: ${servicename} Method: ${methodname} with args: ${JSON.stringify(data.args)}`
         );
-        let result = _env.ServiceFactory
+
+        return _env.ServiceFactory
             .getService(servicename)
-            .callFunc(methodname, data.args, _env, _ws, data.type);
-        return new JsonwspResponse(servicename, methodname, result, data.mirror);
-    } catch (err) {
-        return buildFault(err, data.mirror);
-    }
+            .callFunc(methodname, data.args, _env, _ws, data.type)
+            .then(
+                (result) => {
+                    _env.debug('PacketParser', 'result');
+                    resolve(new JsonwspResponse(servicename, methodname, result, data.mirror));
+                },
+                (err) => {
+                    _env.debug('PacketParser', 'reject');
+                    reject(buildFault(err, data.mirror));
+                }
+            );
+    });
 }
 
 function buildFault(_err, _mirror) {

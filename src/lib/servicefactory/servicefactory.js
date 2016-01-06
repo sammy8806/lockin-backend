@@ -52,10 +52,16 @@ function setup(_env, _serviceFileName) {
         _env.debug(__MODULE_NAME, `Loading Service: ${name}`);
         try {
             _services[name] = require(getServiceFile(name, _serviceFileName));
+            if(_services[name].deps !== undefined && (typeof _services[name].deps) == 'Array') {
+                _services[name].deps.forEach((dep) => {
+                    _env.debug(`${__MODULE_NAME}/${name}`, `ound dependency: ${dep}`);
+                });
+            }
             _services[name].setup(_env);
             _env.debug(__MODULE_NAME, `Service loaded: ${name}`);
         } catch (e) {
-            _env.error(__MODULE_NAME, `Service could not be loaded: ${name}\n${e}`);
+            _env.error(__MODULE_NAME, `Service could not be loaded: ${name}`);
+            console.error(e);
         }
     });
 

@@ -19,8 +19,7 @@ Vagrant.configure(2) do |config|
 
     config.vm.provision "shell", path: "vagrant-config/bootstrap.sh"
 
-    config.vm.synced_folder "src/", "/srv/server/src"
-    config.vm.synced_folder "log/", "/srv/server/log", create: true
+    config.vm.synced_folder ".", "/srv/server/", create: true
 
     config.ssh.username = "vagrant"
     config.ssh.private_key_path = "vagrant-config/id_rsa"
@@ -30,7 +29,7 @@ Vagrant.configure(2) do |config|
 
     # start apache on the guest after the guest starts
     config.trigger.after :up do
-        run_remote "bash /vagrant/vagrant-config/every_start.sh"
+        run_remote "bash /srv/server/vagrant-config/every_start.sh"
     end
 
 end

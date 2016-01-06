@@ -1,0 +1,38 @@
+'use strict';
+
+const DRIVER_NAME = 'MongoDbDriver';
+
+import MongoClient from 'mongodb';
+import assert from 'assert';
+import Promise from 'promise';
+
+let __db = false;
+
+let methods = {};
+
+methods.setup = function (_env) {
+    let url = 'mongodb://localhost:27017/contentloops';
+
+// Use connect method to connect to the Server
+    MongoClient.connect(url, function (err, db) {
+        assert.equal(null, err);
+        _env.debug(DRIVER_NAME, 'Connected correctly to server');
+
+        __db = db;
+    });
+};
+
+methods.findSessionId = function (_sessionId) {
+    return _sessionId;
+};
+
+methods.newSession = function (_session) {
+
+};
+
+methods.findUser = function (_attr) {
+    // __db.collection('users').find(_attr).toArray();
+    return new Promise.resolve(__db.collection('users').find(_attr).toArray());
+};
+
+module.exports = methods;

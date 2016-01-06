@@ -1,8 +1,8 @@
 {
   "type": "jsonwsp/request",
   "version": "1.0",
-  "methodname": "chatservice/createRoom",
-  "args": {},
-  "mirror": "TESTMIRROR"
+  "methodname": "sessionservice/login",
+  "args": {"email": "test@test.de", "password" : "blablabla"},
+  "mirror": "-1"
 }
 ####################################################
