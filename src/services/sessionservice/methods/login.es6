@@ -35,57 +35,55 @@ module.exports = {
         }
 
         _env.debug(METHOD_NAME, 'Searching User');
+        let res = new SimpleResponse({success: false});
 
-        let user = dbDriver.findUser({email: _args.email}); // user anhand der email suchen
+        resolve(dbDriver.findUser({email: _args.email})
+            .then((_user) => {
+                    _env.debug(METHOD_NAME, 'Search done');
 
-        return user.then(function (_arg) {
-            _env.debug(METHOD_NAME, 'Search done');
+                    let user = _user[0]; // Use always the first one
 
-            user = _arg[0]; // Use always the first one
-            let res = new SimpleResponse({success: false});
+                    if (user === undefined) {
+                        reject({code: 'client', string: 'user not found'});
+                    }
 
-            if (user === undefined) {
-                reject({code: 'client', string: 'user not found'});
-            }
+                    if (_args.passwordHash !== user.passwordHash) {
+                        reject({code: 'client', string: 'wrong password'});
+                    }
 
-            if (_args.passwordHash !== user.passwordHash) {
-                reject({code: 'client', string: 'wrong password'});
-            }
+                    let sessionId;
 
-            let sessionId;
+                    // session id erzeugen
+                    sessionId = generateSessionId();
 
-            // session id erzeugen
-            sessionId = generateSessionId();
+                    let session = new Session({sessionId: sessionId, userId: user._id}, _env);
 
-            let session = new Session({sessionId: sessionId, userId: user._id}, _env);
+                    // session id hinzufügen
+                    dbDriver.newSession(session, user).then(
+                        () => {
+                            // session im user speichern
+                            dbDriver.userAddSession(user, session);
 
-            // session id hinzufügen
-            return dbDriver
-                .newSession(session, user)
-                .then(
-                    () => {
-                        // session im user speichern
-                        dbDriver.userAddSession(user, session);
-                        _env.sessionmanager.addSocketSession(_ws, session);
-                        dbDriver.setSessionStatus(session, 'online');
+                            _env.sessionmanager.addSocketSession(_ws, session);
+                            dbDriver.setSessionStatus(session, 'online');
 
-                        res.success = true;
+                            _env.debug(METHOD_NAME, 'Online status set');
+                        }
+                    );
 
-                        _env.debug(METHOD_NAME, 'Done');
+                    res.success = true;
 
-                        resolve(res);
-                    },
-                    (_err) => {
-                        reject({code: 'server', string: _err});
-                        console.log(_err);
-                    })
-                .catch((_err) => {
-                    //console.log(_err);
+                    _env.debug(METHOD_NAME, 'Done');
+
+                    return res;
+                },
+                (_err) => {
                     reject({code: 'server', string: _err});
-                });
-
-        }).catch((err) => {
-            console.log(err);
-        });
+                    console.log(_err);
+                })
+            .catch((_err) => {
+                _env.error(METHOD_NAME, _err);
+            })
+        );
     })
 };

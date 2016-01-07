@@ -35,6 +35,8 @@ _env.sessionmanager = require('./lib/sessionmanager/sessionmanager.js');
 _env.GlobalServiceFactory.setup(_env, 'globalservice');
 _env.ServiceFactory.setup(_env, 'service');
 
+global._env = _env;
+
 const SERVER_PORT = 8080;
 const SERVER_HOST = '::'; // No localhost or something here instead of '::' (IPv6)
 

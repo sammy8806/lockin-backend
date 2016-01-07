@@ -1,6 +1,5 @@
 'use strict';
 
-import Promise from 'promise';
 const METHOD_NAME = 'SessionService/Authenticate';
 
 let db;
@@ -18,30 +17,29 @@ module.exports = {
         let res = new SimpleResponse({success: false});
 
         return new Promise((resolve, reject) => {
-            return db.findSessionToken(_args.sessionToken)
+            let result = db.findSessionToken(_args.sessionToken)
                 .then((_sessionId) => {
-                    _env.debug(METHOD_NAME, 'Token: ' + _sessionId);
+                    let sId = _sessionId[0].sessionId;
 
-                    return db.findSession({sessionId: _sessionId})
-                        .then((_session) => {
-                            console.log(_session);
+                    _env.debug(METHOD_NAME, 'Token: ' + sId);
+                    return db.findSession({sessionId: sId});
 
-                            _session = _session[0];
-
-                            console.log(_session);
-
-                            _env.sessionmanager.addSocketSession(_ws, _session);
-                            db.setSessionStatus({sessionId: _session.sessionId}, 'online');
-                            res.success = true;
-
-                            resolve(res);
-                        }, (_err) => {
-                            console.error(_err);
-                        });
                 }, (_err) => {
                     console.error(_err);
+                    reject(_err);
+                }).then((_session) => {
+                    _session = _session[0];
+                    _env.sessionmanager.addSocketSession(_ws, new Session(_session));
+                    db.setSessionStatus({sessionId: _session.sessionId}, 'online');
+                    res.success = true;
+
+                    return res;
+                }, (_err) => {
+                    console.error(_err);
+                    reject(_err);
                 });
 
+            resolve(result);
         });
     }
 };

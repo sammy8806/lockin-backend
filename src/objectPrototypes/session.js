@@ -11,7 +11,18 @@ module.exports = class Session extends ObjectPrototype {
     }
 
     onConnectionClosed() {
-        let db = this._env.GlobalServiceFactory.getService('DatabaseService').getDriver();
-        db.setSessionStatus(this, 'closed');
+        const tag = 'Object/Session.onConnectionClosed';
+        const oldStatus = this.connectionState;
+        const newStatus = 'closed';
+
+        global._env.debug(tag, 'Setting status from ' + oldStatus + ' to ' + newStatus);
+
+        global._env.GlobalServiceFactory.getService('DatabaseService').getDriver()
+            .setSessionStatus(this, newStatus).then((_res) => {
+                global._env.debug(tag, 'Success');
+            }, (_res) => {
+                global._env.debug(tag, 'Failed: ' + _res);
+            }
+        );
     }
 };

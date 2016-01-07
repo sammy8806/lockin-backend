@@ -7,7 +7,7 @@ module.exports = class ObjectPrototype {
 
     toJSON() {
         let attribs = {};
-        this.copyAttributes(this, attribs, this._serializeAttribs);
+        this.copyAttributes(this, attribs, this._whitelistedAttributes);
         return attribs;
     }
 

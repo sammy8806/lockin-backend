@@ -46,21 +46,15 @@ methods.userAddSession = function (_user, _session) {
 };
 
 methods.setSessionStatus = function (_session, _status) {
+    // console.log('----', typeof _session, _session.sessionId);
     return __db.collection('sessions').updateOne(
         {sessionId: _session.sessionId},
         {$set: {connectionState: _status}}
     );
 };
 
-methods.findSession = function(_session) {
-    return __db.collection('users').find(_session).toArray();
-};
-
-methods.findSessionToken = function(_token) {
-    const s = {sessionId: _token};
-    console.log('Search:');
-    console.log(s);
-    return __db.collection('sessions').find(s).toArray();
+methods.findSessionToken = function (_token) {
+    return __db.collection('sessions').find({sessionId: _token}).toArray();
 };
 
 module.exports = methods;

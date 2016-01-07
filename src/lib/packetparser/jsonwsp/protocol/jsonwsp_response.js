@@ -3,8 +3,8 @@
  */
 'use strict';
 
-module.exports = class JsonWspResponse{
-    constructor(_servicename, _methodname, _result, _reflection){
+module.exports = class JsonWspResponse {
+    constructor(_servicename, _methodname, _result, _reflection) {
         this.type = 'jsonwsp/response';
         this.version = '1.0';
         this.methodname = `${_servicename}/${_methodname}`;
@@ -12,7 +12,7 @@ module.exports = class JsonWspResponse{
         this.reflection = _reflection;
     }
 
-    toJson(){
+    toJson() {
         return JSON.stringify(this);
     }
 };
