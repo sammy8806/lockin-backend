@@ -44,15 +44,20 @@ function parse(_packet, _env, _ws) {
             .callFunc(methodname, data.args, _env, _ws, data.type)
             .then(
                 (result) => {
-                    _env.debug('PacketParser', 'result');
-                    resolve(new JsonwspResponse(servicename, methodname, result, data.mirror));
+                    _env.debug('PacketParser', `result: ${JSON.stringify(result)}`);
+                    resolve(result);
                 },
                 (err) => {
-                    _env.debug('PacketParser', 'reject');
+                    _env.debug('PacketParser', `reject: ${JSON.stringify(err)}`);
                     reject(buildFault(err, data.mirror));
                 }
             );
     });
+}
+
+function buildReponse(_servicename, _methodname, _result, _mirror) {
+    let response = new JsonwspResponse(servicename, methodname, result, _mirror);
+    return
 }
 
 function buildFault(_err, _mirror) {

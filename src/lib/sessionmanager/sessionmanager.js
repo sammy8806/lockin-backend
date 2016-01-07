@@ -7,7 +7,7 @@ let connections = new Map();
 let sessions = new Map();
 
 function addSocketSession(_socket, _session) {
-    console.log(_session);
+    // console.log(_session);
 
     sessions.set(_session, _socket);
     connections.set(_socket, _session);
@@ -37,7 +37,7 @@ function getSessionOfSocket(_socket) {
 function socketClosed(_socket) {
     let session = getSessionOfSocket(_socket);
 
-    console.log(session);
+    // console.log(session);
 
     if (typeof session === 'function' && typeof session.onConnectionClosed === 'function') {
         session.onConnectionClosed();

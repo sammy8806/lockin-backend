@@ -46,6 +46,10 @@ module.exports = {
                                     let message = new Message(_args);
                                     message.id = Date.now();
                                     message.date = Date.now();
+
+                                    // TODO: get sender from active session
+                                    // message.from = ;
+                                    
                                         /*{
                                             id: Date.now(),
                                             from: _args.from,
