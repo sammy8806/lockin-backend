@@ -1,0 +1,19 @@
+{
+  "name": "contentloops-backend-client",
+  "version": "0.1.0",
+  "dependencies": {
+    "ws": ">=0.8.0",
+    "babel-cli": "*",
+    "babel-preset-es2015": "*"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-babel": "^6.1.1",
+    "gulp-rename": "^1.2.2"
+  }
+}

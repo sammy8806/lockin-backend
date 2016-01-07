@@ -1,12 +1,13 @@
 'use strict';
 
-const crypto = require('crypto');
-const Promise = require('promise');
+import crypto from 'crypto';
+import Promise from 'promise';
 
 const METHOD_NAME = 'SessionService/Login';
 
 let db;
 let Session;
+let SimpleResponse;
 
 function generateSessionId() {
     const randomData = crypto.randomBytes(256);
@@ -18,19 +19,19 @@ function generateSessionId() {
 
 module.exports = {
     setup: (_env) => {
+        SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         Session = _env.ObjectFactory.get('Session');
         db = _env.GlobalServiceFactory.getService('DatabaseService');
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
-        const SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
 
         let dbDriver = null;
         try {
             dbDriver = db.getDriver();
         } catch (e) {
             _env.error(METHOD_NAME, 'Please setup this function first!');
-            reject ({code: 'server', string: 'internal error'});
+            reject({code: 'server', string: 'internal error'});
         }
 
         _env.debug(METHOD_NAME, 'Searching User');
@@ -39,50 +40,53 @@ module.exports = {
 
         return user.then(function (_arg) {
             _env.debug(METHOD_NAME, 'Search done');
-            console.log(_arg);
 
             user = _arg[0]; // Use always the first one
             let res = new SimpleResponse({success: false});
 
-            if (user !== undefined) {
-                _env.debug(METHOD_NAME, '1 true');
-
-                console.log(_args, user);
-
-                if (_args.passwordHash === user.passwordHash) {
-                    _env.debug(METHOD_NAME, '2 true');
-
-                    let prevSession;
-                    let sessionId;
-
-                    do {
-                        // session id erzeugen
-                        sessionId = generateSessionId();
-
-                        // prüfen ob diese bereits vorhanden ist (sonst neu erzugen)
-                        prevSession = dbDriver.findSessionId(sessionId);
-                    } while (prevSession !== undefined);
-
-                    // session id hinzufügen
-                    dbDriver.newSession(new Session({_id: sessionId}));
-
-                    // session im user speichern
-                    // user.sessions.push()
-
-                    res.success = true;
-                } else {
-                    _env.debug(METHOD_NAME, '2 false');
-                    resolve({code: 'client', string: 'wrong password'});
-                }
-            } else {
-                _env.debug(METHOD_NAME, '1 false');
+            if (user === undefined) {
                 reject({code: 'client', string: 'user not found'});
             }
 
-            resolve(res);
+            if (_args.passwordHash !== user.passwordHash) {
+                reject({code: 'client', string: 'wrong password'});
+            }
+
+            let sessionId;
+
+            // session id erzeugen
+            sessionId = generateSessionId();
+
+            let session = new Session({sessionId: sessionId, userId: user._id}, _env);
+
+            // session id hinzufügen
+            return dbDriver
+                .newSession(session, user)
+                .then(() => {
+                    // session im user speichern
+                    dbDriver.userAddSession(user, session);
+                })
+                .then(() => {
+                    _env.sessionmanager.addSocketSession(_ws, session);
+                    dbDriver.setSessionStatus(session, 'online');
+                })
+                .then(
+                    () => {
+                        res.success = true;
+                        resolve(res);
+                    },
+                    (_err) => {
+                        reject(_err);
+                        console.log(_err);
+                    }
+                )
+                .catch((_err) => {
+                    console.log(_err);
+                    reject({code: 'server', string: _err});
+                });
+
         }).catch((err) => {
             console.log(err);
         });
     })
 };
-

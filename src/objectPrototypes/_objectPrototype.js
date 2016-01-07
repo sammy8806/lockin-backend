@@ -7,14 +7,15 @@ module.exports = class ObjectPrototype {
 
     toJSON() {
         let attribs = {};
-        this.copyAttributes(this, attribs, this._whitelistedAttributes);
+        this.copyAttributes(this, attribs, this._serializeAttribs);
         return attribs;
     }
 
     copyAttributes(_src, _target, _whitelist) {
-        _whitelist.forEach(
+        let from = _whitelist === null ? Object.keys(_src) : _whitelist;
+        from.forEach(
             (_name) => {
-                if (_src[_name] !== undefined) {
+                if (_src[_name] !== undefined && _name !== '_env') {
                     _target[_name] = _src[_name];
                 }
             }

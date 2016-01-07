@@ -26,13 +26,41 @@ methods.findSessionId = function (_sessionId) {
     return _sessionId;
 };
 
-methods.newSession = function (_session) {
+methods.findSession = function (_attr) {
+    return __db.collection('sessions').find(_attr).toArray();
+};
 
+methods.newSession = function (_session) {
+    return __db.collection('sessions').insertOne({sessionId: _session.sessionId, userId: _session.userId});
 };
 
 methods.findUser = function (_attr) {
-    // __db.collection('users').find(_attr).toArray();
-    return new Promise.resolve(__db.collection('users').find(_attr).toArray());
+    return __db.collection('users').find(_attr).toArray();
+};
+
+methods.userAddSession = function (_user, _session) {
+    return __db.collection('users').updateOne(
+        {_id: _user._id},
+        {$push: {session: _session.sessionId}}
+    );
+};
+
+methods.setSessionStatus = function (_session, _status) {
+    return __db.collection('sessions').updateOne(
+        {sessionId: _session.sessionId},
+        {$set: {connectionState: _status}}
+    );
+};
+
+methods.findSession = function(_session) {
+    return __db.collection('users').find(_session).toArray();
+};
+
+methods.findSessionToken = function(_token) {
+    const s = {sessionId: _token};
+    console.log('Search:');
+    console.log(s);
+    return __db.collection('sessions').find(s).toArray();
 };
 
 module.exports = methods;

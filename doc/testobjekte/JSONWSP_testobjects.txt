@@ -2,7 +2,15 @@
   "type": "jsonwsp/request",
   "version": "1.0",
   "methodname": "sessionservice/login",
-  "args": {"email": "test@test.de", "password" : "blablabla"},
+  "args": {"email":"test@test.de","passwordHash":"test123"},
+  "mirror": "-1"
+}
+####################################################
+{
+  "type": "jsonwsp/request",
+  "version": "1.0",
+  "methodname": "sessionservice/authenticate",
+  "args": {"sessionToken" : "8a09651c3d847a1bd8ba9dd5fb80598d99fa42bb95116c9c013d6ac4625a3c99"},
   "mirror": "-1"
 }
 ####################################################

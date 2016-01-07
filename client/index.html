@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8"/>
+
+    <title>WebSocket Test</title>
+    <link rel="stylesheet" href="bootstrap.min.css"/>
+    <script language="javascript" type="text/javascript" src="client-compiled.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h2>WebSocket Test</h2>
+        <small><input type="text" id="connection_addr" value="ws://localhost:8080/"/></small>
+    </div>
+</div>
+
+<div class="container">
+    <div class="col-md-4">
+        <input type="text" id="service" name="service" placeholder="ServiceName"/>
+        <input type="text" id="method" name="method" placeholder="MethodName"/>
+        <input type="text" id="args" name="args" placeholder="{args}"/>
+        <button id="send" class="btn btn-default">Send</button>
+        <hr/>
+        <button class="btn btn-default" onclick="startConnection()" id="startConnectionBtn">Open Connection</button>
+        <button class="btn btn-danger" onclick="killConnection()">End Connection</button>
+    </div>
+    <div class="col-md-8">
+        <div id="output"></div>
+    </div>
+</div>
+</body>
