@@ -6,6 +6,8 @@ if [ -f "/srv/server/.vars.local" ]; then
     . /srv/server/.vars.local
 fi
 
+export SERVER_DEVEL=1
+
 if [ -z "$SERVER_DEVEL" ]; then
     cd /srv/server/
 

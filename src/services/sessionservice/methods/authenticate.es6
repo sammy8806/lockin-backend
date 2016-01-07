@@ -20,22 +20,24 @@ module.exports = {
         return new Promise((resolve, reject) => {
             return db.findSessionToken(_args.sessionToken)
                 .then((_sessionId) => {
-                    return db.findSession({sessionId: _sessionId});
-                }, (_err) => {
-                    console.error(_err);
-                })
-                .then((_session) => {
-                    console.log(_session);
+                    _env.debug(METHOD_NAME, 'Token: ' + _sessionId);
 
-                    _session = _session[0];
+                    return db.findSession({sessionId: _sessionId})
+                        .then((_session) => {
+                            console.log(_session);
 
-                    console.log(_session);
+                            _session = _session[0];
 
-                    _env.sessionmanager.addSocketSession(_ws, _session);
-                    db.setSessionStatus({sessionId: _session.sessionId}, 'online');
-                    res.success = true;
+                            console.log(_session);
 
-                    resolve(res);
+                            _env.sessionmanager.addSocketSession(_ws, _session);
+                            db.setSessionStatus({sessionId: _session.sessionId}, 'online');
+                            res.success = true;
+
+                            resolve(res);
+                        }, (_err) => {
+                            console.error(_err);
+                        });
                 }, (_err) => {
                     console.error(_err);
                 });

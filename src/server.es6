@@ -46,4 +46,4 @@ _env.websockethandler.init(_env, SERVER_PORT, SERVER_HOST);
 import crypto from 'crypto';
 
 const hashes = crypto.getHashes();
-console.log(hashes);
+// console.log(hashes);

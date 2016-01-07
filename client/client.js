@@ -108,13 +108,13 @@ function testWebSocket() {
     websocket.onmessage = function (evt) {
         const type = JSON.parse(evt.data).type;
 
-        if (type != "jsonwsp/fault") {
+        if (type == "jsonwsp/response") {
             const res = new JsonWspResponse(evt.data);
             const _ref = res.reflection;
             const _req = requests.get(_ref);
             const _cb = _req.getCallback();
             _cb(res.result, res);
-        } else {
+        } else if (type == "jsonwsp/fault") {
             console.log(evt);
 
             const res = new JsonWspFault(evt.data);
@@ -125,6 +125,14 @@ function testWebSocket() {
             <div class="bg-danger">
                 ${_req.methodname}:
                 ${res.fault.code} - ${res.fault.string}
+            </div>
+            `);
+        } else {
+            console.log(evt);
+
+            writeToScreen(`
+            <div class="bg-danger">
+                ${JSON.stringify(evt)}
             </div>
             `);
         }
