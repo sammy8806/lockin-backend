@@ -51,5 +51,6 @@ module.exports = {
     addSocketSession,
     removeSocketOfSession,
     getSocketOfSession,
+    getSessionOfSocket,
     socketClosed
 };
