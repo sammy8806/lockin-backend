@@ -144,6 +144,17 @@ function init() {
         doSocketStuff(() => sendRequest('sessionservice', 'login', args, callback));
     };
 
+    document.querySelector('#auth').onclick = function () {
+        let key = document.querySelector('#login-key').value;
+        let args = {sessionToken: key};
+
+        let callback = function (_data, _res) {
+            writeToScreen(`<div class="bg-success"><span class="small">Login success</span></div>`);
+        };
+
+        doSocketStuff(() => sendRequest('sessionservice', 'authenticate', args, callback));
+    };
+
     document.querySelector('#logout').onclick = function () {
         let callback = function (_data, _res) {
             writeToScreen(`<div class="bg-success"><span class="small">Logout success</span></div>`);
@@ -155,9 +166,26 @@ function init() {
     setInterval(() => {
         if (websocketOpen) {
             sendRequest('adminservice', 'getSessionStatus', {}, (_data, _res) => {
-                console.log(JSON.stringify(_data));
-
                 displaySessionData(_data.sessionId, _data.userId);
+                document.querySelector('#login-key').value = _data.sessionId;
+            });
+
+            sendRequest('chatservice', 'getRooms', {}, (_data, _res) => {
+                let tmp = document.createElement('ul');
+                _data.forEach((_room) => {
+                    let li = document.createElement('li');
+                    li.style.wordWrap = 'break-word';
+                    li.innerHTML = _room;
+
+                    tmp.appendChild(li);
+                });
+
+                let list = document.querySelector('#room-list');
+                for (let n = 0; list.childNodes.length; n++) {
+                    let el = list.firstChild;
+                    list.removeChild(el);
+                }
+                list.appendChild(tmp);
             });
         }
     }, 1000);

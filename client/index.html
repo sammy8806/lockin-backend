@@ -38,13 +38,23 @@
 
         <hr/>
 
+        <input type="text" id="login-key" name="login-key" placeholder="sha256 hash"/>
+        <button id="auth" class="btn btn-danger">Auth</button>
+
+        <hr/>
+
         <input type="text" id="service" name="service" placeholder="ServiceName"/>
         <input type="text" id="method" name="method" placeholder="MethodName"/>
         <input type="text" id="args" name="args" placeholder="{args}"/>
         <button id="send" class="btn btn-default">Send</button>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-5">
         <div id="output"></div>
+    </div>
+    <div class="col-md-3" id="room-list">
+        <ul>
+            <li>Test ---</li>
+        </ul>
     </div>
 </div>
 </body>

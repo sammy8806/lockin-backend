@@ -184,6 +184,19 @@ function init() {
         });
     };
 
+    document.querySelector('#auth').onclick = function () {
+        var key = document.querySelector('#login-key').value;
+        var args = { sessionToken: key };
+
+        var callback = function callback(_data, _res) {
+            writeToScreen('<div class="bg-success"><span class="small">Login success</span></div>');
+        };
+
+        doSocketStuff(function () {
+            return sendRequest('sessionservice', 'authenticate', args, callback);
+        });
+    };
+
     document.querySelector('#logout').onclick = function () {
         var callback = function callback(_data, _res) {
             writeToScreen('<div class="bg-success"><span class="small">Logout success</span></div>');
@@ -197,9 +210,26 @@ function init() {
     setInterval(function () {
         if (websocketOpen) {
             sendRequest('adminservice', 'getSessionStatus', {}, function (_data, _res) {
-                console.log(JSON.stringify(_data));
-
                 displaySessionData(_data.sessionId, _data.userId);
+                document.querySelector('#login-key').value = _data.sessionId;
+            });
+
+            sendRequest('chatservice', 'getRooms', {}, function (_data, _res) {
+                var tmp = document.createElement('ul');
+                _data.forEach(function (_room) {
+                    var li = document.createElement('li');
+                    li.style.wordWrap = 'break-word';
+                    li.innerHTML = _room;
+
+                    tmp.appendChild(li);
+                });
+
+                var list = document.querySelector('#room-list');
+                for (var n = 0; list.childNodes.length; n++) {
+                    var el = list.firstChild;
+                    list.removeChild(el);
+                }
+                list.appendChild(tmp);
             });
         }
     }, 1000);

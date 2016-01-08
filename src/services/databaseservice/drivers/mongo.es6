@@ -2,7 +2,9 @@
 
 const DRIVER_NAME = 'MongoDbDriver';
 
-import MongoClient from 'mongodb';
+const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
+
 import assert from 'assert';
 
 let __db = false;
@@ -207,6 +209,10 @@ methods.endSession = function (_session) {
  */
 methods._getDb = function () {
     return __db;
+};
+
+methods.findOnlineSessionsOfUser = function (_user) {
+    return __db.collection('sessions').find({userId: {$oid: _user}, connectionState: 'online'}).toArray();
 };
 
 module.exports = methods;

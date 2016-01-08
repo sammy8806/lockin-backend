@@ -22,3 +22,15 @@
   "mirror": "-1"
 }
 ####################################################
+{
+  "type": "jsonwsp/request",
+  "version": "1.0",
+  "methodname": "chatservice/sendMessage",
+  "args": {
+    "to": "fffdaaa8de23627bc1add3d548aa71390dbd8c086cf12393a9b4b141c56c3a3f",
+    "type": "PlainMessage",
+    "data" : "Hallo Gruppe!"
+  },
+  "mirror": "-1"
+}
+####################################################
