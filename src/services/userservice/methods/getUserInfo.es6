@@ -19,9 +19,23 @@ module.exports = {
 
         // user anhand id oder mail suchen und neu zuweisen
         if (user.id !== undefined) {
-            user = db.findUser({id: user.id});
+            db.findUser({id: user.id}).toArray()
+                .then((_user) => {
+                        user = _user[0];
+                    },
+                    (_err) => {
+                        reject({code: 'server', string: _err});
+                        console.log(_err);
+                    });
         } else if (_args[0].mail !== undefined) {
-            user = db.findUser({mail: user.mail});
+            db.findUser({mail: user.mail}).toArray()
+                .then((_user) => {
+                        user = _user[0];
+                    },
+                    (_err) => {
+                        reject({code: 'server', string: _err});
+                        console.log(_err);
+                    });
         } else {
             reject({code: 'client', string: 'wrong search information'});
         }
