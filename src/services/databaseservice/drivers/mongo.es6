@@ -53,7 +53,7 @@ methods.newSession = function (_session) {
 };
 
 /**
- * Attention: This returns an MongoCursor! (Use something like toArray to get a promise)
+ * _Attention_: This returns an MongoCursor! (Use something like toArray to get a promise)
  *
  * @param _attr
  * @returns {Cursor}
@@ -105,6 +105,20 @@ methods.findSessionToken = function (_token) {
  */
 methods.insertUser = function (_user) {
     return __db.collection('users').insertOne(_user.toJSON());
+};
+
+/**
+ * _Attention_: This returns an MongoCursor! (Use something like toArray to get a promise)
+ *
+ * @param _roomAttr
+ * @returns {Cursor}
+ */
+methods.findRoom = function(_roomAttr) {
+    return __db.collection('room').find(_roomAttr);
+};
+
+methods.createRoom = function(_room) {
+    return __db.collection('room').insertOne(_room);
 };
 
 module.exports = methods;
