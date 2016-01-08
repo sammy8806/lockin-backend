@@ -3,8 +3,6 @@
  */
 'use strict';
 
-// TODO: Generalisation here
-
 const SERVICE_NAME = 'ChatService';
 let _functions;
 
