@@ -84,9 +84,9 @@ module.exports = {
                         console.trace(_e);
                     }
 
-                    //db.insertMessage(message).then(() => {
-                    //    _env.debug(METHOD_NAME, `Saved Message ${message.id} to DB`);
-                    //});
+                    db.insertMessage(message.toJSON()).then(() => {
+                        _env.debug(METHOD_NAME, `Saved Message ${message.id} to DB`);
+                    });
 
                     db.findOnlineSessionsOfUser(_user).then(
                         (_sessions) => {

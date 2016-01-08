@@ -65,7 +65,7 @@ module.exports = {
                         console.trace('User seems to be corrupt!', typeof user, user);
                     }
 
-                    if (_args.passwordHash !== user.passwordHash) {
+                    if (_args.password !== user.password) {
                         let err = {code: 'client', string: 'wrong password'};
                         throw err;
                     }

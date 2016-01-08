@@ -7,7 +7,7 @@ let parameterVariations = [];
 
 let parameterVariation = {
     'mail' : 'exists',
-    'passwordHash' : 'exists'
+    'password' : 'exists'
 };
 parameterVariations.push(parameterVariation);
 
