@@ -1,12 +1,28 @@
 'use strict';
 
-import Promise from 'promise';
 const METHOD_NAME = 'SessionService/sendMessage';
 
 let db;
 let Session;
 let SimpleResponse;
 let Message;
+
+let forEverySessionSocket = (_user, _cb, _env) => db
+    .findSession({userid: _user, connectionState: 'online'})
+    .then(
+        (_sessions) => {
+            _sessions.forEach((_session) => {
+                let socket = _env.sessionmanager.getSocketOfSession(_session);
+                if (socket == null) {
+                    _env.debug({
+                        code: 'server',
+                        string: 'did not find a socket to an online session'
+                    });
+                }
+
+                _cb(socket);
+            });
+        });
 
 module.exports = {
     setup: (_env) => {
@@ -17,62 +33,51 @@ module.exports = {
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
     },
 
-    call: (_args, _env, _ws, _type) => {
+    call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
-        return new Promise((resolve, reject) => {
+        let message = new Message(_args);
+        message.id = Date.now();
+        message.date = Date.now();
+        message.from = _env.sessionmanager.getSessionFromSocket(_ws).userId;
 
-            return db.findRoom({to:_args.to})
-                .then((_room) => {
-                    if (_room == []){
-                        reject({
-                            code:'client',
-                            string:'room not found'
-                        });
-                    }
+        Object.freeze(message);
 
-                    let timeRecived = Date.now();
+        return db.findRoom({to: _args.to})
+            .then((_room) => {
+                if (_room.length === 0) {
+                    reject({
+                        code: 'client',
+                        string: 'room not found'
+                    });
+                }
 
-                    for(let user in _room.userList){
-                        return db.findOnlineSessionsFromUser({userid: user})
-                            .then((_sessions) => {
-                                for(let session in _sessions) {
-                                    let socket = _env.sessionmanager.getSocketOfSession(session);
-                                    if (socket == null) {
-                                        reject({
-                                            code: 'server',
-                                            string: 'did not find a socket to an online session'
-                                        });
-                                    }
-                                    let message = new Message(_args);
-                                    message.id = Date.now();
-                                    message.date = Date.now();
+                _room = _room[0];
 
-                                    // TODO: get sender from active session
-                                    // message.from = ;
-                                    
-                                        /*{
-                                            id: Date.now(),
-                                            from: _args.from,
-                                            to: _args.to,
-                                            date: timeRecived,
-                                            type: 'PlainMessage',
-                                            data: _args.data
-                                        });*/
+                _room.userList.forEach((_user) => {
 
-                                    try {
-                                        _env.websockethandler.sendMessage(
-                                            socket,
-                                            _env.packetParser.buildRequest('JSONWSP', 'chatservice', 'sendMessage', message, "mirrorhere")
-                                        );
-                                    }catch (err) {
-                                        _env.debug();
-                                    }
+                    let msg = message;
+                    msg.to = _user;
 
-                                }
-                            });
-                    }
+                    forEverySessionSocket(_user, (_sock) => {
 
+                        try {
+                            _env.websockethandler.sendMessage(
+                                _sock,
+                                _env.packetParser.buildRequest(
+                                    'JSONWSP',
+                                    'chatservice',
+                                    'sendMessage',
+                                    msg,
+                                    'mirrorhere'
+                                )
+                            );
+                        } catch (err) {
+                            _env.debug(err);
+                        }
+
+                    }, _env, reject);
                 });
-        });
-    }
+
+            });
+    })
 };
