@@ -34,10 +34,11 @@ module.exports = {
 
         if(session === undefined) {
             reject({code: 'client', string: 'please login first'});
+            return;
         }
 
         // user anhand der session in der datenbank finden
-        return dbDriver.findUser({sessionId: session.sessionId}).limit(1).toArray().then(function (user) {
+        return dbDriver.findUser({'session': session.sessionId}).toArray().then(function (user) {
 
             if (user.length === 0) {
                 // Kein Benutzer gefunden
@@ -46,21 +47,13 @@ module.exports = {
                 user = user[0];
             }
 
-            // session in user aus datenbank entfernen
-            dbDriver.userDeleteSession(user, session);
+            session.endSession();
 
-            // session aus datenbank entfernen
-            dbDriver.endSession(session);
-
-            _env.debug(METHOD_NAME, '-------------------------------');
-            _env.debug(METHOD_NAME, 'Simply closing websocket here!!');
-            _env.debug(METHOD_NAME, '-------------------------------');
-
-            // session aus sessionmanager entfernen und websocket schließen
-            _ws.close();
+            // session aus sessionmanager entfernen
+            _env.sessionmanager.socketClosed(_ws);
 
             res.success = true;
-            resolve(res);
+            return res;
         });
     })
 };

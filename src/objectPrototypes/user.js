@@ -15,4 +15,15 @@ module.exports = class User extends ObjectPrototype {
 
         super(_user, _whitelistedAttributes);
     }
+
+    static isLoggedIn(_ws) {
+        // session von websocket aus sessionmanager holen
+        let session = global._env.sessionmanager.getSessionOfSocket(_ws);
+
+        if (session === undefined) {
+            return false;
+        }
+
+        return !!session.userId;
+    }
 };

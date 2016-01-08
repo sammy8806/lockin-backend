@@ -191,10 +191,13 @@ methods.userDeleteSession = function (_user, _session) {
 };
 
 methods.endSession = function (_session) {
-    return __db.collection('sessions').updateOne(
-        {_id: _session.sessionId},
-        {$set: {connectionState: 'loggedOut', logout: Date.now().toString()}}
-    );
+    // connectionState: 'loggedOut'
+    return methods.setSessionStatus(_session)
+        .then(() =>
+            __db.collection('sessions').updateOne(
+                {sessionId: _session.sessionId},
+                {$set: {logout: Date.now().toString()}}
+            ));
 };
 
 module.exports = methods;

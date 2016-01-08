@@ -7,6 +7,7 @@ const METHOD_NAME = 'SessionService/Login';
 let db;
 let Session;
 let SimpleResponse;
+let User;
 
 function generateSessionId() {
     const randomData = crypto.randomBytes(256);
@@ -20,6 +21,7 @@ module.exports = {
     setup: (_env) => {
         SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         Session = _env.ObjectFactory.get('Session');
+        User = _env.ObjectFactory.get('User');
         db = _env.GlobalServiceFactory.getService('DatabaseService');
     },
 
@@ -31,6 +33,16 @@ module.exports = {
         } catch (e) {
             _env.error(METHOD_NAME, 'Please setup this function first!');
             reject({code: 'server', string: 'internal error'});
+        }
+
+        // session von websocket aus sessionmanager holen
+        //if (global._env.sessionmanager.getSessionOfSocket(_ws) !== undefined) {
+        //    reject({code: 'client', string: 'already logged in'});
+        //}
+
+        if(User.isLoggedIn(_ws)) {
+            reject({code: 'client', string: 'already logged in'});
+            return;
         }
 
         _env.debug(METHOD_NAME, 'Searching User');
