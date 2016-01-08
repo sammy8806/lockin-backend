@@ -44,13 +44,8 @@ module.exports = {
 
                     _env.debug(METHOD_NAME, `-- ${_user}`);
 
-                    let msg;
-
                     try {
-                        msg = message;
-                        msg.to = _user;
-
-                        _env.debug(METHOD_NAME, `Creating Message: ${JSON.stringify(msg)}`);
+                        _env.debug(METHOD_NAME, `Creating Message: ${JSON.stringify(message)}`);
 
                         //filter = {userid: new ObjectID(_user), connectionState: 'online'};
                         //_env.debug(METHOD_NAME, `Find sessions with: ${JSON.stringify(filter)}`);
@@ -59,8 +54,8 @@ module.exports = {
                         console.trace(_e);
                     }
 
-                    //db.insertMessage(msg).then(() => {
-                    //    _env.debug(METHOD_NAME, `Saved Message ${msg.id} to DB`);
+                    //db.insertMessage(message).then(() => {
+                    //    _env.debug(METHOD_NAME, `Saved Message ${message.id} to DB`);
                     //});
 
                     db.findOnlineSessionsOfUser(_user).then(
@@ -68,7 +63,7 @@ module.exports = {
                             _env.debug(METHOD_NAME, `Sessions found: ${_sessions.length}`);
 
                             _sessions.forEach((_session) => {
-                                let socket = _env.sessionmanager.getSocketOfSession(_session);
+                                let socket = _env.sessionmanager.getSocketFromSessionId(_session.sessionId);
                                 _env.debug(METHOD_NAME, `Sockets found: ${typeof socket}`);
 
                                 if (socket == null) {
@@ -78,16 +73,16 @@ module.exports = {
                                     });
                                 }
 
-                                _env.debug(METHOD_NAME, `Sending msg(${msg.id}) to sock`);
+                                _env.debug(METHOD_NAME, `Sending msg(${message.id}) to sock`);
 
                                 try {
                                     _env.websockethandler.sendMessage(
-                                        _sock,
+                                        socket,
                                         _env.packetParser.buildRequest(
                                             'JSONWSP',
                                             'chatservice',
                                             'sendMessage',
-                                            msg,
+                                            message,
                                             'mirrorhere'
                                         )
                                     );

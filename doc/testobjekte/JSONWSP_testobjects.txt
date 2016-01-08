@@ -27,7 +27,7 @@
   "version": "1.0",
   "methodname": "chatservice/sendMessage",
   "args": {
-    "to": "fffdaaa8de23627bc1add3d548aa71390dbd8c086cf12393a9b4b141c56c3a3f",
+    "to": "6040fe953490ab8cc2226ef76638e9b63011a1eddb31e580b119028ff3a6ce68",
     "type": "PlainMessage",
     "data" : "Hallo Gruppe!"
   },

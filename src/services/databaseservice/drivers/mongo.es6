@@ -212,7 +212,7 @@ methods._getDb = function () {
 };
 
 methods.findOnlineSessionsOfUser = function (_user) {
-    return __db.collection('sessions').find({userId: {$oid: _user}, connectionState: 'online'}).toArray();
+    return __db.collection('sessions').find({userId: new ObjectID(_user), connectionState: 'online'}).toArray();
 };
 
 module.exports = methods;
