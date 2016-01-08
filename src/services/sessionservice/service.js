@@ -1,9 +1,6 @@
-/**
- * Created by steve on 11.12.2015.
- */
 'use strict';
 
-const SERVICE_NAME = 'ChatService';
+const SERVICE_NAME = 'SessionService';
 let _functions;
 
 function setup(_env) {
@@ -17,4 +14,5 @@ function callFunc(_method, _args, _env, _ws, _type) {
 module.exports = {
     setup,
     callFunc
+//    deps : ['databaseservice']
 };

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8"/>
+
+    <title>WebSocket Test</title>
+    <link rel="stylesheet" href="bootstrap.min.css"/>
+    <script language="javascript" type="text/javascript" src="client-compiled.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h2>WebSocket Test <small id="user-status">---</small></h2>
+        <small><input type="text" id="connection_addr" value="ws://localhost:8080/"/></small>
+
+        <br /><span>Session: <small id="session-id"></small></span>
+        <br /><span>UserId: <small id="user-id"></small></span>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="col-md-4">
+        <button class="btn btn-default" onclick="startConnection()" id="startConnectionBtn">Open Connection</button>
+        <button class="btn btn-danger" onclick="killConnection()" id="killConnectionBtn" disabled>End Connection</button>
+
+        <hr/>
+
+        <input type="text" id="register-mail" name="register-mail" placeholder="name@domain.tld" value="test@spamkrake.de"/>
+        <input type="text" id="register-pass" name="register-pass" placeholder="*********" value="klartextpass"/>
+        <button id="register" class="btn btn-default">Register</button>
+
+        <hr/>
+
+        <input type="text" id="login-mail" name="register-mail" placeholder="name@domain.tld" value="test@spamkrake.de"/>
+        <input type="text" id="login-pass" name="register-pass" placeholder="*********" value="klartextpass"/>
+        <button id="login" class="btn btn-info">Login</button>
+        <button id="logout" class="btn btn-danger">Logout</button>
+
+        <hr/>
+
+        <input type="text" id="login-key" name="login-key" placeholder="sha256 hash"/>
+        <button id="auth" class="btn btn-danger">Auth</button>
+
+        <hr/>
+
+        <input type="text" id="service" name="service" placeholder="ServiceName"/>
+        <input type="text" id="method" name="method" placeholder="MethodName"/>
+        <input type="text" id="args" name="args" placeholder="{args}"/>
+        <button id="send" class="btn btn-default">Send</button>
+    </div>
+    <div class="col-md-5">
+        <div id="output"></div>
+    </div>
+    <div class="col-md-3" id="room-list">
+        <ul>
+            <li>Test ---</li>
+        </ul>
+    </div>
+</div>
+</body>

@@ -1,9 +1,6 @@
-/**
- * Created by steve on 11.12.2015.
- */
 'use strict';
 
-const SERVICE_NAME = 'ChatService';
+const SERVICE_NAME = 'UserService';
 let _functions;
 
 function setup(_env) {

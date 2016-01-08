@@ -12,9 +12,10 @@ module.exports = class ObjectPrototype {
     }
 
     copyAttributes(_src, _target, _whitelist) {
-        _whitelist.forEach(
+        let from = _whitelist === null ? Object.keys(_src) : _whitelist;
+        from.forEach(
             (_name) => {
-                if (_src[_name] !== undefined) {
+                if (_src[_name] !== undefined && _name.substr(0, 1) !== '_') {
                     _target[_name] = _src[_name];
                 }
             }

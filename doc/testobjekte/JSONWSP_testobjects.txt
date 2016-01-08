@@ -1,8 +1,36 @@
 {
   "type": "jsonwsp/request",
   "version": "1.0",
-  "methodname": "chatservice/createRoom",
-  "args": {},
-  "mirror": "TESTMIRROR"
+  "methodname": "sessionservice/login",
+  "args": {"mail":"test@test.de","passwordHash":"test123"},
+  "mirror": "-1"
+}
+####################################################
+{
+  "type": "jsonwsp/request",
+  "version": "1.0",
+  "methodname": "sessionservice/authenticate",
+  "args": {"sessionToken" : "8a09651c3d847a1bd8ba9dd5fb80598d99fa42bb95116c9c013d6ac4625a3c99"},
+  "mirror": "-1"
+}
+####################################################
+{
+  "type": "jsonwsp/request",
+  "version": "1.0",
+  "methodname": "userservice/register",
+  "args": {"mail":"test@spamkrake.de", "passwordHash" : "hallo"},
+  "mirror": "-1"
+}
+####################################################
+{
+  "type": "jsonwsp/request",
+  "version": "1.0",
+  "methodname": "chatservice/sendMessage",
+  "args": {
+    "to": "fffdaaa8de23627bc1add3d548aa71390dbd8c086cf12393a9b4b141c56c3a3f",
+    "type": "PlainMessage",
+    "data" : "Hallo Gruppe!"
+  },
+  "mirror": "-1"
 }
 ####################################################

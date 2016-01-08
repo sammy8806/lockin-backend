@@ -17,13 +17,19 @@ function init(_env, _port, _host) {
                 'Websockethandler',
                 `Recived message from: ${ws.upgradeReq.connection.remoteAddress} message: ${_msg}`
             );
-            let response = _env.packetParser.parsePacket('JSONWSP', _msg, _env, ws);
-            console.log(response);
-            _env.debug(
-                'Websockethandler',
-                `responding to: ${ws.upgradeReq.connection.remoteAddress} message: ${response}`
-            );
-            ws.send(response);
+
+            _env.packetParser.parsePacket('JSONWSP', _msg, _env, ws)
+                .then((_response) => {
+                    _env.debug(
+                        'Websockethandler',
+                        `responding to: ${ws.upgradeReq.connection.remoteAddress} with message ${_response}`
+                    );
+
+                    ws.send(_response);
+                })
+                .catch((_err) => {
+                    _env.error('Websockethandler', _err);
+                });
         });
 
         ws.on('close', function () {
@@ -34,6 +40,7 @@ function init(_env, _port, _host) {
             );
         });
     });
+
     _env.debug('Websockethandler', 'WebsocketServer running');
 }
 

@@ -49,14 +49,25 @@ function getFunctions(_serviceName) {
     return _functionList;
 }
 
-function loadFunctions(_serviceName) {
+function loadFunctions(_serviceName, _env, _autoSetup) {
+    _autoSetup = _autoSetup === undefined ? true : _autoSetup;
     const _serviceList = getFunctions(_serviceName);
 
     let _functions = {};
     _serviceList.forEach((name) => {
-        debug(_serviceName, `Loading Method: ${name}`);
+        _env.debug(_serviceName, `Loading Method: ${name}`);
         _functions[name] = require(getMethodFile(_serviceName, name));
-        debug(_serviceName, `Method loaded: ${name}`);
+
+        if (
+            typeof _functions[name].setup === 'function' &&
+            _autoSetup === true
+        ) {
+            _env.debug(_serviceName, `${name}: Setup`);
+            _functions[name].setup(_env);
+            _env.debug(_serviceName, `${name}: Setup done!`);
+        }
+
+        _env.debug(_serviceName, `Method loaded: ${name}`);
     });
 
     return _functions;

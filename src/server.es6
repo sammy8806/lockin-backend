@@ -1,4 +1,5 @@
 'use strict';
+require('babel-polyfill');
 
 const _env = {
     ServiceFactory: require('./lib/servicefactory/servicefactory'),
@@ -28,14 +29,23 @@ _env.ObjectFactory = {
     }
 };
 
-_env.packetParser = require('./lib/packetparser/packet_parser.js');
-_env.sessionmanager = require('./lib/sessionmanager/sessionmanager.js');
+_env.packetParser = require('./lib/packetparser/packet_parser');
+_env.sessionmanager = require('./lib/sessionmanager/sessionmanager');
 
-_env.ServiceFactory.setup(_env, 'service');
 _env.GlobalServiceFactory.setup(_env, 'globalservice');
+_env.ServiceFactory.setup(_env, 'service');
+
+global._env = _env;
 
 const SERVER_PORT = 8080;
 const SERVER_HOST = '::'; // No localhost or something here instead of '::' (IPv6)
 
 _env.websockethandler = require('./lib/websockethandler/websockethandler.js');
 _env.websockethandler.init(_env, SERVER_PORT, SERVER_HOST);
+
+// -------------------
+
+import crypto from 'crypto';
+
+const hashes = crypto.getHashes();
+// console.log(hashes);

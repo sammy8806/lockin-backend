@@ -10,10 +10,15 @@ let paramValidators = {
 };
 
 function validateParameter(_args, _argName, _validatorName) {
-    if (paramValidators[_validatorName].validateParameter(_args, _argName)) {
-        return true;
+    try {
+        if (paramValidators[_validatorName].validateParameter(_args, _argName)) {
+            return true;
+        }
+        return false;
+
+    } catch (_err) {
+        global._env.error(`ParameterValidator`, `[${_validatorName}] ${_err}`);
     }
-    return false;
 }
 
 module.exports = {

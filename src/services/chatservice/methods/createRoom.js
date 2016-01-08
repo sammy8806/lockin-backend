@@ -3,37 +3,33 @@
  */
 'use strict';
 
-const __METHOD_NAME = 'createRoom';
+const __METHOD_NAME = 'ChatService/createRoom';
+
+const crypto = require('crypto');
+
+let db;
+let Room;
+let Session;
+let SimpleResponse;
 
 module.exports = {
-    call: (_args, _env, _ws, _type) => {
-        try {
-            const Room = _env.ObjectFactory.get('Room');
-            let tmpRoomList = _env.ServiceFactory.getService('ChatService').tmpRoomList;
+    setup: (_env) => {
+        SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
+        Session = _env.ObjectFactory.get('Session');
+        Room = _env.ObjectFactory.get('Room');
+        db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
+    },
 
-            try {
-                _env.websockethandler.sendMessage(
-                    _ws,
-                    _env.packetParser.buildRequest('JSONWSP', 'servicenamehere', 'methodnamehere', {}, 'mirrorhere')
-                );
-            }
-            catch (err) {
-                console.log(err);
-            }
+    call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
+        const randomData = crypto.randomBytes(256);
 
-            const crypto = require('crypto');
-            const randomData = crypto.randomBytes(256);
+        let hash = crypto.createHash('sha256');
+        hash.update(randomData);
+        const roomId = hash.digest('hex');
 
-            let hash = crypto.createHash('sha256');
-            hash.update(randomData);
-            const roomId = hash.digest('hex');
+        const room = new Room({id: roomId});
+        db.createRoom(room.toJSON());
 
-            const room = new Room({id: roomId});
-            tmpRoomList[roomId] = room;
-
-            return room;
-        } catch (e) {
-            _env.error(__METHOD_NAME, e);
-        }
-    }
+        resolve(room);
+    })
 };
