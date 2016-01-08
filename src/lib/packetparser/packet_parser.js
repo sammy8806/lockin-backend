@@ -13,6 +13,7 @@ function parsePacket(_packettype, _packet, _env, _ws) {
                 resolve(jsonwspParser.parse(_packet, _env, _ws).then(returnAction, returnAction));
         }
     }).catch((_err) => {
+        console.log(_err);
         _env.error('PacketParser', _err);
     });
 }

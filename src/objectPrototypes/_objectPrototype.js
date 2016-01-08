@@ -15,10 +15,13 @@ module.exports = class ObjectPrototype {
         let from = _whitelist === null ? Object.keys(_src) : _whitelist;
         from.forEach(
             (_name) => {
-                if (_src[_name] !== undefined && _name !== '_env') {
+                if (_src[_name] !== undefined && _name.substr(0, 1) !== '_') {
                     _target[_name] = _src[_name];
                 }
             }
         );
+
+        console.log(_src);
+        console.log(_target);
     }
 };

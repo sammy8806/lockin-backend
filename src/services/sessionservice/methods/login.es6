@@ -1,7 +1,6 @@
 'use strict';
 
 import crypto from 'crypto';
-import Promise from 'promise';
 
 const METHOD_NAME = 'SessionService/Login';
 
@@ -37,7 +36,7 @@ module.exports = {
         _env.debug(METHOD_NAME, 'Searching User');
         let res = new SimpleResponse({success: false});
 
-        resolve(dbDriver.findUser({email: _args.email})
+        resolve(dbDriver.findUser({mail: _args.mail}).toArray()
             .then((_user) => {
                     _env.debug(METHOD_NAME, 'Search done');
 

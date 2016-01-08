@@ -3,11 +3,11 @@
  */
 'use strict';
 
-let parameterVariations = new Array();
+let parameterVariations = [];
 
 let parameterVariation = {
     'mail' : 'exists',
-    'password' : 'exists'
+    'passwordHash' : 'exists'
 };
 parameterVariations.push(parameterVariation);
 

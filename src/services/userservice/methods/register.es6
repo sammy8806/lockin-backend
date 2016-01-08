@@ -7,48 +7,42 @@ const METHOD_NAME = 'UserService/Register';
 let db;
 let Session;
 let User;
-let sessionmanager;
 
 module.exports = {
     setup: (_env) => {
         Session = _env.ObjectFactory.get('Session');
-        db = _env.GlobalServiceFactory.getService('DatabaseService');
+        db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
         User = _env.ObjectFactory.get('User');
-        sessionmanager = _env.sessionmanager;
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
-        let dbDriver = null;
-        try {
-            dbDriver = db.getDriver();
-        } catch (e) {
-            _env.error(METHOD_NAME, 'Please setup this function first!');
-            reject({code: 'server', string: 'internal error'});
-        }
+        let mail = _args.mail;
+        let passwordHash = _args.passwordHash;
+
+        _env.debug(METHOD_NAME, `Creating User '${mail}' with Hash '${passwordHash}'`);
 
         // Benutzer anhand der E-Mail suchen
-        dbDriver.findUser({mail: _args[0]}).then(function (user) {
+        resolve(db.findUser({mail: mail}).toArray()
+            .then(function (user) {
+                if (user.length === 0) { // Kein Benutzer gefunden
+                    _env.debug(METHOD_NAME, 'No old user found');
 
-            if (user.length == 0) { // Kein Benutzer gefunden
+                    // neuen benutzer mit email, passworthash und session(?) anlegen
+                    let newUser = new User({mail: mail, passwordHash: passwordHash});
 
-                // session vom websocket holen
-                let session = sessionmanager.getSessionOfSocket(_ws);
+                    _env.debug(METHOD_NAME, 'Creating new User');
 
-                // neuen benutzer mit email, passworthash und session(?) anlegen
-                let newUser = new User({mail: _args[0], passwordHash: _args[1]});
-
-                // user in datenbank speichern
-                dbDriver.insertUser(newUser);
-
-                // user zurückgeben
-                resolve(newUser);
-
-            } else if (user.length > 0) { // Benutzer bereits vorhanden
-                reject({code: 'client', string: 'email already registered'});
-            } else { // Sonstiger fehler
-                reject({code: 'server', string: 'unknown error'});
-            }
-        });
+                    // user in datenbank speichern
+                    return db.insertUser(newUser);
+                } else if (user.length > 0) { // Benutzer bereits vorhanden
+                    throw {code: 'client', string: 'email already registered'};
+                } else { // Sonstiger fehler
+                    throw {code: 'server', string: 'unknown error'};
+                }
+            }, (_err) => {
+                _env.error(METHOD_NAME, _err);
+            })
+        );
     })
 };

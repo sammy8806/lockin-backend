@@ -3,7 +3,7 @@
  */
 'use strict';
 
-let parameterValidator = require('./parameter_validator.js');
+const parameterValidator = require('./parameter_validator.js');
 
 const servicenames = [
     'chatservice',

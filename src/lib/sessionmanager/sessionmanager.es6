@@ -6,8 +6,6 @@
 let connections = new Map();
 let sessions = new Map();
 
-const Session = require('../../objectPrototypes/session');
-
 function addSocketSession(_socket, _session) {
     console.log('-----------------------------');
     console.log(_session);
