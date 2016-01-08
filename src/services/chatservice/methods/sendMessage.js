@@ -8,6 +8,39 @@ let SimpleResponse;
 
 let Message;
 
+function createMessage(_args, _env, _ws) {
+    let message = new Message(_args);
+    message.id = Date.now();
+    message.date = Date.now();
+    message.from = _env.sessionmanager.getSessionOfSocket(_ws).userId;
+    return message;
+}
+
+function sendMessage(_msg, _socket, _env) {
+    _env.debug(METHOD_NAME, `Sending msg(${_msg.id}) to sock`);
+
+    try {
+        let msgPack = _env.packetParser.buildRequest(
+            'JSONWSP',
+            'chatservice',
+            'sendMessage',
+            _msg,
+            'mirrorhere'
+        );
+
+        msgPack.then((msgPack) => {
+            console.log(msgPack);
+
+            _env.websockethandler.sendMessage(
+                _socket,
+                JSON.stringify(msgPack)
+            );
+        });
+    } catch (err) {
+        _env.debug(err);
+    }
+}
+
 module.exports = {
     setup: (_env) => {
 
@@ -19,10 +52,7 @@ module.exports = {
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
-        let message = new Message(_args);
-        message.id = Date.now();
-        message.date = Date.now();
-        message.from = _env.sessionmanager.getSessionOfSocket(_ws).userId;
+        var message = createMessage(_args, _env, _ws);
 
         return db.findRoom({id: _args.to}).toArray()
             .then((_room) => {
@@ -73,22 +103,7 @@ module.exports = {
                                     });
                                 }
 
-                                _env.debug(METHOD_NAME, `Sending msg(${message.id}) to sock`);
-
-                                try {
-                                    _env.websockethandler.sendMessage(
-                                        socket,
-                                        _env.packetParser.buildRequest(
-                                            'JSONWSP',
-                                            'chatservice',
-                                            'sendMessage',
-                                            message,
-                                            'mirrorhere'
-                                        )
-                                    );
-                                } catch (err) {
-                                    _env.debug(err);
-                                }
+                                sendMessage(message, socket, _env);
                             });
                         });
                 });

@@ -1,6 +1,6 @@
 'use strict';
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -18,7 +18,7 @@ function debug() {
     (_console = console).log.apply(_console, arguments);
 }
 
-var JsonWspRequest = (function () {
+var JsonWspRequest = function () {
     // aka jsonwsp/request
 
     function JsonWspRequest(method, args) {
@@ -64,9 +64,9 @@ var JsonWspRequest = (function () {
     }]);
 
     return JsonWspRequest;
-})();
+}();
 
-var JsonWspResponse = (function () {
+var JsonWspResponse = function () {
     // aka jsonwsp/response
 
     function JsonWspResponse(data) {
@@ -95,9 +95,9 @@ var JsonWspResponse = (function () {
     }]);
 
     return JsonWspResponse;
-})();
+}();
 
-var JsonWspFault = (function () {
+var JsonWspFault = function () {
     // aka jsonwsp/fault
 
     function JsonWspFault(data) {
@@ -121,7 +121,7 @@ var JsonWspFault = (function () {
     }]);
 
     return JsonWspFault;
-})();
+}();
 
 function init() {
     output = document.getElementById('output');
@@ -282,10 +282,10 @@ function testWebSocket() {
             writeToScreen('\n            <div class="bg-danger">\n                ' + _req.methodname + ':\n                ' + res.fault.code + ' - ' + res.fault.string + '\n            </div>\n            ');
         } else if (type === 'jsonwsp/request') {
             var res = new JsonWspRequest(evt.data);
-            var _ref = res.reflection;
-            var _req = requests.get(_ref);
+            //const _ref = res.reflection;
+            //const _req = requests.get(_ref);
 
-            writeToScreen('\n            <div class="bg-info">\n                ' + _req.methodname + ': ' + JSON.stringify(_req.args) + '\n            </div>\n            ');
+            writeToScreen('\n            <div class="bg-info">\n                ' + res.methodname + ': ' + JSON.stringify(res.args) + '\n            </div>\n            ');
         } else {
             console.log(evt.data);
         }

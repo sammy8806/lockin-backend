@@ -244,12 +244,12 @@ function testWebSocket() {
             `);
         } else if (type === 'jsonwsp/request') {
             const res = new JsonWspRequest(evt.data);
-            const _ref = res.reflection;
-            const _req = requests.get(_ref);
+            //const _ref = res.reflection;
+            //const _req = requests.get(_ref);
 
             writeToScreen(`
             <div class="bg-info">
-                ${_req.methodname}: ${JSON.stringify(_req.args)}
+                ${res.methodname}: ${JSON.stringify(res.args)}
             </div>
             `);
         } else {
