@@ -144,6 +144,14 @@ function init() {
         doSocketStuff(() => sendRequest('sessionservice', 'login', args, callback));
     };
 
+    document.querySelector('#logout').onclick = function () {
+        let callback = function (_data, _res) {
+            writeToScreen(`<div class="bg-success"><span class="small">Logout success</span></div>`);
+        };
+
+        doSocketStuff(() => sendRequest('sessionservice', 'logout', {}, callback));
+    };
+
     setInterval(() => {
         if (websocketOpen) {
             sendRequest('adminservice', 'getSessionStatus', {}, (_data, _res) => {

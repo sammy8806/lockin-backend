@@ -32,10 +32,14 @@ module.exports = {
         // session von websocket aus sessionmanager holen
         let session = sessionmanager.getSessionOfSocket(_ws);
 
-        // user anhand der session in der datenbank finden
-        dbDriver.findUser({sessionId: session.sessionId}).then(function (user) {
+        if(session === undefined) {
+            reject({code: 'client', string: 'please login first'});
+        }
 
-            if (user.length == 0) {
+        // user anhand der session in der datenbank finden
+        return dbDriver.findUser({sessionId: session.sessionId}).limit(1).toArray().then(function (user) {
+
+            if (user.length === 0) {
                 // Kein Benutzer gefunden
                 reject({code: 'server', string: 'active session not found in user'});
             } else {
@@ -46,7 +50,11 @@ module.exports = {
             dbDriver.userDeleteSession(user, session);
 
             // session aus datenbank entfernen
-            dbDriver.deleteSession(session);
+            dbDriver.endSession(session);
+
+            _env.debug(METHOD_NAME, '-------------------------------');
+            _env.debug(METHOD_NAME, 'Simply closing websocket here!!');
+            _env.debug(METHOD_NAME, '-------------------------------');
 
             // session aus sessionmanager entfernen und websocket schließen
             _ws.close();

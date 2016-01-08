@@ -184,6 +184,16 @@ function init() {
         });
     };
 
+    document.querySelector('#logout').onclick = function () {
+        var callback = function callback(_data, _res) {
+            writeToScreen('<div class="bg-success"><span class="small">Logout success</span></div>');
+        };
+
+        doSocketStuff(function () {
+            return sendRequest('sessionservice', 'logout', {}, callback);
+        });
+    };
+
     setInterval(function () {
         if (websocketOpen) {
             sendRequest('adminservice', 'getSessionStatus', {}, function (_data, _res) {

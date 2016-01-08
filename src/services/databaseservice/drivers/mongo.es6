@@ -174,4 +174,27 @@ methods.removeRoom = function (_room) {
     return __db.collection('rooms').deleteOne({roomId: _room._id});
 };
 
+/**
+ *
+ * @param _msg
+ * @returns {Promise}
+ */
+methods.insertMessage = function (_msg) {
+    return __db.collection('messages').insertOne(_msg);
+};
+
+methods.userDeleteSession = function (_user, _session) {
+    return __db.collection('users').updateOne(
+        {_id: _user._id},
+        {$pull: {session: _session.sessionId}}
+    );
+};
+
+methods.endSession = function (_session) {
+    return __db.collection('sessions').updateOne(
+        {_id: _session.sessionId},
+        {$set: {connectionState: 'loggedOut', logout: Date.now().toString()}}
+    );
+};
+
 module.exports = methods;
