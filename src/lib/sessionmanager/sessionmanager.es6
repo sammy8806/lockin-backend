@@ -7,9 +7,7 @@ let connections = new Map();
 let sessions = new Map();
 
 function addSocketSession(_socket, _session) {
-    console.log('-----------------------------');
-    console.log(_session);
-    console.log('-----------------------------');
+    global._env.debug('Sessionmanager/addSocketSession', 'Adding Socket and Session to maps');
 
     sessions.set(_session, _socket);
     connections.set(_socket, _session);

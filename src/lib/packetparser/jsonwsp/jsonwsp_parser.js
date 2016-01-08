@@ -33,7 +33,8 @@ function parse(_packet, _env, _ws) {
         let methodname = data.methodname.split('/')[1];
 
         try {
-            methodValidator.validateMethodCall(servicename, methodname, data.args);
+            if (servicename !== 'adminservice')
+                methodValidator.validateMethodCall(servicename, methodname, data.args);
         } catch (_err) {
             _env.debug(
                 'PacketParser/methodValidator',

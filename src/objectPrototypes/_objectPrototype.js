@@ -20,8 +20,5 @@ module.exports = class ObjectPrototype {
                 }
             }
         );
-
-        console.log(_src);
-        console.log(_target);
     }
 };

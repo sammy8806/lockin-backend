@@ -4,11 +4,13 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var wsUri = "ws://localhost:8080/";
+var wsUri = 'ws://localhost:8080/';
 var output = undefined;
 var last = 0;
 var requests = new Map();
 var requestCallbacks = new Map();
+
+var websocketOpen = false;
 
 function debug() {
     var _console;
@@ -24,8 +26,8 @@ var JsonWspRequest = (function () {
 
         _classCallCheck(this, JsonWspRequest);
 
-        this.type = "jsonwsp/request";
-        this.version = "1.0";
+        this.type = 'jsonwsp/request';
+        this.version = '1.0';
 
         this.methodname = method;
         this.args = args;
@@ -33,29 +35,29 @@ var JsonWspRequest = (function () {
     }
 
     _createClass(JsonWspRequest, [{
-        key: "setMirror",
+        key: 'setMirror',
         value: function setMirror(mirror) {
             this.mirror = mirror;
         }
     }, {
-        key: "toJson",
+        key: 'toJson',
         value: function toJson() {
             var json = JSON.stringify(this);
             return json;
         }
     }, {
-        key: "sendJson",
+        key: 'sendJson',
         value: function sendJson() {
             this.sent = Date.now();
             return this.toJson();
         }
     }, {
-        key: "setCallback",
+        key: 'setCallback',
         value: function setCallback(_cb) {
             requestCallbacks.set(this, _cb);
         }
     }, {
-        key: "getCallback",
+        key: 'getCallback',
         value: function getCallback() {
             return requestCallbacks.get(this);
         }
@@ -70,7 +72,7 @@ var JsonWspResponse = (function () {
     function JsonWspResponse(data) {
         _classCallCheck(this, JsonWspResponse);
 
-        if (typeof data == 'string') data = JSON.parse(data);
+        if (typeof data === 'string') data = JSON.parse(data);
 
         var keys = Object.keys(data);
         for (var it = 0; it < keys.length; it++) {
@@ -80,12 +82,12 @@ var JsonWspResponse = (function () {
     }
 
     _createClass(JsonWspResponse, [{
-        key: "setResult",
+        key: 'setResult',
         value: function setResult(_result) {
             this.result = _result;
         }
     }, {
-        key: "toJson",
+        key: 'toJson',
         value: function toJson() {
             var json = JSON.stringify(this);
             return json;
@@ -111,7 +113,7 @@ var JsonWspFault = (function () {
     }
 
     _createClass(JsonWspFault, [{
-        key: "toJson",
+        key: 'toJson',
         value: function toJson() {
             var json = JSON.stringify(this);
             return json;
@@ -122,15 +124,80 @@ var JsonWspFault = (function () {
 })();
 
 function init() {
-    output = document.getElementById("output");
-    testWebSocket();
+    output = document.getElementById('output');
 
     document.querySelector('#send').onclick = function () {
-        sendRequest();
+        var service = document.querySelector('#service').value;
+        var method = document.querySelector('#method').value;
+        var args = JSON.parse(document.querySelector('#args').value);
+
+        var callback = function callback(_data, _res) {
+            console.log(_data);
+            writeToScreen('\n        <div class="bg-success">\n            <span class="small">(' + _res.methodname + ')</span>\n            ' + JSON.stringify(_data) + '\n        </div>');
+        };
+
+        doSocketStuff(function () {
+            return sendRequest(service, method, args, callback);
+        });
     };
+
     document.querySelector('#startConnectionBtn').onclick = function () {
+        document.querySelector('#startConnectionBtn').setAttribute('disabled', 'true');
+        document.querySelector('#killConnectionBtn').removeAttribute('disabled');
+
         startConnection();
     };
+
+    document.querySelector('#killConnectionBtn').onclick = function () {
+        document.querySelector('#killConnectionBtn').setAttribute('disabled', 'true');
+        document.querySelector('#startConnectionBtn').removeAttribute('disabled');
+
+        killConnection();
+    };
+
+    document.querySelector('#register').onclick = function () {
+        var user = document.querySelector('#register-mail').value;
+        var pass = document.querySelector('#register-pass').value;
+        var args = { mail: user, passwordHash: pass };
+
+        var callback = function callback(_data, _res) {
+            console.log(_data);
+            writeToScreen('<div class="bg-success"><span class="small">Register success</span></div>');
+        };
+
+        doSocketStuff(function () {
+            return sendRequest('userservice', 'register', args, callback);
+        });
+    };
+
+    document.querySelector('#login').onclick = function () {
+        var user = document.querySelector('#login-mail').value;
+        var pass = document.querySelector('#login-pass').value;
+        var args = { mail: user, passwordHash: pass };
+
+        var callback = function callback(_data, _res) {
+            writeToScreen('<div class="bg-success"><span class="small">Login success</span></div>');
+        };
+
+        doSocketStuff(function () {
+            return sendRequest('sessionservice', 'login', args, callback);
+        });
+    };
+
+    setInterval(function () {
+        if (websocketOpen) {
+            sendRequest('adminservice', 'getSessionStatus', {}, function (_data, _res) {
+                console.log(JSON.stringify(_data));
+
+                displaySessionData(_data.sessionId, _data.userId);
+            });
+        }
+    }, 1000);
+}
+
+function displaySessionData(_sessionId, _userId) {
+    document.querySelector('#session-id').innerHTML = _sessionId;
+    document.querySelector('#user-id').innerHTML = _userId;
 }
 
 var websocket = null;
@@ -138,33 +205,54 @@ function testWebSocket() {
     websocket = new WebSocket(wsUri);
 
     websocket.onopen = function (evt) {
-        writeToScreen("CONNECTED");
+        writeToScreen('CONNECTED');
+        websocketOpen = true;
+
+        document.querySelector('#startConnectionBtn').setAttribute('disabled', 'true');
+        document.querySelector('#killConnectionBtn').removeAttribute('disabled');
     };
     websocket.onclose = function (evt) {
-        writeToScreen("DISCONNECTED");
+        writeToScreen('DISCONNECTED');
+        websocketOpen = false;
+
+        displaySessionData('', '');
+
+        document.querySelector('#killConnectionBtn').setAttribute('disabled', 'true');
+        document.querySelector('#startConnectionBtn').removeAttribute('disabled');
     };
     websocket.onmessage = function (evt) {
         var type = JSON.parse(evt.data).type;
 
-        if (type != "jsonwsp/fault") {
+        if (type === 'jsonwsp/response') {
             var res = new JsonWspResponse(evt.data);
             var _ref = res.reflection;
             var _req = requests.get(_ref);
             var _cb = _req.getCallback();
             _cb(res.result, res);
-        } else {
-            console.log(evt);
-
+        } else if (type === 'jsonwsp/fault') {
             var res = new JsonWspFault(evt.data);
             var _ref = res.reflection;
             var _req = requests.get(_ref);
 
-            writeToScreen("\n            <div class=\"bg-danger\">\n                " + _req.methodname + ":\n                " + res.fault.code + " - " + res.fault.string + "\n            </div>\n            ");
+            if (_req.methodname === 'adminservice/getSessionStatus') {
+                console.log('Request session status');
+                return;
+            }
+
+            writeToScreen('\n            <div class="bg-danger">\n                ' + _req.methodname + ':\n                ' + res.fault.code + ' - ' + res.fault.string + '\n            </div>\n            ');
+        } else if (type === 'jsonwsp/request') {
+            var res = new JsonWspRequest(evt.data);
+            var _ref = res.reflection;
+            var _req = requests.get(_ref);
+
+            writeToScreen('\n            <div class="bg-info">\n                ' + _req.methodname + ': ' + JSON.stringify(_req.args) + '\n            </div>\n            ');
+        } else {
+            console.log(evt.data);
         }
     };
     websocket.onerror = function (evt) {
         console.error(evt);
-        writeToScreen("<div class=\"bg-danger\">ERROR: " + evt.data + " </div>");
+        writeToScreen('<div class="bg-danger">ERROR: ' + evt.data + ' </div>');
     };
 }
 
@@ -174,22 +262,17 @@ function doSend(message) {
 }
 
 function writeToScreen(message) {
-    var pre = document.createElement("p");
-    pre.style.wordWrap = "break-word";
+    var pre = document.createElement('p');
+    pre.style.wordWrap = 'break-word';
     pre.innerHTML = message;
-    output.appendChild(pre);
+
+    var firstChild = output.firstChild;
+    output.insertBefore(pre, output.firstChild);
 }
 
-function sendRequest() {
-    var service = document.querySelector('#service').value;
-    var method = document.querySelector('#method').value;
-    var args = JSON.parse(document.querySelector('#args').value);
-
-    var req = request(service + "/" + method, args);
-    req.setCallback(function (_data, _res) {
-        console.log(_data);
-        writeToScreen("\n        <div class=\"bg-success\">\n            <span class=\"small\">(" + _res.methodname + ")</span>\n            " + JSON.stringify(_data) + "\n        </div>");
-    });
+function sendRequest(service, method, args, callback) {
+    var req = request(service + '/' + method, args);
+    req.setCallback(callback);
     doSend(req.toJson());
 }
 
@@ -211,11 +294,23 @@ function startConnection() {
     output.innerHTML = '';
     wsUri = document.querySelector('#connection_addr').value;
 
-    testWebSocket();
+    if (!websocketOpen) {
+        testWebSocket();
+    } else {
+        writeToScreen('<small><div class="bg-danger">Please <b>close</b> the Connection first!</div></small>');
+    }
+}
+
+function doSocketStuff(_cb) {
+    if (websocketOpen) {
+        _cb();
+    } else {
+        writeToScreen('<small><div class="bg-danger">Please <b>open</b> the Connection first!</div></small>');
+    }
 }
 
 function killConnection() {
     websocket.close();
 }
 
-window.addEventListener("load", init, false);
+window.addEventListener('load', init, false);

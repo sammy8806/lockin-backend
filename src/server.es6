@@ -29,8 +29,8 @@ _env.ObjectFactory = {
     }
 };
 
-_env.packetParser = require('./lib/packetparser/packet_parser.js');
-_env.sessionmanager = require('./lib/sessionmanager/sessionmanager.js');
+_env.packetParser = require('./lib/packetparser/packet_parser');
+_env.sessionmanager = require('./lib/sessionmanager/sessionmanager');
 
 _env.GlobalServiceFactory.setup(_env, 'globalservice');
 _env.ServiceFactory.setup(_env, 'service');
