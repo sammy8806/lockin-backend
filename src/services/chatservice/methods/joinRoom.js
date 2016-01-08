@@ -1,6 +1,9 @@
+/**
+ * Created by steve on 11.12.2015.
+ */
 'use strict';
 
-const METHOD_NAME = 'ChatService/getRooms';
+const METHOD_NAME = 'ChatService/joinRoom';
 
 let db;
 let Session;
@@ -17,9 +20,12 @@ module.exports = {
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
+        const targetRoom = _args.room;
+        _env.debug(METHOD_NAME, `Try to join room ${targetRoom}`);
+
         let user = User.getLoggedIn(_ws, db);
 
-        if (user === false) {
+        if(user === false) {
             reject({code: 'client', string: 'please login first'});
             return;
         }
@@ -27,18 +33,10 @@ module.exports = {
         resolve(user.then((_user) => {
             _env.debug(METHOD_NAME, `Logged-in user ${_user.id}`);
 
-            return db.findRoom({userList: _user.id}).toArray()
-                .then((_rooms) => {
-
-                    _env.debug(METHOD_NAME, `Rooms found: ${_rooms.length}`);
-                    let rooms = [];
-
-                    _rooms.forEach((_r) => {
-                        _env.debug(METHOD_NAME, `Rooms ${_r.id}`);
-                        rooms.push(_r.id);
-                    });
-
-                    return rooms;
+            return db.findRoom({id: targetRoom}).toArray()
+                .then((_room) => {
+                    _env.debug(METHOD_NAME, `Room ${_room[0].id}`);
+                    return db.addUserToRoom(_room[0].id, _user.id);
                 });
         }));
 

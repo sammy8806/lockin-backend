@@ -40,7 +40,7 @@ module.exports = {
         //    reject({code: 'client', string: 'already logged in'});
         //}
 
-        if(User.isLoggedIn(_ws)) {
+        if (User.isLoggedIn(_ws)) {
             reject({code: 'client', string: 'already logged in'});
             return;
         }
@@ -50,17 +50,27 @@ module.exports = {
 
         resolve(dbDriver.findUser({mail: _args.mail}).toArray()
             .then((_user) => {
-                    _env.debug(METHOD_NAME, 'Search done');
+                    _env.debug(METHOD_NAME, `Search done. ${_user.length} results found.`);
 
-                    let user = _user[0]; // Use always the first one
+                    let user;
+
+                    user = _user[0]; // Use always the first one
+
+                    if (user === undefined || _user.length === 0) {
+                        let err = {code: 'client', string: 'user not found'};
+                        throw err;
+                    }
 
                     if (user === undefined) {
-                        reject({code: 'client', string: 'user not found'});
+                        console.trace('User seems to be corrupt!', typeof user, user);
                     }
 
                     if (_args.passwordHash !== user.passwordHash) {
-                        reject({code: 'client', string: 'wrong password'});
+                        let err = {code: 'client', string: 'wrong password'};
+                        throw err;
                     }
+
+                    _env.debug(METHOD_NAME, 'Checks done');
 
                     let sessionId;
 
@@ -92,9 +102,6 @@ module.exports = {
                     reject({code: 'server', string: _err});
                     console.log(_err);
                 })
-            .catch((_err) => {
-                _env.error(METHOD_NAME, _err);
-            })
         );
     })
 };

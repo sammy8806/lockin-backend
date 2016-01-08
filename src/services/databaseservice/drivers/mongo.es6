@@ -134,21 +134,21 @@ methods.createRoom = function (_room) {
  */
 methods.setRoomAttibutes = function (_room, _attribs) {
     return __db.collection('rooms').updateOne(
-        {roomId: _room.roomId},
+        {id: _room.id},
         {$set: _attribs}
     );
 };
 
 /**
  *
- * @param _room
- * @param _user
+ * @param _id
+ * @param _userId
  * @returns {Promise}
  */
-methods.addUserToRoom = function (_room, _user) {
+methods.addUserToRoom = function (_id, _userId) {
     return __db.collection('rooms').updateOne(
-        {roomId: _room.roomId},
-        {$push: {userList: _user._id}}
+        {id: _id},
+        {$push: {userList: _userId}}
     );
 };
 
@@ -160,7 +160,7 @@ methods.addUserToRoom = function (_room, _user) {
  */
 methods.removeUserFromRoom = function (_room, _user) {
     return __db.collection('rooms').updateOne(
-        {roomId: _room.roomId},
+        {id: _room.id},
         {$pull: {userList: _user._id}}
     );
 };
@@ -171,7 +171,7 @@ methods.removeUserFromRoom = function (_room, _user) {
  * @returns {Promise}
  */
 methods.removeRoom = function (_room) {
-    return __db.collection('rooms').deleteOne({roomId: _room._id});
+    return __db.collection('rooms').deleteOne({id: _room._id});
 };
 
 /**
