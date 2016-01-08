@@ -200,4 +200,13 @@ methods.endSession = function (_session) {
             ));
 };
 
+/**
+ * ONLY FOR DEBUG USE!
+ * @returns {boolean}
+ * @private
+ */
+methods._getDb = function () {
+    return __db;
+};
+
 module.exports = methods;
