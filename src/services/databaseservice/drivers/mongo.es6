@@ -16,7 +16,7 @@ let methods = {};
 methods.setup = function (_env) {
     let url = 'mongodb://localhost:27017/contentloops';
 
-// Use connect method to connect to the Server
+    // Use connect method to connect to the Server
     MongoClient.connect(url, function (err, db) {
         assert.equal(null, err);
         _env.debug(DRIVER_NAME, 'Connected correctly to server');
@@ -113,12 +113,65 @@ methods.insertUser = function (_user) {
  * @param _roomAttr
  * @returns {Cursor}
  */
-methods.findRoom = function(_roomAttr) {
-    return __db.collection('room').find(_roomAttr);
+methods.findRoom = function (_roomAttr) {
+    return __db.collection('rooms').find(_roomAttr);
 };
 
-methods.createRoom = function(_room) {
-    return __db.collection('room').insertOne(_room);
+/**
+ *
+ * @param _room
+ * @returns {Promise}
+ */
+methods.createRoom = function (_room) {
+    return __db.collection('rooms').insertOne(_room);
+};
+
+/**
+ *
+ * @param _room
+ * @param _attribs
+ * @returns {Promise}
+ */
+methods.setRoomAttibutes = function (_room, _attribs) {
+    return __db.collection('rooms').updateOne(
+        {roomId: _room.roomId},
+        {$set: _attribs}
+    );
+};
+
+/**
+ *
+ * @param _room
+ * @param _user
+ * @returns {Promise}
+ */
+methods.addUserToRoom = function (_room, _user) {
+    return __db.collection('rooms').updateOne(
+        {roomId: _room.roomId},
+        {$push: {userList: _user._id}}
+    );
+};
+
+/**
+ *
+ * @param _room
+ * @param _user
+ * @returns {Promise}
+ */
+methods.removeUserFromRoom = function (_room, _user) {
+    return __db.collection('rooms').updateOne(
+        {roomId: _room.roomId},
+        {$pull: {userList: _user._id}}
+    );
+};
+
+/**
+ *
+ * @param _room
+ * @returns {Promise}
+ */
+methods.removeRoom = function (_room) {
+    return __db.collection('rooms').deleteOne({roomId: _room._id});
 };
 
 module.exports = methods;
