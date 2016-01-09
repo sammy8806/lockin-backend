@@ -70,6 +70,25 @@ module.exports = {
                 let userList = _room.userList;
                 _env.debug(METHOD_NAME, `Room has ${userList.length} members (${JSON.stringify(userList)})`);
 
+                // rolecheck
+                let userrole = userList.filter(function (obj){
+                    return obj.id == _env.sessionmanager.getSessionOfSocket(_ws).userId;
+                });
+                if(userrole.length === 0){
+                    reject({
+                        code: 'client',
+                        string: 'user not in room'
+                    });
+                    return;
+                }else if(userrole[0].role !== 'member'){
+                    reject({
+                        code: 'client',
+                        string: 'insufficient permissions'
+                    });
+                    return;
+                }
+
+
                 userList.forEach((_user) => {
 
                     _env.debug(METHOD_NAME, `-- ${_user}`);

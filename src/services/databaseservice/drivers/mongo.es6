@@ -147,10 +147,21 @@ methods.setRoomAttibutes = function (_room, _attribs) {
  * @param _userId
  * @returns {Promise}
  */
-methods.addUserToRoom = function (_id, _userId) {
+methods.addUserToRoom = function (_id, _userId, _roles) {
     return __db.collection('rooms').updateOne(
-        {id: _id},
-        {$push: {userList: _userId}}
+        { id: _id },
+        {$push: {userList: {id: _userId, roles: _roles}}}
+    );
+};
+
+methods.setUserPermissionsInRoom = function (_id, _userId, _roles) {
+    // nicht sicher ob das so funktioniert
+    return __db.collection('rooms').updateOne(
+        {
+            id: _id,
+            "userList.id": _userId
+        },
+        {$set: {"userList.$.roles" : _roles}}
     );
 };
 
