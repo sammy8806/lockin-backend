@@ -25,8 +25,11 @@ function getSocketOfSession(_session) {
 }
 
 function _removeSession(_session) {
+    if (_session !== undefined) {
+        sessionIds.delete(_session.sessionId);
+    }
+
     sessions.delete(_session);
-    sessionIds.delete(_session.sessionId);
 }
 
 function _removeSocket(_socket) {

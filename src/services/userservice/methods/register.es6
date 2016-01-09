@@ -37,7 +37,7 @@ module.exports = {
 
                     // user in datenbank speichern
                     return db.insertUser(newUser).then(() => {
-                        let user = newUser.toJSON();
+                        let user = newUser;
                         user.password = undefined;
                         return user.toJSON();
                     });
