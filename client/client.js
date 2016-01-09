@@ -122,7 +122,7 @@ function init() {
     document.querySelector('#register').onclick = function () {
         let user = document.querySelector('#register-mail').value;
         let pass = document.querySelector('#register-pass').value;
-        let args = {mail: user, passwordHash: pass};
+        let args = {mail: user, password: pass};
 
         let callback = function (_data, _res) {
             console.log(_data);
@@ -135,7 +135,7 @@ function init() {
     document.querySelector('#login').onclick = function () {
         let user = document.querySelector('#login-mail').value;
         let pass = document.querySelector('#login-pass').value;
-        let args = {mail: user, passwordHash: pass};
+        let args = {mail: user, password: pass};
 
         let callback = function (_data, _res) {
             writeToScreen(`<div class="bg-success"><span class="small">Login success</span></div>`);

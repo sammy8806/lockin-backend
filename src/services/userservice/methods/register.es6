@@ -7,9 +7,11 @@ const METHOD_NAME = 'UserService/Register';
 let db;
 let Session;
 let User;
+let SimpleResponse;
 
 module.exports = {
     setup: (_env) => {
+        SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         Session = _env.ObjectFactory.get('Session');
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
         User = _env.ObjectFactory.get('User');
@@ -29,12 +31,16 @@ module.exports = {
                     _env.debug(METHOD_NAME, 'No old user found');
 
                     // neuen benutzer mit email, passworthash und session(?) anlegen
-                    let newUser = new User({mail: mail, passwordHash: passwordHash});
+                    let newUser = new User({mail: mail, password: passwordHash});
 
                     _env.debug(METHOD_NAME, 'Creating new User');
 
                     // user in datenbank speichern
-                    return db.insertUser(newUser);
+                    return db.insertUser(newUser).then(() => {
+                        let user = newUser.toJSON();
+                        user.password = undefined;
+                        return user.toJSON();
+                    });
                 } else if (user.length > 0) { // Benutzer bereits vorhanden
                     throw {code: 'client', string: 'email already registered'};
                 } else { // Sonstiger fehler
