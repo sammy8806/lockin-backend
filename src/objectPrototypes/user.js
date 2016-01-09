@@ -11,7 +11,7 @@ module.exports = class User extends ObjectPrototype {
             'username',
             'displayname',
             'avatar',
-            'passwordHash'
+            'password'
         ];
 
         super(_user, _whitelistedAttributes);
