@@ -6,7 +6,16 @@
 function validateParameter(_args, _argName) {
 
     if (_args.hasOwnProperty(_argName)) {
-        if (_args[_argName] !== undefined) {
+        /**
+         * > test = null
+         null
+         > test !== undefined
+         true
+         > test != undefined
+         false
+         >
+         */
+        if (_args[_argName] != undefined) {
             return true;
         }
     }
