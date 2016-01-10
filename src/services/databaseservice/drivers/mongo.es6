@@ -178,6 +178,15 @@ methods.removeRoom = function (_room) {
 
 /**
  *
+ * @param _user
+ * @returns {Promise}
+ */
+methods.removeUser = function(_user) {
+    return __db.collection('users').deleteOne({id: _user._id});
+};
+
+/**
+ *
  * @param _msg
  * @returns {Promise}
  */
