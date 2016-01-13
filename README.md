@@ -56,6 +56,13 @@ cd ../client
 npm install
 ```
 
+## MongoDB external
+To enable external access to MongoDB run this on your console:
+
+```bash
+vagrant ssh -c "sudo sed -ri 's/^(.*?)bindIp/#  bindIp/g' /etc/mongod.conf; sudo systemctl restart mongod"
+```
+
 # WebStorm
 
 ## NodeJS Support
