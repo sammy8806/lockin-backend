@@ -35,11 +35,6 @@ module.exports = {
             reject({code: 'server', string: 'internal error'});
         }
 
-        // session von websocket aus sessionmanager holen
-        //if (global._env.sessionmanager.getSessionOfSocket(_ws) !== undefined) {
-        //    reject({code: 'client', string: 'already logged in'});
-        //}
-
         if (User.isLoggedIn(_ws)) {
             reject({code: 'client', string: 'already logged in'});
             return;
@@ -48,7 +43,7 @@ module.exports = {
         _env.debug(METHOD_NAME, 'Searching User');
         let res = new SimpleResponse({success: false});
 
-        resolve(dbDriver.findUser({email: _args.email}).toArray()
+        resolve(dbDriver.findUser({mail: _args.mail}).toArray()
             .then((_user) => {
                     _env.debug(METHOD_NAME, `Search done. ${_user.length} results found.`);
 

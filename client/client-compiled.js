@@ -158,7 +158,7 @@ function init() {
     document.querySelector('#register').onclick = function () {
         var user = document.querySelector('#register-mail').value;
         var pass = document.querySelector('#register-pass').value;
-        var args = { email: user, password: pass };
+        var args = { mail: user, password: pass };
 
         var callback = function callback(_data, _res) {
             console.log(_data);
@@ -173,7 +173,7 @@ function init() {
     document.querySelector('#login').onclick = function () {
         var user = document.querySelector('#login-mail').value;
         var pass = document.querySelector('#login-pass').value;
-        var args = { email: user, password: pass };
+        var args = { mail: user, password: pass };
 
         var callback = function callback(_data, _res) {
             writeToScreen('<div class="bg-success"><span class="small">Login success</span></div>');
