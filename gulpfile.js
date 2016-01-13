@@ -6,6 +6,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const exec = require('child_process').exec;
 const concat = require('gulp-concat');
+const mocha = require('gulp-mocha');
 
 const log = (err, stdout, stderr) => {
     console.log(stdout);
@@ -17,6 +18,17 @@ const log = (err, stdout, stderr) => {
 //gulp.task('watch', function() {
 //    gulp.watch('client.js', ['babel']);
 //});
+
+
+gulp.task('test-socket', () => {
+    return gulp.src('test/socketTest.js')
+        // gulp-mocha needs filepaths so you can't have any plugins before it
+        .pipe(mocha({
+            compilers: {
+                js: babel
+            }
+        }));
+});
 
 gulp.task('_es_transpile', () => {
     return gulp.src(['src/**/*.es6', 'src/**/*.es7'])
