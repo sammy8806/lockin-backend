@@ -1,6 +1,6 @@
 'use strict';
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -18,7 +18,7 @@ function debug() {
     (_console = console).log.apply(_console, arguments);
 }
 
-var JsonWspRequest = (function () {
+var JsonWspRequest = function () {
     // aka jsonwsp/request
 
     function JsonWspRequest(method, args) {
@@ -64,9 +64,9 @@ var JsonWspRequest = (function () {
     }]);
 
     return JsonWspRequest;
-})();
+}();
 
-var JsonWspResponse = (function () {
+var JsonWspResponse = function () {
     // aka jsonwsp/response
 
     function JsonWspResponse(data) {
@@ -95,9 +95,9 @@ var JsonWspResponse = (function () {
     }]);
 
     return JsonWspResponse;
-})();
+}();
 
-var JsonWspFault = (function () {
+var JsonWspFault = function () {
     // aka jsonwsp/fault
 
     function JsonWspFault(data) {
@@ -121,7 +121,7 @@ var JsonWspFault = (function () {
     }]);
 
     return JsonWspFault;
-})();
+}();
 
 function init() {
     output = document.getElementById('output');
@@ -158,7 +158,7 @@ function init() {
     document.querySelector('#register').onclick = function () {
         var user = document.querySelector('#register-mail').value;
         var pass = document.querySelector('#register-pass').value;
-        var args = { mail: user, password: pass };
+        var args = { email: user, password: pass };
 
         var callback = function callback(_data, _res) {
             console.log(_data);
@@ -173,7 +173,7 @@ function init() {
     document.querySelector('#login').onclick = function () {
         var user = document.querySelector('#login-mail').value;
         var pass = document.querySelector('#login-pass').value;
-        var args = { mail: user, password: pass };
+        var args = { email: user, password: pass };
 
         var callback = function callback(_data, _res) {
             writeToScreen('<div class="bg-success"><span class="small">Login success</span></div>');
@@ -306,7 +306,6 @@ function writeToScreen(message) {
     pre.style.wordWrap = 'break-word';
     pre.innerHTML = message;
 
-    var firstChild = output.firstChild;
     output.insertBefore(pre, output.firstChild);
 }
 

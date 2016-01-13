@@ -181,7 +181,7 @@ methods.removeRoom = function (_room) {
  * @param _user
  * @returns {Promise}
  */
-methods.removeUser = function(_user) {
+methods.removeUser = function (_user) {
     return __db.collection('users').deleteOne({id: _user._id});
 };
 
@@ -220,8 +220,42 @@ methods._getDb = function () {
     return __db;
 };
 
+/**
+ *
+ * @param _user
+ * @returns {Promise}
+ */
 methods.findOnlineSessionsOfUser = function (_user) {
     return __db.collection('sessions').find({userId: new ObjectID(_user), connectionState: 'online'}).toArray();
+};
+
+/**
+ *
+ * @param _session
+ * @param _token
+ * @returns {Promise}
+ */
+methods.insertSessionToken = function (_session, _token) {
+    return __db.collection('sessions').updateOne(
+        {sessionId: _session.sessionId},
+        {$push: {sessionTokens: _token}}
+    );
+};
+
+/**
+ *
+ * @param {String} _token
+ * @returns {Cursor}
+ */
+methods.findSessionByToken = function (_token) {
+    return __db.collection('sessions').find({
+        'sessionTokens.sessionToken': _token
+    });
+};
+
+
+methods.invalidateSessionToken = function (_token) {
+    throw 'STUB!';
 };
 
 module.exports = methods;
