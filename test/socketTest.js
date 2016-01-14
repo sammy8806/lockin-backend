@@ -61,6 +61,16 @@ let createRoom = {
     "mirror": "-1"
 };
 
+let joinRoom = {
+    "type": "jsonwsp/request",
+    "version": "1.0",
+    "methodname": "chatservice/joinRoom",
+    "args": {
+        "room": "6040fe953490ab8cc2226ef76638e9b63011a1eddb31e580b119028ff3a6ce68"
+    },
+    "mirror": "-1"
+};
+
 let sendChatMessage = {
     "type": "jsonwsp/request",
     "version": "1.0",
@@ -226,6 +236,85 @@ describe('socket', () => {
             expected.result.id = actualObject.result.id;
             assert.equal(JSON.stringify(expected), actual);
             done();
+        });
+    });
+
+    it('should let a user join a room', (done) => {
+        let expected = {
+            "type": "jsonwsp/response",
+            "version": "1.0",
+            "methodname": "chatservice/joinRoom",
+            "result": {"ok": 1, "nModified": 1, "n": 1},
+            "reflection": "-1"
+        };
+
+        sendMessage(register);
+
+        ws.on('message', (response) => {
+            let res = JSON.parse(response);
+            if (res.methodname === "userservice/register") {
+                sendMessage(login);
+            } else if (res.methodname === "sessionservice/login") {
+                sendMessage(createRoom);
+            } else if (res.methodname === "chatservice/createRoom") {
+                joinRoom.args.room = res.result.id;
+                sendMessage(joinRoom);
+            } else {
+                assert.equal(JSON.stringify(expected), response);
+                done();
+            }
+        });
+    });
+
+    it('should let a user send a message to a room', (done) => {
+        let messageSent = false;
+        let roomID;
+
+        let expected = {
+            "type": "jsonwsp/request",
+            "version": "1.0",
+            "methodname": "chatservice/sendMessage",
+            "args": {
+                "id": 1452794554298,
+                "from": "5697e2ba4141294703997aed",
+                "to": "9fc7a840aa1e47a305c067580f9fc54e73626b8bf1692bf2cb11bfe045a99b73",
+                "date": 1452794554298,
+                "type": "PlainMessage",
+                "data": "Hallo Gruppe!"
+            },
+            "mirror": "mirrorhere"
+        };
+
+        sendMessage(register);
+
+        ws.on('message', (response) => {
+            let res = JSON.parse(response);
+            if (res.methodname === "userservice/register") {
+                sendMessage(login);
+            } else if (res.methodname === "sessionservice/login") {
+                sendMessage(createRoom);
+            } else if (res.methodname === "chatservice/createRoom") {
+                roomID = res.result.id;
+                joinRoom.args.room = roomID;
+                sendMessage(joinRoom);
+            } else if (res.methodname === "chatservice/joinRoom") {
+                sendChatMessage.args.to = roomID;
+                sendMessage(sendChatMessage);
+            } else {
+                if (!messageSent) {
+                    messageSent = true;
+                    sendChatMessage.args.to = roomID;
+                    sendMessage(sendChatMessage);
+                } else {
+                    //message received
+                    expected.args.id = res.args.id;
+                    expected.args.from = res.args.from;
+                    expected.args.to = roomID;
+                    expected.args.date = res.args.date;
+                    assert.equal(JSON.stringify(expected), response);
+                    done();
+                }
+            }
         });
     });
 });
