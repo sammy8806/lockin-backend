@@ -104,4 +104,7 @@ data/
 log/
 dist/
 
+# Remove here to edit ...
+vagrant-config/startup.sh
+
 .vars.local
