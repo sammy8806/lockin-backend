@@ -1,6 +1,6 @@
 'use strict';
 
-const __METHOD_NAME = 'ChatService/assignRole';
+const METHOD_NAME = 'ChatService/assignRole';
 
 let db;
 let Room;
@@ -17,15 +17,15 @@ module.exports = {
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
         return db.setUserPermissionsInRoom(_args.group, _args.user, [_args.role])
-            .then((_res)=>{
-                if(_res.modifiedCount == 1){
-                    let response = new SimpleResponse({ success : true});
+            .then((_res)=> {
+                _env.debug(METHOD_NAME, _res);
+                if (_res.result.nModified === 1) {
+                    let response = new SimpleResponse({success: true});
                     resolve(response);
-                }else{ // wenn kein Datensatz modifiziert wurde
+                } else { // wenn kein Datensatz modifiziert wurde
                     reject({code: 'server', string: 'user room combination not found'});
                 }
             });
-
 
 
     })

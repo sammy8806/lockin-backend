@@ -169,11 +169,10 @@ methods.addUserToRoom = function (_id, _userId, _roles) {
 };
 
 methods.setUserPermissionsInRoom = function (_id, _userId, _roles) {
-    // nicht sicher ob das so funktioniert
     return __db.collection('rooms').updateOne(
         {
             id: _id,
-            'userList.id': _userId
+            'userList.id': new ObjectID(_userId)
         },
         {$set: {'userList.$.roles': _roles}}
     );
