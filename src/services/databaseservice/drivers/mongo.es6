@@ -115,10 +115,10 @@ methods.insertUser = function (_user) {
  * @param _user
  * @returns {Promise}
  */
-methods.updateUser = function(_findAttr, _user) {
+methods.updateUser = function (_findAttr, _user) {
     return __db.collection('users').updateOne(
         _findAttr,
-        {$set : _user}
+        {$set: _user}
     );
 };
 
@@ -163,7 +163,7 @@ methods.setRoomAttibutes = function (_room, _attribs) {
  */
 methods.addUserToRoom = function (_id, _userId, _roles) {
     return __db.collection('rooms').updateOne(
-        { id: _id },
+        {id: _id},
         {$push: {userList: {id: _userId, roles: _roles}}}
     );
 };
@@ -175,7 +175,7 @@ methods.setUserPermissionsInRoom = function (_id, _userId, _roles) {
             id: _id,
             'userList.id': _userId
         },
-        {$set: {'userList.$.roles' : _roles}}
+        {$set: {'userList.$.roles': _roles}}
     );
 };
 
@@ -188,7 +188,7 @@ methods.setUserPermissionsInRoom = function (_id, _userId, _roles) {
 methods.removeUserFromRoom = function (_room, _user) {
     return __db.collection('rooms').updateOne(
         {id: _room.id},
-        {$pull: {userList: _user._id}}
+        {$pull: {userList: {id: new ObjectID(_user._id)}}}
     );
 };
 
@@ -198,7 +198,7 @@ methods.removeUserFromRoom = function (_room, _user) {
  * @returns {Promise}
  */
 methods.removeRoom = function (_room) {
-    return __db.collection('rooms').deleteOne({id: _room._id});
+    return __db.collection('rooms').deleteOne({id: _room.id});
 };
 
 /**

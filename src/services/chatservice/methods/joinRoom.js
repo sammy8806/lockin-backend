@@ -25,19 +25,30 @@ module.exports = {
 
         let user = User.getLoggedIn(_ws, db);
 
-        if(user === false) {
+        if (user === false) {
             reject({code: 'client', string: 'please login first'});
             return;
         }
 
-        resolve(user.then((_user) => {
-            _env.debug(METHOD_NAME, `Logged-in user ${_user.id}`);
-            return db.findRoom({id: targetRoom}).toArray()
+        let activeUser;
+
+        resolve(
+            user.then((_user) => {
+                    _env.debug(METHOD_NAME, `Logged-in user ${_user.id}`);
+                    activeUser = _user;
+                    return db.findRoom({id: targetRoom}).toArray();
+                })
                 .then((_room) => {
                     _env.debug(METHOD_NAME, `Room ${_room[0].id}`);
-                    return db.addUserToRoom(_room[0].id, _user.id, [_room[0].defaultRole]);
-                });
-        }));
-
+                    return db.addUserToRoom(_room[0].id, activeUser.id, [_room[0].defaultRole]);
+                })
+                .then((_res) => {
+                    if (_res.result.ok === 1) { // Type not known
+                        return new SimpleResponse({success: true});
+                    } else {
+                        reject({code: 'server', string: 'room cannot be created'});
+                    }
+                })
+        );
     })
 };
