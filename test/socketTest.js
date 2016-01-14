@@ -53,6 +53,26 @@ let loginWithInvalidCredentials = {
     "mirror": "-1"
 };
 
+let createRoom = {
+    "type": "jsonwsp/request",
+    "version": "1.0",
+    "methodname": "chatservice/createRoom",
+    "args": {},
+    "mirror": "-1"
+};
+
+let sendChatMessage = {
+    "type": "jsonwsp/request",
+    "version": "1.0",
+    "methodname": "chatservice/sendMessage",
+    "args": {
+        "to": "6040fe953490ab8cc2226ef76638e9b63011a1eddb31e580b119028ff3a6ce68",
+        "type": "PlainMessage",
+        "data": "Hallo Gruppe!"
+    },
+    "mirror": "-1"
+};
+
 function sendMessage(msg) {
     waitForSocketConnection(ws, () => {
         ws.send(JSON.stringify(msg));
@@ -74,27 +94,29 @@ function waitForSocketConnection(socket, callback) {
         }, 5);
 }
 
-beforeEach((done) => {
-    ws = new WebSocket(wsUri);
-    ws.on('open', () => {
-        sendMessage(removeUsers);
+describe('socket', () => {
+    beforeEach(done => {
+        ws = new WebSocket(wsUri);
+        ws.on('open', () => {
+            sendMessage(removeUsers);
+        });
+
         ws.on('message', () => {
+            ws.close();
             ws = new WebSocket(wsUri);
             ws.on('open', () => {
                 done();
             });
-        })
+        });
     });
-});
 
-afterEach((done) => {
-    ws.close();
-    ws.on('close', () => {
-        done();
+    afterEach((done) => {
+        ws.close();
+        ws.on('close', () => {
+            done();
+        });
     });
-});
 
-describe('socket', () => {
     it('should register', (done) => {
         let expected = {
             "type": "jsonwsp/response",
@@ -155,12 +177,14 @@ describe('socket', () => {
 
         sendMessage(register);
 
-        ws.on('message', () => {
-            sendMessage(login);
-            ws.on('message', (actual) => {
-                assert.equal(JSON.stringify(expected), actual);
+        ws.on('message', (response) => {
+            let res = JSON.parse(response);
+            if (res.methodname === "userservice/register")
+                sendMessage(login);
+            else {
+                assert.equal(JSON.stringify(expected), response);
                 done();
-            });
+            }
         });
     });
 
@@ -174,13 +198,34 @@ describe('socket', () => {
 
         sendMessage(register);
 
-        ws.on('message', () => {
-            sendMessage(loginWithInvalidCredentials);
+        ws.on('message', (response) => {
+            let res = JSON.parse(response);
+            if (res.methodname === "userservice/register") {
+                sendMessage(loginWithInvalidCredentials);
 
-            ws.on('message', (actual) => {
-                assert.equal(JSON.stringify(expected), actual);
+            } else {
+                assert.equal(JSON.stringify(expected), response);
                 done();
-            });
+            }
+        });
+    });
+
+    it('should create a room', (done) => {
+        let expected = {
+            "type": "jsonwsp/response",
+            "version": "1.0",
+            "methodname": "chatservice/createRoom",
+            "result": {"id": "unknown"},
+            "reflection": "-1"
+        };
+
+        sendMessage(createRoom);
+
+        ws.on('message', (actual) => {
+            let actualObject = JSON.parse(actual);
+            expected.result.id = actualObject.result.id;
+            assert.equal(JSON.stringify(expected), actual);
+            done();
         });
     });
 });
