@@ -19,27 +19,34 @@ module.exports = {
 
         let res = new SimpleResponse({success: false});
         let sessionUserId = _env.sessionmanager.getSessionOfSocket(_ws).userId;
-        let newUserInfo = _args[0];
+        let newUserInfo = _args;
 
-        if (newUserInfo.id === sessionUserId) {
+        if (newUserInfo.id == sessionUserId) {
 
             // prüfen ob informationen dabei sind, die nicht verändert werden dürfen
             if (newUserInfo.mail !== undefined) {
-                reject({code: 'client', string: 'u are not allowed to change the mail-address'});
+                reject({code: 'client', string: 'you are not allowed to change the mail-address'});
             } else if (newUserInfo.displayname !== undefined) {
-                reject({code: 'client', string: 'u are not allowed to change the displayname'});
+                reject({code: 'client', string: 'you are not allowed to change the displayname'});
             }
 
             // neuen user mit nur zulässigen attributen erzeugen
             let userInfo = new User(newUserInfo);
+            delete userInfo.id; // id wird nicht benötigt
 
             // userinformationen aktualisieren
-            db.updateUser({id: newUserInfo.id}, userInfo);
-            res.success = true;
-        } else {
-            reject({code: 'client', string: 'u cannot change information of other users'});
-        }
+            resolve(db.updateUser({_id: sessionUserId}, userInfo.toJSON()).then(
+                () => {
+                    res.success = true;
+                    return res;
+                }, (_err) => {
+                    reject({code: 'server', string: _err});
+                    console.log(_err);
+                })
+            );
 
-        resolve(res);
+        } else {
+            reject({code: 'client', string: 'you cannot change information of other users'});
+        }
     })
 };
