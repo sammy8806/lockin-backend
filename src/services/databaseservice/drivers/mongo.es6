@@ -110,6 +110,19 @@ methods.insertUser = function (_user) {
 };
 
 /**
+ *
+ * @param _findAttr
+ * @param _user
+ * @returns {Promise}
+ */
+methods.updateUser = function(_findAttr, _user) {
+    return __db.collection('users').updateOne(
+        _findAttr,
+        {$set : _user}
+    );
+};
+
+/**
  * _Attention_: This returns an MongoCursor! (Use something like toArray to get a promise)
  *
  * @param _roomAttr
@@ -145,6 +158,7 @@ methods.setRoomAttibutes = function (_room, _attribs) {
  *
  * @param _id
  * @param _userId
+ * @param _roles
  * @returns {Promise}
  */
 methods.addUserToRoom = function (_id, _userId, _roles) {
@@ -159,9 +173,9 @@ methods.setUserPermissionsInRoom = function (_id, _userId, _roles) {
     return __db.collection('rooms').updateOne(
         {
             id: _id,
-            "userList.id": _userId
+            'userList.id': _userId
         },
-        {$set: {"userList.$.roles" : _roles}}
+        {$set: {'userList.$.roles' : _roles}}
     );
 };
 
