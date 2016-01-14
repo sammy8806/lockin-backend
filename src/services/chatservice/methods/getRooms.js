@@ -27,7 +27,7 @@ module.exports = {
         resolve(user.then((_user) => {
             _env.debug(METHOD_NAME, `Logged-in user ${_user.id}`);
 
-            return db.findRoom({userList: _user.id}).toArray()
+            return db.findRoom({'userList.id': _user.id}).toArray()
                 .then((_rooms) => {
 
                     _env.debug(METHOD_NAME, `Rooms found: ${_rooms.length}`);
