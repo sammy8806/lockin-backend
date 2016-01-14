@@ -6,6 +6,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const exec = require('child_process').exec;
 const concat = require('gulp-concat');
+const mocha = require('gulp-mocha');
 
 const log = (err, stdout, stderr) => {
     console.log(stdout);
@@ -17,6 +18,42 @@ const log = (err, stdout, stderr) => {
 //gulp.task('watch', function() {
 //    gulp.watch('client.js', ['babel']);
 //});
+
+function test(string) {
+    return gulp.src('test/socketTest.js')
+        // gulp-mocha needs filepaths so you can't have any plugins before it
+        .pipe(mocha({
+            compilers: {
+                js: babel
+            },
+            grep: string
+        }));
+}
+
+gulp.task('test-all', () => {
+  test('');
+});
+
+gulp.task('test-register', () => {
+    test('should register');
+});
+
+gulp.task('test-login', () => {
+    test('should login');
+});
+
+gulp.task('test-create-room', () => {
+    test('should create a room');
+});
+
+gulp.task('test-join-room', () => {
+    test('should let a user join a room');
+});
+
+gulp.task('test-send-message', () => {
+    test('should let a user send a message to a room');
+});
+
 
 gulp.task('_es_transpile', () => {
     return gulp.src(['src/**/*.es6', 'src/**/*.es7'])
