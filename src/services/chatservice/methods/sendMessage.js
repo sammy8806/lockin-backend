@@ -29,8 +29,6 @@ function sendMessage(_msg, _socket, _env) {
         );
 
         msgPack.then((msgPack) => {
-            console.log(msgPack);
-
             _env.websockethandler.sendMessage(
                 _socket,
                 JSON.stringify(msgPack)
@@ -52,7 +50,8 @@ module.exports = {
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
-        var message = createMessage(_args, _env, _ws);
+        let message = createMessage(_args, _env, _ws);
+        _env.debug(METHOD_NAME, `Creating Message: ${JSON.stringify(message)}`);
 
         return db.findRoom({id: _args.to}).toArray()
             .then((_room) => {
@@ -70,19 +69,37 @@ module.exports = {
                 let userList = _room.userList;
                 _env.debug(METHOD_NAME, `Room has ${userList.length} members (${JSON.stringify(userList)})`);
 
+                // rolecheck
+                const activeUser = _env.sessionmanager.getSessionOfSocket(_ws).userId;
+                const userrole = userList.filter((_obj) => String(_obj.id) === String(activeUser));
+
+                const neededPermission = 'member';
+                let permissionGranted = userrole[0].roles.filter((_obj) => String(_obj) === neededPermission);
+                permissionGranted = permissionGranted.length >= 1;
+
+                console.log(permissionGranted);
+
+                if (userrole.length === 0) {
+                    reject({
+                        code: 'client',
+                        string: 'user not in room'
+                    });
+                    return;
+                } else if (!permissionGranted) {
+                    reject({
+                        code: 'client',
+                        string: 'insufficient permissions'
+                    });
+                    return;
+                }
+
                 userList.forEach((_user) => {
 
-                    _env.debug(METHOD_NAME, `-- ${_user}`);
+                    _env.debug(METHOD_NAME, `-- ${_user.id}`);
 
-                    try {
-                        _env.debug(METHOD_NAME, `Creating Message: ${JSON.stringify(message)}`);
-
-                        //filter = {userid: new ObjectID(_user), connectionState: 'online'};
-                        //_env.debug(METHOD_NAME, `Find sessions with: ${JSON.stringify(filter)}`);
-                        //console.log(filter);
-                    } catch (_e) {
-                        console.trace(_e);
-                    }
+                    //filter = {userid: new ObjectID(_user), connectionState: 'online'};
+                    //_env.debug(METHOD_NAME, `Find sessions with: ${JSON.stringify(filter)}`);
+                    //console.log(filter);
 
                     db.insertMessage(message.toJSON()).then(() => {
                         _env.debug(METHOD_NAME, `Saved Message ${message.id} to DB`);

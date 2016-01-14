@@ -32,11 +32,10 @@ module.exports = {
 
         resolve(user.then((_user) => {
             _env.debug(METHOD_NAME, `Logged-in user ${_user.id}`);
-
             return db.findRoom({id: targetRoom}).toArray()
                 .then((_room) => {
                     _env.debug(METHOD_NAME, `Room ${_room[0].id}`);
-                    return db.addUserToRoom(_room[0].id, _user.id);
+                    return db.addUserToRoom(_room[0].id, _user.id, [_room[0].defaultRole]);
                 });
         }));
 
