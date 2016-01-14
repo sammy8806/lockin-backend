@@ -19,6 +19,6 @@ module.exports = class Room extends ObjectPrototype {
         super(_room, _whitelistedAttributes);
 
         // default default role maybe delete later
-        this.defaultRole = "member";
+        this.defaultRole = 'member';
     }
 };
