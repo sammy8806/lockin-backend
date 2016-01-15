@@ -63,6 +63,11 @@ To enable external access to MongoDB run this on your console:
 vagrant ssh -c "sudo sed -ri 's/^(.*?)bindIp/#  bindIp/g' /etc/mongod.conf; sudo systemctl restart mongod"
 ```
 
+## Livelog
+```bash
+vagrant ssh -c "sudo journalctl -ef"
+```
+
 # WebStorm
 
 ## NodeJS Support
