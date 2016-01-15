@@ -42,4 +42,7 @@ module.exports = class Session extends ObjectPrototype {
                 (_res) => global._env.debug(tag, 'Failed: ' + _res)
             );
     }
+
+    // TODO: setAttribute
+    // TODO: getAttribute
 };

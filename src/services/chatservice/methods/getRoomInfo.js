@@ -13,7 +13,5 @@ module.exports = {
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
     },
 
-    call: (_args, _env, _ws, _type) => db.findRoom({id: _args.room}).toArray().then((room) => {
-        return new Room(room[0]);
-    })
+    call: (_args, _env, _ws, _type) => db.findRoom({id: _args.room}).toArray().then((room) => new Room(room[0]))
 };

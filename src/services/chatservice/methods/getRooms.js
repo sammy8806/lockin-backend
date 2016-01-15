@@ -35,7 +35,7 @@ module.exports = {
 
                     _rooms.forEach((_r) => {
                         _env.debug(METHOD_NAME, `Rooms ${_r.id}`);
-                        rooms.push(_r.id);
+                        rooms.push(_r);
                     });
 
                     return rooms;

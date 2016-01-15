@@ -19,8 +19,8 @@ module.exports = {
         const userId = _env.sessionmanager.getSessionOfSocket(_ws).userId;
         const roomId = _args.room;
 
-        _env.log(METHOD_NAME, `User: ${userId}`);
-        _env.log(METHOD_NAME, `Room: ${userId}`);
+        _env.debug(METHOD_NAME, `User: ${userId}`);
+        _env.debug(METHOD_NAME, `Room: ${userId}`);
 
         resolve(db.removeUserFromRoom({id: roomId}, {_id: userId})
             .then((_success) => {
