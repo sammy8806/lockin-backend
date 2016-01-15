@@ -168,6 +168,13 @@ methods.addUserToRoom = function (_id, _userId, _roles) {
     );
 };
 
+/**
+ *
+ * @param _id
+ * @param _userId
+ * @param _roles
+ * @returns {Promise}
+ */
 methods.setUserPermissionsInRoom = function (_id, _userId, _roles) {
     return __db.collection('rooms').updateOne(
         {
@@ -218,6 +225,12 @@ methods.insertMessage = function (_msg) {
     return __db.collection('messages').insertOne(_msg);
 };
 
+/**
+ *
+ * @param _user
+ * @param _session
+ * @returns {Promise}
+ */
 methods.userDeleteSession = function (_user, _session) {
     return __db.collection('users').updateOne(
         {_id: _user._id},
@@ -225,6 +238,11 @@ methods.userDeleteSession = function (_user, _session) {
     );
 };
 
+/**
+ *
+ * @param _session
+ * @returns {Promise.<T>}
+ */
 methods.endSession = function (_session) {
     // connectionState: 'loggedOut'
     return methods.setSessionStatus(_session)
@@ -277,7 +295,10 @@ methods.findSessionByToken = function (_token) {
     });
 };
 
-
+/**
+ *
+ * @param _token
+ */
 methods.invalidateSessionToken = function (_token) {
     throw 'STUB!';
 };
