@@ -5,6 +5,7 @@ const METHOD_NAME = 'ChatService/getRooms';
 let db;
 let Session;
 let User;
+let Room;
 let SimpleResponse;
 
 module.exports = {
@@ -12,6 +13,7 @@ module.exports = {
         SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         Session = _env.ObjectFactory.get('Session');
         User = _env.ObjectFactory.get('User');
+        Room = _env.ObjectFactory.get('Room');
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
     },
 
@@ -35,7 +37,7 @@ module.exports = {
 
                     _rooms.forEach((_r) => {
                         _env.debug(METHOD_NAME, `Rooms ${_r.id}`);
-                        rooms.push(_r);
+                        rooms.push(new Room(_r).toJSON());
                     });
 
                     return rooms;
