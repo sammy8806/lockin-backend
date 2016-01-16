@@ -264,11 +264,11 @@ methods._getDb = function () {
 
 /**
  *
- * @param _user
+ * @param _user, _state
  * @returns {Promise}
  */
-methods.findOnlineSessionsOfUser = function (_user) {
-    return __db.collection('sessions').find({userId: new ObjectID(_user.id), connectionState: 'online'}).toArray();
+methods.findActiveSessionsOfUser = function (_user, _state) {
+    return __db.collection('sessions').find({userId: new ObjectID(_user.id), connectionState: _state}).toArray();
 };
 
 /**

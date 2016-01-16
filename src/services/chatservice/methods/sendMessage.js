@@ -39,6 +39,19 @@ function sendMessage(_msg, _socket, _env) {
     }
 }
 
+function sendGCMMessage(regTokens) {
+    let GCM = require('../../../external/gcm/gcm.js');
+    let gcm = new GCM();
+
+    //TODO: setup api key only once, not everytime a message is sent
+    gcm.setup({apiKey: 'AIzaSyCTnTdd2RoYKVRG4yDnd1vd_tuznxVH1Pw'});
+
+    let message = GCM.getMessage();
+    message.data = {messageID: message.id};
+
+    gcm.send(message, regTokens, 3);
+}
+
 module.exports = {
     setup: (_env) => {
 
@@ -105,23 +118,33 @@ module.exports = {
                         _env.debug(METHOD_NAME, `Saved Message ${message.id} to DB`);
                     });
 
-                    db.findOnlineSessionsOfUser(_user).then(
-                        (_sessions) => {
-                            _env.debug(METHOD_NAME, `Sessions found: ${_sessions.length}`);
+                    db.findActiveSessionsOfUser(_user, 'online').then(
+                        (_onlineSession) => {
+                            _env.debug(METHOD_NAME, `Sessions found: ${_onlineSession.length}`);
 
-                            _sessions.forEach((_session) => {
-                                let socket = _env.sessionmanager.getSocketFromSessionId(_session.sessionId);
-                                _env.debug(METHOD_NAME, `Sockets found: ${typeof socket}`);
+                            if (_onlineSession.length === 0) {
+                                db.findActiveSessionsOfUser(_user, 'closed').then((_closedSessions) => {
+                                    let regTokens = [_closedSessions.length];
+                                    for (let i = 0; i < _closedSessions.length; i++) {
+                                        regTokens[i] = _closedSessions[i].getAttribute('gcm-reg-token');
+                                    }
+                                    sendGCMMessage(regTokens);
+                                });
+                            } else {
+                                _onlineSession.forEach((_session) => {
+                                    let socket = _env.sessionmanager.getSocketFromSessionId(_session.sessionId);
+                                    _env.debug(METHOD_NAME, `Sockets found: ${typeof socket}`);
 
-                                if (socket == null) {
-                                    _env.debug({
-                                        code: 'server',
-                                        string: 'did not find a socket to an online session'
-                                    });
-                                }
+                                    if (socket == null) {
+                                        _env.debug({
+                                            code: 'server',
+                                            string: 'did not find a socket to an online session'
+                                        });
+                                    }
 
-                                sendMessage(message, socket, _env);
-                            });
+                                    sendMessage(message, socket, _env);
+                                });
+                            }
                         });
                 });
 
