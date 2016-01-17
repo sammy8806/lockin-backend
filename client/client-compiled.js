@@ -1,6 +1,6 @@
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -18,7 +18,7 @@ function debug() {
     (_console = console).log.apply(_console, arguments);
 }
 
-var JsonWspRequest = function () {
+var JsonWspRequest = (function () {
     // aka jsonwsp/request
 
     function JsonWspRequest(method, args) {
@@ -64,9 +64,9 @@ var JsonWspRequest = function () {
     }]);
 
     return JsonWspRequest;
-}();
+})();
 
-var JsonWspResponse = function () {
+var JsonWspResponse = (function () {
     // aka jsonwsp/response
 
     function JsonWspResponse(data) {
@@ -95,9 +95,9 @@ var JsonWspResponse = function () {
     }]);
 
     return JsonWspResponse;
-}();
+})();
 
-var JsonWspFault = function () {
+var JsonWspFault = (function () {
     // aka jsonwsp/fault
 
     function JsonWspFault(data) {
@@ -121,7 +121,7 @@ var JsonWspFault = function () {
     }]);
 
     return JsonWspFault;
-}();
+})();
 
 function init() {
     output = document.getElementById('output');
@@ -219,7 +219,7 @@ function init() {
                 _data.forEach(function (_room) {
                     var li = document.createElement('li');
                     li.style.wordWrap = 'break-word';
-                    li.innerHTML = _room;
+                    li.innerHTML = _room.name + ' (<small>' + _room.id + '</small>)';
 
                     tmp.appendChild(li);
                 });

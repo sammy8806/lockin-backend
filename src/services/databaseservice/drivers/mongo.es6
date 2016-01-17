@@ -80,15 +80,25 @@ methods.userAddSession = function (_user, _session) {
 /**
  *
  * @param _session
+ * @param _attrib
+ * @returns {Promise}
+ */
+methods.setSessionAttribute = function (_session, _attrib) {
+    return __db.collection('sessions').updateOne(
+        {sessionId: _session.sessionId},
+        {$set: _attrib}
+    );
+};
+
+/**
+ *
+ * @param _session
  * @param _status
  * @returns {Promise}
  */
 methods.setSessionStatus = function (_session, _status) {
     // console.log('----', typeof _session, _session.sessionId);
-    return __db.collection('sessions').updateOne(
-        {sessionId: _session.sessionId},
-        {$set: {connectionState: _status}}
-    );
+    return methods.setSessionAttribute(_session, {connectionState: _status});
 };
 
 /**
@@ -264,11 +274,11 @@ methods._getDb = function () {
 
 /**
  *
- * @param _user
+ * @param _user, _state
  * @returns {Promise}
  */
-methods.findOnlineSessionsOfUser = function (_user) {
-    return __db.collection('sessions').find({userId: new ObjectID(_user.id), connectionState: 'online'}).toArray();
+methods.findActiveSessionsOfUser = function (_user, _state) {
+    return __db.collection('sessions').find({userId: new ObjectID(_user.id), connectionState: _state}).toArray();
 };
 
 /**
