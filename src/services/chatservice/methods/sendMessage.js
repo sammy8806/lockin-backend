@@ -86,25 +86,29 @@ module.exports = {
                 const activeUser = _env.sessionmanager.getSessionOfSocket(_ws).userId;
                 const userrole = userList.filter((_obj) => String(_obj.id) === String(activeUser));
 
-                const neededPermission = 'member';
-                let permissionGranted = userrole[0].roles.filter((_obj) => String(_obj) === neededPermission);
-                permissionGranted = permissionGranted.length >= 1;
-
-                console.log(permissionGranted);
-
                 if (userrole.length === 0) {
                     reject({
                         code: 'client',
                         string: 'user not in room'
                     });
                     return;
-                } else if (!permissionGranted) {
+                }
+
+                const neededPermission = 'member';
+                let permissionGranted = userrole[0].roles.filter((_obj) => String(_obj) === neededPermission);
+                permissionGranted = permissionGranted.length >= 1;
+
+                if (!permissionGranted) {
                     reject({
                         code: 'client',
                         string: 'insufficient permissions'
                     });
                     return;
                 }
+
+                db.insertMessage(message.toJSON()).then(() => {
+                    _env.debug(METHOD_NAME, `Saved Message ${message.id} to DB`);
+                });
 
                 userList.forEach((_user) => {
 
@@ -114,35 +118,64 @@ module.exports = {
                     //_env.debug(METHOD_NAME, `Find sessions with: ${JSON.stringify(filter)}`);
                     //console.log(filter);
 
-                    db.insertMessage(message.toJSON()).then(() => {
-                        _env.debug(METHOD_NAME, `Saved Message ${message.id} to DB`);
-                    });
-
                     db.findActiveSessionsOfUser(_user, 'online').then(
-                        (_onlineSession) => {
-                            _env.debug(METHOD_NAME, `Sessions found: ${_onlineSession.length}`);
+                        (_onlineSessions) => {
+                            _env.debug(METHOD_NAME, `${_user.id} ** ${_onlineSessions.length} Online-Sessions found`);
 
-                            if (_onlineSession.length === 0) {
-                                db.findActiveSessionsOfUser(_user, 'closed').then((_closedSessions) => {
-                                    let regTokens = [_closedSessions.length];
-                                    for (let i = 0; i < _closedSessions.length; i++) {
-                                        regTokens[i] = _closedSessions[i].getAttribute('gcm-reg-token');
-                                    }
-                                    sendGCMMessage(regTokens);
-                                });
+                            if (_onlineSessions.length === 0) {
+                                _env.debug(METHOD_NAME, `${_user.id} ** No Online-Session found`);
+
+                                db.findActiveSessionsOfUser(_user, 'closed')
+                                    .then((_closedSessions) => {
+                                        if (_closedSessions.length === 0) {
+                                            _env.debug(METHOD_NAME, `${_user.id} ** No Closed-Session found`);
+                                            return;
+                                        }
+
+                                        _env.debug(
+                                            METHOD_NAME,
+                                            `${_user.id} ** ${_closedSessions.length} Closed-Sessions found`
+                                        );
+
+                                        let regTokens = [];
+                                        for (let i = 0; i < _closedSessions.length; i++) {
+                                            regTokens[i] = new Session(_closedSessions[i]).gcm_reg_token;
+
+                                            if (regTokens[i] === undefined) {
+                                                _env.debug(
+                                                    METHOD_NAME,
+                                                    `${_user.id} ** No GCM-Token found`
+                                                );
+                                            } else {
+                                                _env.debug(
+                                                    METHOD_NAME,
+                                                    `${_user.id} ** Found Reg-Token: ${regTokens[i].gcm_reg_token}`
+                                                );
+                                            }
+                                        }
+
+                                        sendGCMMessage(regTokens);
+                                    });
                             } else {
-                                _onlineSession.forEach((_session) => {
-                                    let socket = _env.sessionmanager.getSocketFromSessionId(_session.sessionId);
-                                    _env.debug(METHOD_NAME, `Sockets found: ${typeof socket}`);
+                                _onlineSessions.forEach((_session) => {
+                                    _env.debug(
+                                        METHOD_NAME,
+                                        `${_user.id} ** ${_onlineSessions.length} Online-Sessions!`
+                                    );
 
-                                    if (socket == null) {
-                                        _env.debug({
+                                    let socket = _env.sessionmanager.getSocketFromSessionId(_session.sessionId);
+                                    _env.debug(METHOD_NAME, `${_user.id} ** Socket found`);
+
+                                    if (socket == null || socket === undefined) {
+                                        _env.debug(METHOD_NAME, {
                                             code: 'server',
                                             string: 'did not find a socket to an online session'
                                         });
-                                    }
 
-                                    sendMessage(message, socket, _env);
+                                        _env.error(METHOD_NAME, `${_user.id} ** !! Inconsistant Database !!`);
+                                    } else {
+                                        sendMessage(message, socket, _env);
+                                    }
                                 });
                             }
                         });

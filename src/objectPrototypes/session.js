@@ -43,6 +43,20 @@ module.exports = class Session extends ObjectPrototype {
             );
     }
 
+    setAttribute(_key, _value) {
+        const tag = 'Object/Session.setAttribute';
+        global._env.debug(tag, `Setting Attribute ${_key} to: ${_value}`);
+
+        let attrib = {};
+        attrib[_key] = _value;
+
+        return this._db.setSessionAttribute(this, attrib)
+            .then(
+                () => global._env.debug(tag, 'Success'),
+                (_res) => global._env.debug(tag, 'Failed: ' + _res)
+            );
+    }
+
     // TODO: setAttribute
     // TODO: getAttribute
 };

@@ -175,7 +175,7 @@ function init() {
                 _data.forEach((_room) => {
                     let li = document.createElement('li');
                     li.style.wordWrap = 'break-word';
-                    li.innerHTML = _room;
+                    li.innerHTML = `${_room.name} (<small>${_room.id}</small>)`;
 
                     tmp.appendChild(li);
                 });
