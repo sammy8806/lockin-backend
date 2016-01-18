@@ -61,7 +61,10 @@ methods.newSession = function (_session) {
  * @returns {Cursor}
  */
 methods.findUser = function (_attr) {
-    return __db.collection('users').find(_attr);
+    if (_attr.hasOwnProperty('_id'))
+        return __db.collection('users').find({_id: ObjectID(_attr._id)});
+    else
+        return __db.collection('users').find(_attr);
 };
 
 /**
