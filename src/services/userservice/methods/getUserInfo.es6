@@ -15,7 +15,7 @@ module.exports = {
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
-        let user = _args;
+        let user = _args.user;
         let search = null;
 
         // suchkriterium anhand id oder mail festlegen

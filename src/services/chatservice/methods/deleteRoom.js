@@ -29,7 +29,8 @@ module.exports = {
             _env.debug(METHOD_NAME, `Deleting Room: ${_room}`);
 
             return db.removeRoom(_room);
-        }).then((_success) => {
+        })
+        .then((_success) => {
             _env.debug(METHOD_NAME, `Remove status: ${_success.result.ok}`);
 
             if (_success.result.ok === 1) {
