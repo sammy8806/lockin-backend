@@ -19,7 +19,7 @@ module.exports = {
 
         let res = new SimpleResponse({success: false});
         let sessionUserId = _env.sessionmanager.getSessionOfSocket(_ws).userId;
-        let newUserInfo = _args;
+        let newUserInfo = _args.newInfo;
 
         if (newUserInfo.id == sessionUserId) {
 
