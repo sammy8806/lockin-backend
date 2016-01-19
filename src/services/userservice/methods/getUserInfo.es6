@@ -30,6 +30,11 @@ module.exports = {
         resolve(db.findUser(search).toArray()
             .then((_user) => {
                 user = _user[0];
+
+                // A bit fixing here
+                user.id = _user._id;
+                delete user._id;
+
                 delete user.password;
                 return user;
             }),

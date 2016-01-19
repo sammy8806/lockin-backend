@@ -29,7 +29,7 @@ module.exports = {
         if(targetUser === undefined) {
             user = User.getLoggedIn(_ws, db);
         } else {
-            user = User.newFromDatabase({_id: targetUser._id}, db);
+            user = User.newFromDatabase({_id: targetUser.id}, db);
         }
 
         if (user === false) {
