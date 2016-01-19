@@ -21,9 +21,16 @@ module.exports = {
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
         const targetRoom = _args.room;
+        const targetUser = _args.user;
         _env.debug(METHOD_NAME, `Try to join room ${targetRoom}`);
 
-        let user = User.getLoggedIn(_ws, db);
+        let user;
+
+        if(targetUser === undefined) {
+            user = User.getLoggedIn(_ws, db);
+        } else {
+            user = User.newFromDatabase({_id: targetUser._id}, db);
+        }
 
         if (user === false) {
             reject({code: 'client', string: 'please login first'});
