@@ -32,7 +32,7 @@ module.exports = {
                 user = _user[0];
 
                 // A bit fixing here
-                user.id = _user._id;
+                user.id = user._id;
                 delete user._id;
 
                 delete user.password;

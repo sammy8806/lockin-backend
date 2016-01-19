@@ -3,8 +3,12 @@
  */
 'use strict';
 
-let parameterVariations = new Array();
+let parameterVariations = [];
 
+let parameterVariation = {
+    'user' : 'exists'
+};
+parameterVariations.push(parameterVariation);
 
 module.exports = {
     parameterVariations
