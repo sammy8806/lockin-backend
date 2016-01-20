@@ -1,6 +1,8 @@
 'use strict';
 require('babel-polyfill');
 
+import crypto from 'crypto';
+
 const _env = {
     ServiceFactory: require('./lib/servicefactory/servicefactory'),
     GlobalServiceFactory: require('./lib/servicefactory/servicefactory')
@@ -21,6 +23,19 @@ _env.debug = function (_tag, _string) {
 
 _env.error = function (_tag, _string) {
     _env._log(console.log, 'ERROR', _tag, _string);
+};
+
+_env.random = function (howMany, chars) {
+    chars = chars || "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+    let rnd = crypto.randomBytes(howMany);
+    let value = new Array(howMany);
+    let len = chars.length;
+
+    for (let i = 0; i < howMany; i++) {
+        value[i] = chars[rnd[i] % len]
+    }
+
+    return value.join('');
 };
 
 _env.ObjectFactory = {
@@ -44,8 +59,3 @@ _env.websockethandler = require('./lib/websockethandler/websockethandler.js');
 _env.websockethandler.init(_env, SERVER_PORT, SERVER_HOST);
 
 // -------------------
-
-import crypto from 'crypto';
-
-const hashes = crypto.getHashes();
-// console.log(hashes);

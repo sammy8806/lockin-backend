@@ -240,6 +240,41 @@ methods.insertMessage = function (_msg) {
 
 /**
  *
+ * @param {String} _msg Unique MessageID
+ * @param {String} _session Unique SessionID
+ * @returns {Promise}
+ */
+methods.setMessageDelivered = function (_msg, _session) {
+    return __db.collection('messages').updateOne(
+        {id: _msg},
+        {$push: {_deliveredTo: _session}}
+    );
+};
+
+/**
+ *
+ * @param _find
+ * @returns {Cursor}
+ */
+methods.getMessages = function(_find) {
+    return __db.collection('messages').find(_find);
+};
+
+/**
+ *
+ * @param {String} _session Unique SessionID
+ * @returns {Cursor}
+ */
+methods.getUndeliveredMessages = function (_session) {
+    return __db.collection('messages').find({
+        _deliveredTo: {
+            $ne: _session
+        }
+    });
+};
+
+/**
+ *
  * @param _user
  * @param _session
  * @returns {Promise}

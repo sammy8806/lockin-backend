@@ -10,7 +10,7 @@ let Message;
 
 function createMessage(_args, _env, _ws) {
     let message = new Message(_args);
-    message.id = Date.now();
+    message.id = `${_env.random(25)}_${Date.now()}`;
     message.date = Date.now();
     message.from = _env.sessionmanager.getSessionOfSocket(_ws).userId;
     return message;
@@ -175,6 +175,8 @@ module.exports = {
                                         _env.error(METHOD_NAME, `${_user.id} ** !! Inconsistant Database !!`);
                                     } else {
                                         sendMessage(message, socket, _env);
+
+                                        db.setMessageDelivered(message.id, _session.sessionId);
                                     }
                                 });
                             }
