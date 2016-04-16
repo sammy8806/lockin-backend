@@ -52,9 +52,9 @@ function setup(_env, _serviceFileName) {
         _env.debug(__MODULE_NAME, `Loading Service: ${name}`);
         try {
             _services[name] = require(getServiceFile(name, _serviceFileName));
-            if(_services[name].deps !== undefined && (typeof _services[name].deps) == 'Array') {
+            if (_services[name].deps !== undefined && (typeof _services[name].deps) == 'Array') {
                 _services[name].deps.forEach((dep) => {
-                    _env.debug(`${__MODULE_NAME}/${name}`, `ound dependency: ${dep}`);
+                    _env.debug(`${__MODULE_NAME}/${name}`, `found dependency: ${dep}`);
                 });
             }
             _services[name].setup(_env);
