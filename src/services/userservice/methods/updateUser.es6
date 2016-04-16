@@ -2,7 +2,7 @@
 
 import Promise from 'promise';
 
-const METHOD_NAME = 'UserService/ChangeUserInfo';
+const METHOD_NAME = 'UserService/updateUser';
 
 let db;
 let SimpleResponse;

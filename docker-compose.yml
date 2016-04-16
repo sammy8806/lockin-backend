@@ -1,0 +1,13 @@
+version: '2'
+services:
+  web:
+    build: .
+    command: npm run deploy
+    ports:
+     - "8080:8080"
+    volumes:
+     - .:/app
+    depends_on:
+     - mongo
+  mongo:
+    image: mongo:latest

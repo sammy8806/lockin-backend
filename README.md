@@ -7,6 +7,7 @@ Please install via:
 
 ```bash
 vagrant plugin install vagrant-triggers
+vagrant plugin install vagrant-docker-compose
 ```
 
 If you want to run this, simply run the following command and the nodejs-server is started for you.

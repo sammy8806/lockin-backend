@@ -10,6 +10,18 @@ let User;
 let SimpleResponse;
 
 module.exports = {
+    parameterVariations: [
+        {
+            name: 'exists',
+            password: 'exists',
+            email: 'exists',
+            key: '!exists',
+            id: '!exists',
+            accesslist: '!exists',
+            doorlocklist: '!exists'
+        }
+    ],
+
     setup: (_env) => {
         SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         Session = _env.ObjectFactory.get('Session');

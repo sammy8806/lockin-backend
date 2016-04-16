@@ -5,40 +5,21 @@
 
 const parameterValidator = require('./parameter_validator.js');
 
-const servicenames = [
-    'chatservice',
-    'userservice',
-    'sessionservice',
-    'fileservice'
-];
+function validateMethodCall(_env, _servicename, _methodname, _args) {
+    let service = _env.ServiceFactory.getService(_servicename);
 
-let services = {};
-
-for (let i = 0; i < servicenames.length; i++) {
-    let servicename = servicenames[i];
-    services[servicename] = {};
-    let methodnames = require(`./services/${servicename}/servicedescription.js`);
-    methodnames = methodnames.serviceMethods;
-    for (let j = 0; j < methodnames.length; j++) {
-        let methodname = methodnames[j];
-        services[servicename][methodname] = require(`./services/${servicename}/${methodname}.js`);
-    }
-}
-
-function validateMethodCall(_servicename, _methodname, _args) {
-    let service = services[_servicename];
     if (service === undefined) {
         throw {string: 'unknown service', code: 'client'};
     }
 
-    let method = service[_methodname];
+    let method = service.getFunc(_methodname);
     if (method === undefined) {
         throw {string: 'unknown method', code: 'client'};
     }
 
     let parameterVariations = method.parameterVariations;
 
-    if (parameterVariations.length === 0) {
+    if (parameterVariations === undefined || parameterVariations.length === 0) {
         return true;
     }
 
@@ -66,6 +47,7 @@ function validateMethodCallOption(_parameterVariation, _args) {
             }
         }
     }
+
     return true;
 }
 

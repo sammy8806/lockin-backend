@@ -7,11 +7,12 @@ module.exports = class User extends ObjectPrototype {
         const _whitelistedAttributes = [
             '_id',
             'id',
-            'mail',
-            'username',
-            'displayname',
-            'avatar',
-            'password'
+            'name',
+            'password',
+            'email',
+            'key',
+            'accesslist',
+            'doorlocklist'
         ];
 
         super(_user, _whitelistedAttributes);

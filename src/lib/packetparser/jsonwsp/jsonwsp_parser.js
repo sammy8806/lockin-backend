@@ -33,8 +33,9 @@ function parse(_packet, _env, _ws) {
         let methodname = data.methodname.split('/')[1];
 
         try {
-            if (servicename !== 'adminservice')
-                methodValidator.validateMethodCall(servicename, methodname, data.args);
+            if (servicename !== 'adminservice') {
+                methodValidator.validateMethodCall(_env, servicename, methodname, data.args);
+            }
         } catch (_err) {
             _env.debug(
                 'PacketParser/methodValidator',
@@ -49,9 +50,12 @@ function parse(_packet, _env, _ws) {
             `Calling Service: ${servicename} Method: ${methodname} with args: ${JSON.stringify(data.args)}`
         );
 
+        let funcArgc = Object.keys(data.args).length;
+        let funcArgs = (funcArgc === 1 ? Object.keys(data.args)[0] : data.args);
+
         resolve(_env.ServiceFactory
             .getService(servicename)
-            .callFunc(methodname, data.args, _env, _ws, data.type)
+            .callFunc(methodname, funcArgs, _env, _ws, data.type)
             .then(
                 (result) => {
                     _env.debug('PacketParser', 'result: ' + JSON.stringify(result));

@@ -29,8 +29,8 @@
     "mocha": "^2.3.4"
   },
   "scripts": {
-    "build": "mkdir -p dist && npm run min",
-    "min": "uglifyjs dist/async-functions-in-pouchdb.js -mc > dist/async-functions-in-pouchdb.min.js",
-    "start": "node node_modules/http-server/bin/http-server -p 7777"
+    "build": "npm install && mkdir -p dist && node node_modules/gulp/bin/gulp.js compile",
+    "start": "node dist/server.js",
+    "deploy": "npm run build && npm run start"
   }
 }

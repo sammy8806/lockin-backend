@@ -16,15 +16,7 @@ module.exports = {
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
         let user = _args.user;
-        let search = null;
-
-        // suchkriterium anhand id oder mail festlegen
-        if (user.id !== undefined)
-            search = {_id: user.id};
-        else if (user.mail !== undefined)
-            search = {mail: user.mail};
-        else
-            reject({code: 'client', string: 'wrong search information'});
+        let search = user;
 
         // user suchen und zurückgeben
         resolve(db.findUser(search).toArray()
