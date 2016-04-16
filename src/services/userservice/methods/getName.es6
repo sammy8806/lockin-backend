@@ -13,7 +13,7 @@ module.exports = {
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
-        getUserInfo = _env.ServiceFactory.getService('UserService').getFunc('_getUserInfo');
+        // getUserInfo = _env.ServiceFactory.getService('UserService').getFunc('_getUserInfo');
 
         let user = _args.user;
         let search = null;
