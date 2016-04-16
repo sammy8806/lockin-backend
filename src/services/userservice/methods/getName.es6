@@ -9,7 +9,7 @@ let User;
 
 module.exports = {
     setup: (_env) => {
-        getUserInfo = _env.ServiceFactory.getService('getUserInfo').getFunc('getUserInfo');
+        getUserInfo = _env.ServiceFactory.getService('userservice').getFunc('getUserInfo');
         User = _env.ObjectFactory.get('User');
     },
 
