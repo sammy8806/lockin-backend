@@ -1,13 +1,14 @@
 version: '2'
 services:
-  web:
+  cl2-web:
     build: .
     command: npm run deploy
+    working_dir: /app
     ports:
      - "8080:8080"
     volumes:
      - .:/app
     depends_on:
-     - mongo
-  mongo:
+     - cl2-mongo
+  cl2-mongo:
     image: mongo:latest

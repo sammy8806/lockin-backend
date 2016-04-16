@@ -141,7 +141,7 @@ describe('socket', () => {
         ws.on('message', (actual) => {
             assert.equal(JSON.stringify(expected), actual);
             done();
-        })
+        });
     });
 
     it('should fail to register with invalid arguments', (done) => {
