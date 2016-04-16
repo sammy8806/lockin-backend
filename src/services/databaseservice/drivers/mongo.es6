@@ -16,7 +16,7 @@ let methods = {};
  * @param _env
  */
 methods.setup = function (_env) {
-    let url = 'mongodb://mongo:27017/contentloops';
+    let url = 'mongodb://cl2-mongo:27017/contentloops';
 
     // Use connect method to connect to the Server
     MongoClient.connect(url, function (err, db) {
