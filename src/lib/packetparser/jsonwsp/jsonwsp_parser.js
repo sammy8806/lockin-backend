@@ -29,12 +29,15 @@ function parse(_packet, _env, _ws) {
             reject(buildFault(err, data.mirror));
         }
 
+        let funcArgc = Object.keys(data.args).length;
+        let funcArgs = (funcArgc === 1 ? Object.keys(data.args)[0] : data.args);
+
         let servicename = data.methodname.split('/')[0];
         let methodname = data.methodname.split('/')[1];
 
         try {
             if (servicename !== 'adminservice') {
-                methodValidator.validateMethodCall(_env, servicename, methodname, data.args);
+                methodValidator.validateMethodCall(_env, servicename, methodname, funcArgs);
             }
         } catch (_err) {
             _env.debug(
@@ -49,9 +52,6 @@ function parse(_packet, _env, _ws) {
             'PacketParser',
             `Calling Service: ${servicename} Method: ${methodname} with args: ${JSON.stringify(data.args)}`
         );
-
-        let funcArgc = Object.keys(data.args).length;
-        let funcArgs = (funcArgc === 1 ? Object.keys(data.args)[0] : data.args);
 
         resolve(_env.ServiceFactory
             .getService(servicename)
