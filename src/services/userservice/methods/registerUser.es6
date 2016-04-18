@@ -37,15 +37,15 @@ module.exports = {
         _env.debug(METHOD_NAME, `Creating User '${email}' with Hash '${password}'`);
 
         // Benutzer anhand der E-Mail suchen
-        resolve(db.findUser({mail: email}).toArray()
+        resolve(db.findUser({email: email}).toArray()
             .then(function (user) {
                 if (user.length === 0) { // Kein Benutzer gefunden
                     _env.debug(METHOD_NAME, 'No old user found');
 
                     // neuen benutzer mit email, passworthash und session(?) anlegen
-                    let newUser = new User({mail: email, password: password});
+                    let newUser = new User({email: email, password: password});
 
-                    _env.debug(METHOD_NAME, `Creating new User ${newUser.mail} with password: '${newUser.password}'`);
+                    _env.debug(METHOD_NAME, `Creating new User ${newUser.email} with password: '${newUser.password}'`);
 
                     // user in datenbank speichern
                     return db.insertUser(newUser).then(() => {
