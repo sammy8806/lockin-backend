@@ -18,6 +18,27 @@ function generateSessionId() {
 }
 
 module.exports = {
+    parameterVariations: [
+        {
+            name: '!exists',
+            password: 'exists',
+            email: 'exists',
+            key: '!exists',
+            id: '!exists',
+            accesslist: '!exists',
+            doorlocklist: '!exists'
+        },
+        {
+            name: 'exists',
+            password: 'exists',
+            email: '!exists',
+            key: '!exists',
+            id: '!exists',
+            accesslist: '!exists',
+            doorlocklist: '!exists'
+        }
+    ],
+
     setup: (_env) => {
         SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         Session = _env.ObjectFactory.get('Session');
@@ -40,10 +61,10 @@ module.exports = {
             return;
         }
 
-        _env.debug(METHOD_NAME, 'Searching User');
+        _env.debug(METHOD_NAME, `Searching User with ${_args}`);
         let res = new SimpleResponse({success: false});
 
-        resolve(dbDriver.findUser({email: _args.email}).toArray()
+        resolve(dbDriver.findUser({'$or' : [{email: _args.email}, {name: _args.name}]}).toArray()
             .then((_user) => {
                     _env.debug(METHOD_NAME, `Search done. ${_user.length} results found.`);
 

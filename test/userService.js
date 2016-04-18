@@ -34,10 +34,25 @@ function waitForSocketConnection(socket, callback) {
 }
 
 describe('socket', () => {
-    beforeEach(done => {
+    before(done => {
         ws = new WebSocket(wsUri);
         ws.on('open', () => {
             sendMessage(removeUsers);
+        });
+
+        ws.on('message', () => {
+            ws.close();
+            ws = new WebSocket(wsUri);
+            ws.on('open', () => {
+                done();
+            });
+        });
+    });
+
+    beforeEach(done => {
+        ws = new WebSocket(wsUri);
+        ws.on('open', () => {
+            sendMessage();
         });
 
         ws.on('message', () => {
@@ -146,7 +161,7 @@ describe('socket', () => {
         let expected = {
             type: 'jsonwsp/response',
             version: '1.0',
-            methodname: 'UserService/updateUser',
+            methodname: 'UserService/loginUser',
             result: {success: true},
             reflection: register.mirror
         };
