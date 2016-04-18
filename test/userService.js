@@ -53,7 +53,7 @@ describe('socket', () => {
             'type': 'jsonwsp/request',
             'version': '1.0',
             'methodname': 'UserService/registerUser',
-            'args': {user: {'name': 'admin', 'mail': 'test@spamkrake.de', 'password': 'hallo123'}},
+            'args': {user: {'name': 'admin', 'email': 'test@spamkrake.de', 'password': 'hallo123'}},
             'mirror': '-1'
         };
 
@@ -61,7 +61,7 @@ describe('socket', () => {
             'type': 'jsonwsp/response',
             'version': '1.0',
             'methodname': 'userservice/registerUser',
-            'result': {'mail': 'test@spamkrake.de'},
+            'result': {'email': 'test@spamkrake.de'},
             'reflection': '-1'
         };
 

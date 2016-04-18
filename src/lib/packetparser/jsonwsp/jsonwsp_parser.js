@@ -31,22 +31,7 @@ function parse(_packet, _env, _ws) {
             reject(buildFault(err, data.mirror));
         }
 
-        const funcArgc = Object.keys(data.args).length;
-        const funcArgTranslate = funcArgc === 1 && typeof data.args === Object;
-
-        _env.debug(
-            METHOD_NAME + '/methodValidator',
-            `Found ${funcArgc} arguments`
-        );
-
-        let funcArgs = (funcArgTranslate ? data.args[Object.keys(data.args)[0]] : data.args);
-
-        if(funcArgTranslate) {
-            _env.debug(
-                METHOD_NAME + '/methodValidator',
-                `Args translated to: ${JSON.parse(funcArgs)}`
-            );
-        }
+        let funcArgs = data.args;
 
         let servicename = data.methodname.split('/')[0];
         let methodname = data.methodname.split('/')[1];
