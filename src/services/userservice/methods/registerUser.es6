@@ -12,7 +12,6 @@ let SimpleResponse;
 module.exports = {
     parameterVariations: [
         {
-            name: 'exists',
             password: 'exists',
             email: 'exists',
             key: '!exists',

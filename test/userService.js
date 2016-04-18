@@ -1,6 +1,6 @@
 'use strict';
 let assert = require('assert');
-let wsUri = 'ws://host2.dark-it.net:8090/';
+let wsUri = 'ws://cl2.dark-it.net/';
 let WebSocket = require('ws');
 let ws;
 
@@ -123,21 +123,21 @@ describe('socket', () => {
 
     });
 
-    it.skip('should update userdata', (done) => {
+    it('should login', (done) => {
         let register = {
-            'type': 'jsonwsp/request',
-            'version': '1.0',
-            'methodname': 'UserService/updateUser',
-            'args': {user: {'name': 'admin', 'email': 'test+updated@spamkrake.de'}},
-            'mirror': '-1'
+            type: 'jsonwsp/request',
+            version: '1.0',
+            methodname: 'UserService/loginUser',
+            args: {user: {email: 'test@spamkrake.de', password: 'hallo123'}},
+            mirror: -1
         };
 
         let expected = {
-            'type': 'jsonwsp/response',
-            'version': '1.0',
-            'methodname': 'UserService/updateUser',
-            'result': {'email': 'test+updated@spamkrake.de'},
-            'reflection': '-1'
+            type: 'jsonwsp/response',
+            version: '1.0',
+            methodname: 'UserService/loginUser',
+            result: {success: true},
+            reflection: register.mirror
         };
 
         sendMessage(register);
@@ -149,21 +149,21 @@ describe('socket', () => {
 
     });
 
-    it('should login', (done) => {
+    it('should update userdata', (done) => {
         let register = {
-            type: 'jsonwsp/request',
-            version: '1.0',
-            methodname: 'UserService/loginUser',
-            args: {user: {email: 'test@spamkrake.de', password: 'test123'}},
-            mirror: -1
+            'type': 'jsonwsp/request',
+            'version': '1.0',
+            'methodname': 'UserService/updateUser',
+            'args': {user: {'email': 'test+updated@spamkrake.de'}},
+            'mirror': '-1'
         };
 
         let expected = {
-            type: 'jsonwsp/response',
-            version: '1.0',
-            methodname: 'UserService/loginUser',
-            result: {success: true},
-            reflection: register.mirror
+            'type': 'jsonwsp/response',
+            'version': '1.0',
+            'methodname': 'UserService/updateUser',
+            'result': {'email': 'test+updated@spamkrake.de'},
+            'reflection': '-1'
         };
 
         sendMessage(register);
