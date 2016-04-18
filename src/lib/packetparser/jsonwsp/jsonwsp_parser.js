@@ -51,7 +51,7 @@ function parse(_packet, _env, _ws) {
 
         _env.debug(
             METHOD_NAME,
-            `Calling Service: ${servicename} Method: ${methodname} with args: ${JSON.stringify(data.args)}`
+            `Calling Service: ${servicename} Method: ${methodname} with args: ${JSON.stringify(funcArgs)}`
         );
 
         resolve(_env.ServiceFactory
