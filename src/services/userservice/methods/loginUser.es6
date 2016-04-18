@@ -27,15 +27,6 @@ module.exports = {
             id: '!exists',
             accesslist: '!exists',
             doorlocklist: '!exists'
-        },
-        {
-            name: 'exists',
-            password: 'exists',
-            email: '!exists',
-            key: '!exists',
-            id: '!exists',
-            accesslist: '!exists',
-            doorlocklist: '!exists'
         }
     ],
 
@@ -64,7 +55,7 @@ module.exports = {
         _env.debug(METHOD_NAME, `Searching User with ${JSON.stringify(_args)}`);
         let res = new SimpleResponse({success: false});
 
-        resolve(dbDriver.findUser({'$or' : [{email: _args.email}, {name: _args.name}]}).toArray()
+        resolve(dbDriver.findUser({email: _args.email}).toArray()
             .then((_user) => {
                     _env.debug(METHOD_NAME, `Search done. ${_user.length} results found.`);
                     _env.debug(METHOD_NAME, JSON.stringify(_user));

@@ -76,7 +76,7 @@ describe('socket', () => {
             'type': 'jsonwsp/request',
             'version': '1.0',
             'methodname': 'UserService/registerUser',
-            'args': {user: {'name': 'admin', 'email': 'test@spamkrake.de', 'password': 'hallo123'}},
+            'args': {user: {'email': 'test@spamkrake.de', 'password': 'hallo123'}},
             'mirror': '-1'
         };
 
