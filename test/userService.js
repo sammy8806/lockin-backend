@@ -81,4 +81,82 @@ describe('socket', () => {
         });
 
     });
+
+    it('should register with alternate syntax', (done) => {
+        let register = {
+            'type': 'jsonwsp/request',
+            'version': '1.0',
+            'methodname': 'UserService/registerUser',
+            'args': {'name': 'admin2', 'email': 'test2@spamkrake.de', 'password': 'hallo123'},
+            'mirror': '-1'
+        };
+
+        let expected = {
+            'type': 'jsonwsp/response',
+            'version': '1.0',
+            'methodname': 'UserService/registerUser',
+            'result': {'email': 'test2@spamkrake.de'},
+            'reflection': '-1'
+        };
+
+        sendMessage(register);
+
+        ws.on('message', (actual) => {
+            assert.equal(actual, JSON.stringify(expected));
+            done();
+        });
+
+    });
+
+    it.skip('should update userdata', (done) => {
+        let register = {
+            'type': 'jsonwsp/request',
+            'version': '1.0',
+            'methodname': 'UserService/updateUser',
+            'args': {user: {'name': 'admin', 'email': 'test+updated@spamkrake.de'}},
+            'mirror': '-1'
+        };
+
+        let expected = {
+            'type': 'jsonwsp/response',
+            'version': '1.0',
+            'methodname': 'UserService/updateUser',
+            'result': {'email': 'test+updated@spamkrake.de'},
+            'reflection': '-1'
+        };
+
+        sendMessage(register);
+
+        ws.on('message', (actual) => {
+            assert.equal(actual, JSON.stringify(expected));
+            done();
+        });
+
+    });
+
+    it('should login', (done) => {
+        let register = {
+            type: 'jsonwsp/request',
+            version: '1.0',
+            methodname: 'UserService/loginUser',
+            args: {user: {email: 'test@spamkrake.de', password: 'test123'}},
+            mirror: -1
+        };
+
+        let expected = {
+            type: 'jsonwsp/response',
+            version: '1.0',
+            methodname: 'UserService/updateUser',
+            result: {success: true},
+            reflection: register.mirror
+        };
+
+        sendMessage(register);
+
+        ws.on('message', (actual) => {
+            assert.equal(actual, JSON.stringify(expected));
+            done();
+        });
+
+    });
 });
