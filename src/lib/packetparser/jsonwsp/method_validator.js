@@ -27,14 +27,24 @@ function validateMethodCall(_env, _servicename, _methodname, _args) {
         return true;
     }
 
-    for (let i = 0; i < parameterVariations.length; i++) {
-        let parameterVariation = parameterVariations[i];
-        if (validateMethodCallOption(_env, parameterVariation, _args)) {
-            return true;
+    let extracted = false;
+    let extract = false;
+
+    do {
+        if(extract) {
+            _env.debug(METHOD_NAME, 'Trying to extract Parameters');
+            _args = _args[Object.keys(_args)[0]];
+            extracted = true;
         }
-    }
 
-
+        for (let i = 0; i < parameterVariations.length; i++) {
+            let parameterVariation = parameterVariations[i];
+            if (validateMethodCallOption(_env, parameterVariation, _args)) {
+                return true;
+            }
+        }
+    } while(!extracted);
+    
     throw {string: 'arguments invalid', code: 'client'};
 }
 
