@@ -3,15 +3,19 @@
  */
 'use strict';
 
+const METHOD_NAME = 'PacketParser/methodValidator';
 const parameterValidator = require('./parameter_validator.js');
 
 function validateMethodCall(_env, _servicename, _methodname, _args) {
+
+    _env.debug(METHOD_NAME,`Searching Service: ${_servicename}`);
     let service = _env.ServiceFactory.getService(_servicename);
 
     if (service === undefined) {
         throw {string: 'unknown service', code: 'client'};
     }
 
+    _env.debug(METHOD_NAME,`Searching Method: ${_servicename}/${_methodname}`);
     let method = service.getFunc(_methodname);
     if (method === undefined) {
         throw {string: 'unknown method', code: 'client'};

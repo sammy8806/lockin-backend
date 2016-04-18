@@ -1,6 +1,6 @@
 'use strict';
 let assert = require('assert');
-let wsUri = 'ws://localhost:8090/';
+let wsUri = 'ws://host2.dark-it.net:8090/';
 let WebSocket = require('ws');
 let ws;
 
@@ -52,8 +52,8 @@ describe('socket', () => {
         let register = {
             'type': 'jsonwsp/request',
             'version': '1.0',
-            'methodname': 'userservice/registerUser',
-            'args': {'name': 'admin', 'mail': 'test@spamkrake.de', 'password': 'hallo123'},
+            'methodname': 'UserService/registerUser',
+            'args': {user: {'name': 'admin', 'mail': 'test@spamkrake.de', 'password': 'hallo123'}},
             'mirror': '-1'
         };
 
@@ -68,7 +68,7 @@ describe('socket', () => {
         sendMessage(register);
 
         ws.on('message', (actual) => {
-            assert.equal(JSON.stringify(expected), actual);
+            assert.equal(actual, JSON.stringify(expected));
             done();
         });
 

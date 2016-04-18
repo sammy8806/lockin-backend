@@ -12,7 +12,7 @@ function callFunc(_method, _args, _env, _ws, _type) {
 }
 
 function getFunc(_method) {
-    return _functions[_method.toLowerCase()];
+    return _functions[_method];
 }
 
 module.exports = {
