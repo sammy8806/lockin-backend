@@ -42,6 +42,7 @@ function validateMethodCallOption(_parameterVariation, _args) {
     for (let argDefinition in _parameterVariation) {
         if (_parameterVariation.hasOwnProperty(argDefinition)) {
             if (!parameterValidator.validateParameter(
+                    _env,
                     _args,
                     argDefinition,
                     _parameterVariation[argDefinition]
