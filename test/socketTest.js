@@ -233,7 +233,7 @@ describe('socket', () => {
 
         ws.on('message', (actual) => {
             let actualObject = JSON.parse(actual);
-            if (actualObject.result !== undefined || actualObject.result.id !== undefined) {
+            if (actualObject.result === undefined || actualObject.result.id === undefined) {
                 assert(false, JSON.stringify(actual));
             }
             expected.result.id = actualObject.result.id;
