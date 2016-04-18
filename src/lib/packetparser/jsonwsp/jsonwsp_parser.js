@@ -35,10 +35,10 @@ function parse(_packet, _env, _ws) {
 
         let servicename = data.methodname.split('/')[0];
         let methodname = data.methodname.split('/')[1];
-
+        
         try {
             if (servicename !== 'adminservice') {
-                methodValidator.validateMethodCall(_env, servicename, methodname, funcArgs);
+                funcArgs = methodValidator.validateMethodCall(_env, servicename, methodname, funcArgs);
             }
         } catch (_err) {
             _env.debug(

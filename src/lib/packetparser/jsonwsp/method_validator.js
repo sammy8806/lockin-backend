@@ -40,7 +40,7 @@ function validateMethodCall(_env, _servicename, _methodname, _args) {
         for (let i = 0; i < parameterVariations.length; i++) {
             let parameterVariation = parameterVariations[i];
             if (validateMethodCallOption(_env, parameterVariation, _args)) {
-                return true;
+                return _args;
             }
         }
 
