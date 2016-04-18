@@ -61,12 +61,13 @@ module.exports = {
             return;
         }
 
-        _env.debug(METHOD_NAME, `Searching User with ${_args}`);
+        _env.debug(METHOD_NAME, `Searching User with ${JSON.stringify(_args)}`);
         let res = new SimpleResponse({success: false});
 
         resolve(dbDriver.findUser({'$or' : [{email: _args.email}, {name: _args.name}]}).toArray()
             .then((_user) => {
                     _env.debug(METHOD_NAME, `Search done. ${_user.length} results found.`);
+                    _env.debug(METHOD_NAME, JSON.stringify(_user));
 
                     let user;
 
