@@ -1,7 +1,7 @@
 version: '2'
 services:
   cl2-web:
-    build: .
+    image: node:latest
     command: npm run deploy
     working_dir: /app
     ports:
@@ -12,3 +12,5 @@ services:
      - cl2-mongo
   cl2-mongo:
     image: mongo:latest
+    #volumes:
+    # - ./.data/mongo:/data/db

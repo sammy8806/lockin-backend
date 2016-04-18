@@ -11,21 +11,25 @@ function sendMessage(msg) {
 }
 
 function waitForSocketConnection(socket, callback) {
-    setTimeout(() => {
-        if (socket.readyState === WebSocket.OPEN) {
-            if (callback != null) {
-                callback();
+    setTimeout(
+        () => {
+            if (socket.readyState === WebSocket.OPEN) {
+                if (callback != null) {
+                    callback();
+                }
+                return;
+
+            } else {
+                waitForSocketConnection(socket, callback);
             }
-        } else {
-            waitForSocketConnection(socket, callback);
-        }
-    }, 5);
+        }, 5);
 }
 
 describe('socket', () => {
     beforeEach(done => {
         ws = new WebSocket(wsUri);
         ws.on('open', () => {
+            sendMessage();
         });
 
         ws.on('message', () => {
@@ -48,15 +52,15 @@ describe('socket', () => {
         let register = {
             'type': 'jsonwsp/request',
             'version': '1.0',
-            'methodname': 'userservice/register',
-            'args': {'mail': 'test@spamkrake.de', 'password': 'hallo123'},
+            'methodname': 'userservice/registerUser',
+            'args': {'name': 'admin', 'mail': 'test@spamkrake.de', 'password': 'hallo123'},
             'mirror': '-1'
         };
 
         let expected = {
             'type': 'jsonwsp/response',
             'version': '1.0',
-            'methodname': 'userservice/register',
+            'methodname': 'userservice/registerUser',
             'result': {'mail': 'test@spamkrake.de'},
             'reflection': '-1'
         };
@@ -69,6 +73,4 @@ describe('socket', () => {
         });
 
     });
-
-
 });
