@@ -43,8 +43,10 @@ function validateMethodCall(_env, _servicename, _methodname, _args) {
                 return true;
             }
         }
+
+        extract = true;
     } while(!extracted);
-    
+
     throw {string: 'arguments invalid', code: 'client'};
 }
 
