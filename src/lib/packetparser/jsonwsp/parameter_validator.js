@@ -24,12 +24,13 @@ function validateParameter(_env, _args, _argName, _validatorName) {
 
     try {
         const valid = (!!paramValidators[_validatorName].validateParameter(_args, _argName));
-        const boolExpr = valid && (!negated);
+        const boolExpr = !negated ? valid : !valid;
 
         _env.debug(
             METHOD_NAME,
-            `Validated: ${_argName} with ${negated ? 'nagated' : ''} '${_validatorName}' => ${valid}/${boolExpr}`
+            `Validated: ${_argName} with${negated ? ' nagated' : ''} '${_validatorName}' => ${valid}/${boolExpr}`
         );
+
         return boolExpr;
     } catch (_err) {
         global._env.error(`ParameterValidator`, `[${_validatorName}] ${_err}`);
