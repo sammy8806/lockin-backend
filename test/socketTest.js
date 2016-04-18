@@ -1,6 +1,6 @@
 'use strict';
 let assert = require('assert');
-let wsUri = 'ws://host2.dark-it.net:8090/';
+let wsUri = 'ws://cl2-web:8090/';
 let WebSocket = require('ws');
 let ws;
 
