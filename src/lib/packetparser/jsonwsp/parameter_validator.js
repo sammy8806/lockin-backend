@@ -18,8 +18,10 @@ function validateParameter(_env, _args, _argName, _validatorName) {
     }
 
     try {
-        const boolExpr = (!!paramValidators[_validatorName].validateParameter(_args, _argName)) && (!negate);
-        _env.debug(METHOD_NAME, `Validating: ${_argName} with ${_validatorName} negate: ${negate} => ${boolExpr}`);
+        const valid = (!!paramValidators[_validatorName].validateParameter(_args, _argName));
+        const boolExpr = valid && (!negate);
+        
+        _env.debug(METHOD_NAME, `Validating: ${_argName} with ${_validatorName} negate: ${negate} => ${valid}/${boolExpr}`);
         return boolExpr;
     } catch (_err) {
         global._env.error(`ParameterValidator`, `[${_validatorName}] ${_err}`);
