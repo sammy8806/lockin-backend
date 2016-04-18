@@ -310,6 +310,7 @@ describe('socket', () => {
                     sendMessage(sendChatMessage);
                 } else {
                     //message received
+                    assert(res.args === undefined, JSON.stringify(res));
                     expected.args.id = res.args.id;
                     expected.args.from = res.args.from;
                     expected.args.to = roomID;
