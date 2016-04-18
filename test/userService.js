@@ -4,6 +4,14 @@ let wsUri = 'ws://host2.dark-it.net:8090/';
 let WebSocket = require('ws');
 let ws;
 
+let removeUsers = {
+    'type': 'jsonwsp/request',
+    'version': '1.0',
+    'methodname': 'adminservice/cleanup',
+    'args': {'collection': 'users'},
+    'mirror': '-1'
+};
+
 function sendMessage(msg) {
     waitForSocketConnection(ws, () => {
         ws.send(JSON.stringify(msg));
@@ -29,7 +37,7 @@ describe('socket', () => {
     beforeEach(done => {
         ws = new WebSocket(wsUri);
         ws.on('open', () => {
-            sendMessage();
+            sendMessage(removeUsers);
         });
 
         ws.on('message', () => {
@@ -60,7 +68,7 @@ describe('socket', () => {
         let expected = {
             'type': 'jsonwsp/response',
             'version': '1.0',
-            'methodname': 'userservice/registerUser',
+            'methodname': 'UserService/registerUser',
             'result': {'email': 'test@spamkrake.de'},
             'reflection': '-1'
         };
