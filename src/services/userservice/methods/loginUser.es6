@@ -52,7 +52,7 @@ module.exports = {
             return;
         }
 
-        _env.debug(METHOD_NAME, `Searching User with ${JSON.stringify(_args)}`);
+        _env.debug(METHOD_NAME, `Searching User with ${_args.email} * ${_args.password}`);
         let res = new SimpleResponse({success: false});
 
         resolve(dbDriver.findUser({email: _args.email}).toArray()
