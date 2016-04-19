@@ -1,6 +1,6 @@
 'use strict';
 let assert = require('assert');
-let wsUri = 'ws://localhost:8080/';
+let wsUri = 'ws://cl2-web:8090/';
 let WebSocket = require('ws');
 let ws;
 
@@ -233,6 +233,9 @@ describe('socket', () => {
 
         ws.on('message', (actual) => {
             let actualObject = JSON.parse(actual);
+            if (actualObject.result === undefined || actualObject.result.id === undefined) {
+                assert(false, JSON.stringify(actual));
+            }
             expected.result.id = actualObject.result.id;
             assert.equal(JSON.stringify(expected), actual);
             done();
@@ -307,6 +310,7 @@ describe('socket', () => {
                     sendMessage(sendChatMessage);
                 } else {
                     //message received
+                    assert(res.args !== undefined, JSON.stringify(res));
                     expected.args.id = res.args.id;
                     expected.args.from = res.args.from;
                     expected.args.to = roomID;

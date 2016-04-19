@@ -4,8 +4,8 @@ services:
     image: node:latest
     command: npm run deploy
     working_dir: /app
-    ports:
-     - 8090:8090
+    expose:
+     - 8090
     volumes:
      - .:/app
     depends_on:
@@ -15,3 +15,12 @@ services:
     image: mongo:latest
     #volumes:
     # - ./.data/mongo:/data/db
+
+  cl2-testing:
+    image: node:latest
+    command: npm run testing
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - cl2-web

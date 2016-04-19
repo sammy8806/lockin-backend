@@ -9,11 +9,11 @@ let User;
 
 module.exports = {
     setup: (_env) => {
-        getUserInfo = _env.ServiceFactory.getService('UserService').getFunc('_getUserInfo');
         User = _env.ObjectFactory.get('User');
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
+        // getUserInfo = _env.ServiceFactory.getService('UserService').getFunc('_getUserInfo');
 
         let user = _args.user;
         let search = null;

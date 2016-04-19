@@ -18,10 +18,15 @@ module.exports = {
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
         let res = new SimpleResponse({success: false});
-        let sessionUserId = _env.sessionmanager.getSessionOfSocket(_ws).userId;
+        const session = _env.sessionmanager.getSessionOfSocket(_ws);
+        if(session === undefined) {
+            reject({code: 'client', string: 'currently not logged in'});
+        }
+
+        let sessionUserId = session.userId;
         let newUserInfo = _args.newInfo;
 
-        if (newUserInfo.id == sessionUserId) {
+        if (newUserInfo.id === sessionUserId) {
 
             // prüfen ob informationen dabei sind, die nicht verändert werden dürfen
             if (newUserInfo.mail !== undefined) {

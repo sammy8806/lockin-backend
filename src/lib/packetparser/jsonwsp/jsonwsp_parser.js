@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const METHOD_NAME = 'PacketParser';
+
 const JsonwspFault = require('./protocol/jsonwsp_fault.js');
 const JsonwspResponse = require('./protocol/jsonwsp_response.js');
 const JsonwspRequest = require('./protocol/jsonwsp_request.js');
@@ -29,16 +31,18 @@ function parse(_packet, _env, _ws) {
             reject(buildFault(err, data.mirror));
         }
 
+        let funcArgs = data.args;
+
         let servicename = data.methodname.split('/')[0];
         let methodname = data.methodname.split('/')[1];
-
+        
         try {
             if (servicename !== 'adminservice') {
-                methodValidator.validateMethodCall(_env, servicename, methodname, data.args);
+                funcArgs = methodValidator.validateMethodCall(_env, servicename, methodname, funcArgs);
             }
         } catch (_err) {
             _env.debug(
-                'PacketParser/methodValidator',
+                METHOD_NAME + '/methodValidator',
                 `reject: ${typeof _err === 'object' ? JSON.stringify(_err) : _err}`
             );
             reject(buildFault(_err, data.mirror));
@@ -46,28 +50,25 @@ function parse(_packet, _env, _ws) {
         }
 
         _env.debug(
-            'PacketParser',
-            `Calling Service: ${servicename} Method: ${methodname} with args: ${JSON.stringify(data.args)}`
+            METHOD_NAME,
+            `Calling Service: ${servicename} Method: ${methodname} with args: ${JSON.stringify(funcArgs)}`
         );
-
-        let funcArgc = Object.keys(data.args).length;
-        let funcArgs = (funcArgc === 1 ? Object.keys(data.args)[0] : data.args);
 
         resolve(_env.ServiceFactory
             .getService(servicename)
             .callFunc(methodname, funcArgs, _env, _ws, data.type)
             .then(
                 (result) => {
-                    _env.debug('PacketParser', 'result: ' + JSON.stringify(result));
+                    _env.debug(METHOD_NAME, 'result: ' + JSON.stringify(result));
                     return buildResponse(servicename, methodname, result, data.mirror);
                 },
                 (err) => {
                     console.error(err);
-                    _env.debug('PacketParser', `reject: ${JSON.stringify(err)}`);
+                    _env.debug(METHOD_NAME, `reject: ${JSON.stringify(err)}`);
                     return buildFault(err, data.mirror);
                 }
             )).catch((_err) => {
-            _env.error('PacketParser', _err);
+            _env.error(METHOD_NAME, _err);
         });
     });
 }
