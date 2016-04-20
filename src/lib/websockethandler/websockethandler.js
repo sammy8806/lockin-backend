@@ -32,10 +32,12 @@ function init(_env, _port, _host) {
                 });
         });
         
-        ws.on('error', function(_error) {
+        ws.on('error', function(_error, _code) {
             _env.debug(
                 'Websockethandler',
-                'Error Occured:',
+                'Error Occured from:',
+                ws.upgradeReq.connection.remoteAddress,
+                _code,
                 _error
             );
         });
