@@ -50,7 +50,12 @@ describe('database', () => {
 
     let Access = objectFactory.get('access');
 
-    let access = new Access({key: '123', requestor_id: '1', time_start: new Date(2016), time_end: new Date(2017), state:'granted'});
+    let startDate = new Date();
+    date.setFullYear(2016);
+    let endDate = new Date();
+    date.setFullYear(2017);
+    
+    let access = new Access({key: '123', requestor_id: '1', time_start: startDate, time_end: endDate, state:'granted'});
 
     it('should add access to user', (done) => {
         mongo.userAddAccess(dbUser, access).then((res) => {
