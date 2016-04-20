@@ -5,7 +5,8 @@ const DRIVER_NAME = 'MongoDbDriver';
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 
-import assert from 'assert';
+
+// import assert from 'assert';
 
 let __db = false;
 
@@ -20,11 +21,97 @@ methods.setup = function (_env) {
 
     // Use connect method to connect to the Server
     MongoClient.connect(url, function (err, db) {
-        assert.equal(null, err);
-        _env.debug(DRIVER_NAME, 'Connected correctly to server');
+        // assert.equal(null, err);
+        env.debug(DRIVER_NAME, 'Connected correctly to server');
+        env.debug = function (_tag, _string) {
+            env._log(console.log, 'DEBUG', _tag, _string);
+        };
 
         __db = db;
     });
+};
+
+/**
+ * _Attention_: This returns an MongoCursor! (Use something like toArray to get a promise)
+ *
+ * @param _attr
+ * @returns {Cursor}
+ */
+methods.findUser = function (_attr) {
+    if (_attr.hasOwnProperty('_id'))
+        return __db.collection('users').find({_id: ObjectID(_attr._id)});
+    else
+        return __db.collection('users').find(_attr);
+};
+
+/**
+ *
+ * @param _user
+ * @returns {Promise}
+ */
+methods.insertUser = function (_user) {
+    return __db.collection('users').insertOne(_user.toJSON());
+};
+
+/**
+ *
+ * @param _findAttr
+ * @param _user
+ * @returns {Promise}
+ */
+methods.updateUser = function (_findAttr, _user) {
+    return __db.collection('users').updateOne(
+        _findAttr,
+        {$set: _user}
+    );
+};
+
+/**
+ *
+ * @param _user
+ * @returns {Promise}
+ */
+methods.removeUser = function (_user) {
+    return __db.collection('users').deleteOne({id: _user._id});
+};
+
+/**
+ *
+ * @param _user
+ * @param _access
+ * @returns {Promise}
+ */
+methods.userAddAccess = function (_user, _access) {
+    return __db.collection('users').updateOne(
+        {_id: _user._id},
+        {$push: {accessList: _access.toJSON()}}
+    );
+};
+
+/**
+ *
+ * @param _user
+ * @param _session
+ * @returns {Promise}
+ */
+methods.userAddSession = function (_user, _session) {
+    return __db.collection('users').updateOne(
+        {_id: _user._id},
+        {$push: {session: _session.sessionId}}
+    );
+};
+
+/**
+ *
+ * @param _user
+ * @param _session
+ * @returns {Promise}
+ */
+methods.userDeleteSession = function (_user, _session) {
+    return __db.collection('users').updateOne(
+        {_id: _user._id},
+        {$pull: {session: _session.sessionId}}
+    );
 };
 
 /**
@@ -52,32 +139,6 @@ methods.findSession = function (_attr) {
  */
 methods.newSession = function (_session) {
     return __db.collection('sessions').insertOne({sessionId: _session.sessionId, userId: _session.userId});
-};
-
-/**
- * _Attention_: This returns an MongoCursor! (Use something like toArray to get a promise)
- *
- * @param _attr
- * @returns {Cursor}
- */
-methods.findUser = function (_attr) {
-    if (_attr.hasOwnProperty('_id'))
-        return __db.collection('users').find({_id: ObjectID(_attr._id)});
-    else
-        return __db.collection('users').find(_attr);
-};
-
-/**
- *
- * @param _user
- * @param _session
- * @returns {Promise}
- */
-methods.userAddSession = function (_user, _session) {
-    return __db.collection('users').updateOne(
-        {_id: _user._id},
-        {$push: {session: _session.sessionId}}
-    );
 };
 
 /**
@@ -115,25 +176,124 @@ methods.findSessionToken = function (_token) {
 
 /**
  *
- * @param _user
- * @returns {Promise}
+ * @param _session
+ * @returns {Promise.<T>}
  */
-methods.insertUser = function (_user) {
-    return __db.collection('users').insertOne(_user.toJSON());
+methods.endSession = function (_session) {
+    // connectionState: 'loggedOut'
+    return methods.setSessionStatus(_session)
+        .then(() =>
+            __db.collection('sessions').updateOne(
+                {sessionId: _session.sessionId},
+                {$set: {logout: Date.now().toString()}}
+            ));
 };
 
 /**
  *
- * @param _findAttr
- * @param _user
+ * @param _user, _state
  * @returns {Promise}
  */
-methods.updateUser = function (_findAttr, _user) {
-    return __db.collection('users').updateOne(
-        _findAttr,
-        {$set: _user}
+methods.findActiveSessionsOfUser = function (_user, _state) {
+    return __db.collection('sessions').find({userId: new ObjectID(_user.id), connectionState: _state}).toArray();
+};
+
+/**
+ *
+ * @param _session
+ * @param _token
+ * @returns {Promise}
+ */
+methods.insertSessionToken = function (_session, _token) {
+    return __db.collection('sessions').updateOne(
+        {sessionId: _session.sessionId},
+        {$push: {sessionTokens: _token}}
     );
 };
+
+/**
+ *
+ * @param {String} _token
+ * @returns {Cursor}
+ */
+methods.findSessionByToken = function (_token) {
+    return __db.collection('sessions').find({
+        'sessionTokens.sessionToken': _token
+    });
+};
+
+/**
+ *
+ * @param _token
+ */
+methods.invalidateSessionToken = function (_token) {
+    throw 'STUB!';
+};
+
+/**
+ *
+ * @param _doorLock
+ * @returns {Promise}
+ */
+methods.insertDoorLock = function(_doorLock) {
+    return __db.collection('doorLocks').insertOne(_doorLock.toJSON());
+};
+
+/**
+ *
+ * @param _attr
+ * @returns {Cursor}
+ */
+methods.findDoorLock = function(_attr) {
+    if (_attr.hasOwnProperty('_id'))
+        return __db.collection('doorLocks').find({_id: ObjectID(_attr._id)});
+    else
+        return __db.collection('doorLocks').find(_attr);
+};
+
+
+/**
+ *
+ * @param _attr
+ * @param _doorLock
+ * @returns {Promise}
+ */
+methods.updateDoorLock = function (_attr, _doorLock) {
+    return __db.collection('users').updateOne(
+        _attr,
+        {$set: _doorLock}
+    );
+};
+
+/**
+ *
+ * @param _attr
+ * @returns {Cursor}
+ */
+methods.deleteDoorLock = function(_attr) {
+    if (_attr.hasOwnProperty('_id'))
+        return __db.collection('doorLocks').find({_id: ObjectID(_attr._id)});
+    else
+        return __db.collection('doorLocks').find(_attr);
+};
+
+/**
+ * ONLY FOR DEBUG USE!
+ * @returns {boolean}
+ */
+methods.getDb = function () {
+    return __db;
+};
+
+/**
+ * set custom db for testing purposes
+ * @param db
+ */
+methods.setDb = function (db) {
+    __db = db;
+};
+
+//TODO: delete functions below - probably not needed anymore
 
 /**
  * _Attention_: This returns an MongoCursor! (Use something like toArray to get a promise)
@@ -222,15 +382,6 @@ methods.removeRoom = function (_room) {
 
 /**
  *
- * @param _user
- * @returns {Promise}
- */
-methods.removeUser = function (_user) {
-    return __db.collection('users').deleteOne({id: _user._id});
-};
-
-/**
- *
  * @param _msg
  * @returns {Promise}
  */
@@ -271,84 +422,6 @@ methods.getUndeliveredMessages = function (_session) {
             $ne: _session
         }
     });
-};
-
-/**
- *
- * @param _user
- * @param _session
- * @returns {Promise}
- */
-methods.userDeleteSession = function (_user, _session) {
-    return __db.collection('users').updateOne(
-        {_id: _user._id},
-        {$pull: {session: _session.sessionId}}
-    );
-};
-
-/**
- *
- * @param _session
- * @returns {Promise.<T>}
- */
-methods.endSession = function (_session) {
-    // connectionState: 'loggedOut'
-    return methods.setSessionStatus(_session)
-        .then(() =>
-            __db.collection('sessions').updateOne(
-                {sessionId: _session.sessionId},
-                {$set: {logout: Date.now().toString()}}
-            ));
-};
-
-/**
- * ONLY FOR DEBUG USE!
- * @returns {boolean}
- * @private
- */
-methods._getDb = function () {
-    return __db;
-};
-
-/**
- *
- * @param _user, _state
- * @returns {Promise}
- */
-methods.findActiveSessionsOfUser = function (_user, _state) {
-    return __db.collection('sessions').find({userId: new ObjectID(_user.id), connectionState: _state}).toArray();
-};
-
-/**
- *
- * @param _session
- * @param _token
- * @returns {Promise}
- */
-methods.insertSessionToken = function (_session, _token) {
-    return __db.collection('sessions').updateOne(
-        {sessionId: _session.sessionId},
-        {$push: {sessionTokens: _token}}
-    );
-};
-
-/**
- *
- * @param {String} _token
- * @returns {Cursor}
- */
-methods.findSessionByToken = function (_token) {
-    return __db.collection('sessions').find({
-        'sessionTokens.sessionToken': _token
-    });
-};
-
-/**
- *
- * @param _token
- */
-methods.invalidateSessionToken = function (_token) {
-    throw 'STUB!';
 };
 
 module.exports = methods;
