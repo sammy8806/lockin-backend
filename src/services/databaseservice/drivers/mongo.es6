@@ -22,10 +22,7 @@ methods.setup = function (_env) {
     // Use connect method to connect to the Server
     MongoClient.connect(url, function (err, db) {
         // assert.equal(null, err);
-        env.debug(DRIVER_NAME, 'Connected correctly to server');
-        env.debug = function (_tag, _string) {
-            env._log(console.log, 'DEBUG', _tag, _string);
-        };
+        _env.debug(DRIVER_NAME, 'Connected correctly to server');
 
         __db = db;
     });
