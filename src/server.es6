@@ -55,7 +55,15 @@ global._env = _env;
 const SERVER_PORT = 8090;
 const SERVER_HOST = '::'; // No localhost or something here instead of '::' (IPv6)
 
-_env.websockethandler = require('./lib/websockethandler/websockethandler.js');
-_env.websockethandler.init(_env, SERVER_PORT, SERVER_HOST);
+function init() {
+    try {
+        _env.websockethandler = require('./lib/websockethandler/websockethandler.js');
+        _env.websockethandler.init(_env, SERVER_PORT, SERVER_HOST);
+    } catch (e) {
+        console.log(e);
+        init();
+    }
+}
 
+init();
 // -------------------
