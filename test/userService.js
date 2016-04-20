@@ -123,6 +123,39 @@ describe('socket', () => {
 
     });
 
+    it('should register with alternate syntax', (done) => {
+        let checkAccess = {
+            args: {
+                key: {
+                    data: 'ichbindata',
+                    id: 789453789543789,
+                    owner_id: 123123123
+                },
+                lockId: 65456
+            },
+            methodname: 'AccessService/checkAccess',
+            mirror: '-1',
+            type: 'jsonwsp/request',
+            version: '1.0'
+        };
+
+        let expected = {
+            'type': 'jsonwsp/response',
+            'version': '1.0',
+            'methodname': 'AccessService/checkAccess',
+            'result': true,
+            'reflection': '-1'
+        };
+
+        sendMessage(checkAccess);
+
+        ws.on('message', (actual) => {
+            assert.equal(actual, JSON.stringify(expected));
+            done();
+        });
+
+    });
+
     it('should login', (done) => {
         let register = {
             type: 'jsonwsp/request',
