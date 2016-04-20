@@ -123,7 +123,7 @@ describe('socket', () => {
 
     });
 
-    it('should register with alternate syntax', (done) => {
+    it.only('should grant access', (done) => {
         let checkAccess = {
             args: {
                 key: {
