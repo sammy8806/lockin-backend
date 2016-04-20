@@ -28,7 +28,8 @@ describe('database', () => {
 
 
     let User = objectFactory.get('user');
-    let user = new User({email: 'test@spamkrake.de', password: 'hallo123'});
+    let userJSON = {email: 'test@spamkrake.de', password: 'hallo123'};
+    let user = new User(userJSON);
 
     //used to get a user with _id from database
     let dbUser = null;
@@ -41,7 +42,7 @@ describe('database', () => {
     });
 
     it('should find user', (done) => {
-        mongo.findUser(userJson).toArray().then((_user) => {
+        mongo.findUser(userJSON).toArray().then((_user) => {
             assert.equal(_user.length, 1);
             dbUser = _user[0];
             done();
@@ -51,11 +52,11 @@ describe('database', () => {
     let Access = objectFactory.get('access');
 
     let startDate = new Date();
-    date.setFullYear(2016);
+    startDate.setFullYear(2016);
     let endDate = new Date();
-    date.setFullYear(2017);
-    
-    let access = new Access({key: '123', requestor_id: '1', time_start: startDate, time_end: endDate, state:'granted'});
+    endDate.setFullYear(2017);
+
+    let access = new Access({_id: ObjectID(), key: '123', requestor_id: '1', time_start: startDate, time_end: endDate, state:'granted'});
 
     it('should add access to user', (done) => {
         mongo.userAddAccess(dbUser, access).then((res) => {
