@@ -31,6 +31,14 @@ function init(_env, _port, _host) {
                     _env.error('Websockethandler', _err);
                 });
         });
+        
+        ws.on('error', function(_error) {
+            _env.debug(
+                'Websockethandler',
+                'Error Occured:',
+                _error
+            );
+        });
 
         ws.on('close', function () {
             _env.sessionmanager.socketClosed(ws);
