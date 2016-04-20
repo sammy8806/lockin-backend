@@ -28,10 +28,9 @@ describe('database', () => {
 
 
     let User = objectFactory.get('user');
-    let userJson = {email: 'test@spamkrake.de', password: 'hallo123'};
-    let user = new User(userJson);
+    let user = new User({email: 'test@spamkrake.de', password: 'hallo123'});
 
-    //used to get a user with _id
+    //used to get a user with _id from database
     let dbUser = null;
 
     it('should create user', (done) => {
@@ -52,7 +51,6 @@ describe('database', () => {
     let Access = objectFactory.get('access');
 
     let access = new Access({key: '123', requestor_id: '1', time_start: new Date(2016), time_end: new Date(2017), state:'granted'});
-    console.log(access)
 
     it('should add access to user', (done) => {
         mongo.userAddAccess(dbUser, access).then((res) => {
