@@ -13,7 +13,7 @@ let objectFactory = {
 
 
 describe('database', () => {
-    before(function (done) {
+    before(done => {
         let url = 'mongodb://localhost/contentloops';
 
         MongoClient.connect(url, function (err, db) {
@@ -25,6 +25,11 @@ describe('database', () => {
             });
         });
     });
+
+    after(() => {
+            mongo.getDb().close();
+        }
+    );
 
     describe('user', () => {
         let User = objectFactory.get('user');
@@ -75,7 +80,7 @@ describe('database', () => {
 
     describe('doorLock', () => {
         let DoorLock = objectFactory.get('doorLock');
-        let doorLockJSON = {name: 'doorlock1', state:"locked"}
+        let doorLockJSON = {name: 'doorlock1', state: "locked"}
         let doorLock = new DoorLock(doorLockJSON);
         let dbDoorLock = null;
 
@@ -102,7 +107,7 @@ describe('database', () => {
                     done();
                 })
 
-            }); 
+            });
         })
     });
 });

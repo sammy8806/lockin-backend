@@ -31,7 +31,7 @@ function test(string) {
 }
 
 
-gulp.task('test-database', () => {
+gulp.task('test-all', () => {
     test('');
 });
 
