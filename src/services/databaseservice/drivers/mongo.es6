@@ -256,7 +256,7 @@ methods.findDoorLock = function(_attr) {
  * @returns {Promise}
  */
 methods.updateDoorLock = function (_attr, _doorLock) {
-    return __db.collection('users').updateOne(
+    return __db.collection('doorLocks').updateOne(
         _attr,
         {$set: _doorLock}
     );
@@ -264,14 +264,11 @@ methods.updateDoorLock = function (_attr, _doorLock) {
 
 /**
  *
- * @param _attr
- * @returns {Cursor}
+ * @param _doorLock
+ * @returns {Promise}
  */
-methods.deleteDoorLock = function(_attr) {
-    if (_attr.hasOwnProperty('_id'))
-        return __db.collection('doorLocks').find({_id: ObjectID(_attr._id)});
-    else
-        return __db.collection('doorLocks').find(_attr);
+methods.removeDoorLock = function(_doorLock) {
+    return __db.collection('doorLocks').deleteOne({id: _doorLock.id});
 };
 
 /**
