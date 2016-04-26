@@ -7,7 +7,7 @@ const DRIVER_NAME = 'MongoDbDriver';
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 
-// import assert from 'assert';
+import assert from 'assert';
 
 let __db = false;
 
@@ -18,11 +18,11 @@ let methods = {};
  * @param _env
  */
 methods.setup = function (_env) {
-    let url = dbconfig.host + '/' + dbconfig.port + '/' + dbconfig.dbname;
+    let url = dbconfig.host + ':' + dbconfig.port + '/' + dbconfig.dbname;
 
     // Use connect method to connect to the Server
     MongoClient.connect(url, function (err, db) {
-        // assert.equal(null, err);
+        assert.equal(null, err);
         _env.debug(DRIVER_NAME, 'Connected correctly to server');
 
         __db = db;
