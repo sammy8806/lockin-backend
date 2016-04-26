@@ -18,7 +18,7 @@ let methods = {};
  * @param _env
  */
 methods.setup = function (_env) {
-    let url = dbconfig.host + '/' + dbconfig.port + '/' + dbconfig.dbname;
+    let url = dbconfig.host + ':' + dbconfig.port + '/' + dbconfig.dbname;
 
     // Use connect method to connect to the Server
     MongoClient.connect(url, function (err, db) {
