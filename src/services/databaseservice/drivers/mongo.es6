@@ -1,10 +1,11 @@
 'use strict';
 
+let dbconfig = require('../../../lib/config.js').database;
+
 const DRIVER_NAME = 'MongoDbDriver';
 
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
-
 
 // import assert from 'assert';
 
@@ -17,7 +18,7 @@ let methods = {};
  * @param _env
  */
 methods.setup = function (_env) {
-    let url = 'mongodb://cl2-mongo:27017/contentloops';
+    let url = dbconfig.host + '/' + dbconfig.port + '/' + dbconfig.dbname;
 
     // Use connect method to connect to the Server
     MongoClient.connect(url, function (err, db) {
