@@ -1,5 +1,6 @@
 'use strict';
 require('babel-polyfill');
+let config = require('./lib/config.js');
 
 import crypto from 'crypto';
 
@@ -52,10 +53,7 @@ _env.ServiceFactory.setup(_env, 'service');
 
 global._env = _env;
 
-const SERVER_PORT = 8090;
-const SERVER_HOST = '::'; // No localhost or something here instead of '::' (IPv6)
-
 _env.websockethandler = require('./lib/websockethandler/websockethandler.js');
-_env.websockethandler.init(_env, SERVER_PORT, SERVER_HOST);
+_env.websockethandler.init(_env, config.server.port, config.server.host);
 
 // -------------------
