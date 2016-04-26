@@ -49,7 +49,7 @@ describe('database', () => {
 
     describe('doorLock', () => {
         let DoorLock = objectFactory.get('doorLock');
-        let doorLockJSON = {name: 'doorlock1', state: "locked"}
+        let doorLockJSON = {name: 'doorlock1', state: "locked"};
         let doorLock = new DoorLock(doorLockJSON);
         let dbDoorLock = null;
 
