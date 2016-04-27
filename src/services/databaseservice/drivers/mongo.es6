@@ -76,19 +76,6 @@ methods.removeUser = function (_user) {
 /**
  *
  * @param _user
- * @param _access
- * @returns {Promise}
- */
-methods.userAddAccess = function (_user, _access) {
-    return __db.collection('users').updateOne(
-        {_id: _user._id},
-        {$push: {accessList: _access.toJSON()}}
-    );
-};
-
-/**
- *
- * @param _user
  * @param _session
  * @returns {Promise}
  */
