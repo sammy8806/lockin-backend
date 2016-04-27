@@ -228,6 +228,10 @@ methods.invalidateSessionToken = function (_token) {
     throw 'STUB!';
 };
 
+methods.insertAccess = function(_access) {
+    return __db.collection('accesses').insertOne(_access.toJSON());
+};
+
 /**
  *
  * @param _doorLock
