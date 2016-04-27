@@ -10,12 +10,13 @@
 | 1004 | Unknown Service | |
 | 1005 | Unknown Method | |
 | 1006 | Invalid Parameters | |
+| 1007 | Invalid JSON | |
 
 ## Database (2000)
 
 | Code | Message | Comments |
 | --- | --- | --- |
-| 1001 | Database not initialised | Please set database-driver before use |
+| 2001 | Database not initialised | Please set database-driver before use |
 
 ## Sessions (3000)
 

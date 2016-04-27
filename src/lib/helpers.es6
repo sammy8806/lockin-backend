@@ -30,13 +30,13 @@ function setupEnv() {
     };
 
     _env.random = function (howMany, chars) {
-        chars = chars || "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+        chars = chars || 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789';
         let rnd = crypto.randomBytes(howMany);
         let value = new Array(howMany);
         let len = chars.length;
 
         for (let i = 0; i < howMany; i++) {
-            value[i] = chars[rnd[i] % len]
+            value[i] = chars[rnd[i] % len];
         }
 
         return value.join('');
@@ -50,9 +50,11 @@ function setupEnv() {
 
     _env.packetParser = require('./packetparser/packet_parser');
     _env.sessionmanager = require('./sessionmanager/sessionmanager');
+    _env.ErrorHandler = require('./errorhandler/errorhandler');
 
     _env.GlobalServiceFactory.setup(_env, 'globalservice');
     _env.ServiceFactory.setup(_env, 'service');
+    _env.ErrorHandler.setup(_env);
 
     _env.websockethandler = require('./websockethandler/websockethandler.js');
 

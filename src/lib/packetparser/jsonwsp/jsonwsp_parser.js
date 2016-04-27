@@ -26,7 +26,7 @@ function parse(_packet, _env, _ws) {
         }
 
         try {
-            checkParameters(data);
+            checkParameters(_env, data);
         } catch (err) {
             reject(buildFault(err, data.mirror));
         }
@@ -85,21 +85,21 @@ function buildRequest(_servicename, _methodname, _args, _mirror) {
     return new JsonwspRequest(_servicename, _methodname, _args, _mirror);
 }
 
-function checkParameters(_data) {
+function checkParameters(_env, _data) {
     let requiredArgs = ['type', 'version', 'methodname', 'args', 'mirror'];
 
     for (let i = 0; i < requiredArgs.length; i++) {
         if (!parameterExistsValidator.validateParameter(_data, requiredArgs[i])) {
-            throw {string: `missing parameter ${requiredArgs[i]}`, code: 'client'};
+            _env.ErrorHandler.throwError(1002, `parameter ${requiredArgs[i]}`);
         }
     }
 
     if (_data.methodname.split('/').length !== 2) {
-        throw {string: 'parameter methodname is invalid', code: 'client'};
+        _env.ErrorHandler.throwError(1003);
     }
 
     if (_data.version !== '1.0') {
-        throw {string: 'version mismatch. Server requires version 1.0', code: 'incompatible'};
+        _env.ErrorHandler.throwError(1001, 'Server requires version 1.0');
     }
 }
 
