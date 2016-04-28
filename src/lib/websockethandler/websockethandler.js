@@ -31,6 +31,16 @@ function init(_env, _port, _host) {
                     _env.error('Websockethandler', _err);
                 });
         });
+        
+        ws.on('error', function(_error, _code) {
+            _env.debug(
+                'Websockethandler',
+                'Error Occured from:',
+                ws.upgradeReq.connection.remoteAddress,
+                _code,
+                _error
+            );
+        });
 
         ws.on('close', function () {
             _env.sessionmanager.socketClosed(ws);

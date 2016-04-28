@@ -47,9 +47,10 @@ module.exports = {
                     _env.debug(METHOD_NAME, `Creating new User ${newUser.email} with password: '${newUser.password}'`);
 
                     // user in datenbank speichern
-                    return db.insertUser(newUser).then(() => {
+                    return db.insertUser(newUser).then((_user) => {
                         let user = newUser;
                         user.password = undefined;
+                        user.id = _user._id;
                         return user.toJSON();
                     });
                 } else if (user.length > 0) { // Benutzer bereits vorhanden

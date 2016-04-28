@@ -9,6 +9,11 @@ let SimpleResponse;
 let User;
 
 module.exports = {
+    parameterVariations: [
+        {
+            'id' : 'exists'
+        }
+    ],
     setup: (_env) => {
         SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
@@ -24,7 +29,11 @@ module.exports = {
         }
 
         let sessionUserId = session.userId;
-        let newUserInfo = _args.newInfo;
+        let newUserInfo = _args;
+        
+        if(newUserInfo.id === undefined) {
+            newUserInfo.id = sessionUserId;
+        }
 
         if (newUserInfo.id === sessionUserId) {
 

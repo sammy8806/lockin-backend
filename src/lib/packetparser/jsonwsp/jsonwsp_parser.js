@@ -25,6 +25,11 @@ function parse(_packet, _env, _ws) {
             reject(buildFault(err, null));
         }
 
+        /*
+        TODO: Wrong Request crashes Server
+        {"type":"jsonwsp/response","version":"1.0","methodname":"UserService/registerUser","result":{"email":"gt"},"reflection":{"id":"1"}}
+         */
+
         try {
             checkParameters(_env, data);
         } catch (err) {
