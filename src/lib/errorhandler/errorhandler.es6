@@ -7,7 +7,7 @@ const table = {
     // Packet Parser
     1001: 'API-Version mismatch',
     1002: 'Missing Parameters',
-    1003: 'Methodname invvalid',
+    1003: 'Methodname invalid',
     1004: 'Unknown Service',
     1005: 'Unknown Method',
     1006: 'Invalid Parameters',
@@ -78,9 +78,11 @@ function registerError(_id, _string, _faulty, _comments) {
 function returnError(_id, _comment) {
     let err = errorList[_id];
 
-    if (_comment !== undefined) {
-        err.comments.push(_comment);
-    }
+    //if (_comment !== undefined) {
+    //    err.comments.push(_comment);
+    //}
+
+    _env.debug('Errorhandler', `Error ${_id}`);
 
     return err;
 }

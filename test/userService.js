@@ -1,6 +1,6 @@
 'use strict';
 let assert = require('assert');
-let wsUri = 'ws://cl2.dark-it.net/';
+let wsUri = 'ws://192.168.99.100:8090/';
 let WebSocket = require('ws');
 let ws;
 
@@ -59,6 +59,34 @@ describe('socket', () => {
         const pass = `lol_pass_${suffix}`;
         users.push({email: email, pass: pass});
     }
+
+    describe('stub', () => {
+
+    });
+
+    describe('api', () => {
+        it('version check', (done) => {
+            let register = {
+                'type': 'jsonwsp/request',
+                'version': '1.5',
+                'methodname': 'UserService/test123',
+                'args': {user: {'email': '123', 'password': '123'}},
+                'mirror': '-1'
+            };
+
+            sendMessage(register, (actual, req) => {
+                let expected = {
+                    'type': 'jsonwsp/fault',
+                    'version': '1.0',
+                    'fault': {code: '1001', string: 'API-Version mismatch', faulty: ''},
+                    'reflection': req.id
+                };
+
+                assert.equal(actual, JSON.stringify(expected));
+                done();
+            }, ws);
+        });
+    });
 
     describe('registration', () => {
         for (let user of users) {
@@ -152,7 +180,7 @@ describe('socket', () => {
         }
     });
 
-    describe.only('session', () => {
+    describe('session', () => {
         before(done => {
             ws = new WebSocket(wsUri);
             ws.on('open', () => {

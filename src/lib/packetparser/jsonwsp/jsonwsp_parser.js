@@ -103,9 +103,12 @@ function checkParameters(_env, _data) {
         _env.ErrorHandler.throwError(1003);
     }
 
+    _env.debug(METHOD_NAME, 'version',  _data.version);
+
     if (_data.version !== '1.0') {
-        _env.ErrorHandler.throwError(1001, 'Server requires version 1.0');
+        _env.ErrorHandler.throwError(1001);
     }
+
 }
 
 module.exports = {
