@@ -34,7 +34,7 @@ module.exports = {
         let session = _env.sessionmanager.getSessionOfSocket(_ws);
 
         if (session === undefined) {
-            reject({code: 'internal', string: 'No active session'});
+            reject(_env.ErrorHandler.returnError(4002));
             return;
         }
 

@@ -44,11 +44,11 @@ module.exports = {
             dbDriver = db.getDriver();
         } catch (e) {
             _env.error(METHOD_NAME, 'Please setup this function first!');
-            reject({code: 'server', string: 'internal error'});
+            reject(_env.ErrorHandler.returnError(4006));
         }
 
         if (User.isLoggedIn(_ws)) {
-            reject({code: 'client', string: 'already logged in'});
+            reject(_env.ErrorHandler.returnError(3005));
             return;
         }
 
@@ -65,8 +65,7 @@ module.exports = {
                     user = _user[0]; // Use always the first one
 
                     if (user === undefined || _user.length === 0) {
-                        let err = {code: 'client', string: 'user not found'};
-                        throw err;
+                        _env.ErrorHandler.throwError(3002);
                     }
 
                     if (user === undefined) {
@@ -74,8 +73,7 @@ module.exports = {
                     }
 
                     if (_args.password !== user.password) {
-                        let err = {code: 'client', string: 'wrong password'};
-                        throw err;
+                        _env.ErrorHandler.throwError(3007);
                     }
 
                     _env.debug(METHOD_NAME, 'Checks done');

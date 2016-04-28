@@ -15,7 +15,7 @@ module.exports = {
             if (session !== undefined) {
                 go(session);
             } else {
-                fail({code: 'internal', string: 'No active session'});
+                fail(_env.ErrorHandler.returnError(5003));
             }
 
         });

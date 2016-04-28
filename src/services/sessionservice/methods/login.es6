@@ -52,8 +52,7 @@ module.exports = {
                     user = _user[0]; // Use always the first one
 
                     if (user === undefined || _user.length === 0) {
-                        let err = {code: 'client', string: 'user not found'};
-                        throw err;
+                        _env.ErrorHandler.throwError(4006);
                     }
 
                     if (user === undefined) {
@@ -61,8 +60,7 @@ module.exports = {
                     }
 
                     if (_args.password !== user.password) {
-                        let err = {code: 'client', string: 'wrong password'};
-                        throw err;
+                        _env.ErrorHandler.throwError(4007);
                     }
 
                     _env.debug(METHOD_NAME, 'Checks done');

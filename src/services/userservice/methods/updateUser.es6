@@ -25,7 +25,7 @@ module.exports = {
         let res = new SimpleResponse({success: false});
         const session = _env.sessionmanager.getSessionOfSocket(_ws);
         if(session === undefined) {
-            reject({code: 'client', string: 'currently not logged in'});
+            reject(_env.ErrorHandler.returnError(4005));
         }
 
         let sessionUserId = session.userId;
@@ -60,7 +60,7 @@ module.exports = {
             );
 
         } else {
-            reject({code: 'client', string: 'you cannot change information of other users'});
+            reject(_env.ErrorHandler.returnError(4005));
         }
     })
 };

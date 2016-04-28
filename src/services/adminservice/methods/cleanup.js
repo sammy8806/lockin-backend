@@ -19,7 +19,7 @@ module.exports = {
         };
 
         if(collections[_args.collection] !== true) {
-            fail({code: 'client', string: 'NEIN!'});
+            fail(_env.ErrorHandler.returnError(5002));
         }
 
         _env.debug(METHOD_NAME, `!!! ${_args.collection.toUpperCase()} CLEANUP !!!`);

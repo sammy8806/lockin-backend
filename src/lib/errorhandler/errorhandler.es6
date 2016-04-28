@@ -3,6 +3,8 @@
 let _env = null;
 let errorList = [];
 
+// _env.ErrorHandler.throwError(1003);
+
 const table = {
     // Packet Parser
     1001: 'API-Version mismatch',
@@ -23,6 +25,7 @@ const table = {
     3004: 'Password incorrect',
     3005: 'Already logged in',
     3006: 'Unknown Error',
+    3007: 'Wrong Password',
 
     // Users
     4001: 'Lifetime is not valid',
@@ -30,6 +33,10 @@ const table = {
     4003: 'E-Mail already exists',
     4004: 'Unknown registration Error',
     4005: 'Access Denied',
+    4006: 'User not found',
+    4007: 'Wrong password',
+    4008: 'internal error',
+    4009: 'Please login first',
 
     // Admins
     5001: 'Access Denied',

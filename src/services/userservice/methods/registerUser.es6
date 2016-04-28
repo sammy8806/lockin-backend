@@ -54,9 +54,9 @@ module.exports = {
                         return user.toJSON();
                     });
                 } else if (user.length > 0) { // Benutzer bereits vorhanden
-                    throw {code: 'client', string: 'email already registered'};
+                    _env.ErrorHandler.throwError(4003);
                 } else { // Sonstiger fehler
-                    throw {code: 'server', string: 'unknown error'};
+                    _env.ErrorHandler.throwError(4008);
                 }
             }, (_err) => {
                 _env.error(METHOD_NAME, _err);

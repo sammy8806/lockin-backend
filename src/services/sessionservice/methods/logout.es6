@@ -26,14 +26,14 @@ module.exports = {
             dbDriver = db.getDriver();
         } catch (e) {
             _env.error(METHOD_NAME, 'Please setup this function first!');
-            reject({code: 'server', string: 'internal error'});
+            reject(_env.ErrorHandler.returnError(4008));
         }
 
         // session von websocket aus sessionmanager holen
         let session = sessionmanager.getSessionOfSocket(_ws);
 
         if(session === undefined) {
-            reject({code: 'client', string: 'please login first'});
+            reject(_env.ErrorHandler.returnError(4009));
             return;
         }
 
@@ -42,7 +42,7 @@ module.exports = {
 
             if (user.length === 0) {
                 // Kein Benutzer gefunden
-                reject({code: 'server', string: 'active session not found in user'});
+                reject(_env.ErrorHandler.returnError(4002));
             } else {
                 user = user[0];
             }

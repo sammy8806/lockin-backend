@@ -20,7 +20,7 @@ module.exports = {
             let result = db.findSessionByToken(_args.sessionToken).toArray()
                 .then((_sessions) => {
                     if (_sessions.length === 0) {
-                        throw {code: 'client', string: 'no session for this token found'};
+                        _env.ErrorHandler.throwError(3001);
                     }
 
                     let sId = _sessions[0].sessionId;
