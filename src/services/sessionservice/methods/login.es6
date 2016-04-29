@@ -2,7 +2,7 @@
 
 import crypto from 'crypto';
 
-const METHOD_NAME = 'SessionService/Login';
+const METHOD_NAME = 'UserService/loginUser';
 
 let db;
 let Session;
@@ -18,6 +18,18 @@ function generateSessionId() {
 }
 
 module.exports = {
+    parameterVariations: [
+        {
+            name: '!exists',
+            password: 'exists',
+            email: 'exists',
+            key: '!exists',
+            id: '!exists',
+            accesslist: '!exists',
+            doorlocklist: '!exists'
+        }
+    ],
+
     setup: (_env) => {
         SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         Session = _env.ObjectFactory.get('Session');
@@ -32,27 +44,28 @@ module.exports = {
             dbDriver = db.getDriver();
         } catch (e) {
             _env.error(METHOD_NAME, 'Please setup this function first!');
-            reject({code: 'server', string: 'internal error'});
+            reject(_env.ErrorHandler.returnError(4006));
         }
 
         if (User.isLoggedIn(_ws)) {
-            reject({code: 'client', string: 'already logged in'});
+            reject(_env.ErrorHandler.returnError(3005));
             return;
         }
 
-        _env.debug(METHOD_NAME, 'Searching User');
+        _env.debug(METHOD_NAME, `Searching User with ${_args.email} * ${_args.password}`);
         let res = new SimpleResponse({success: false});
 
-        resolve(dbDriver.findUser({mail: _args.mail}).toArray()
+        resolve(dbDriver.findUser({email: _args.email}).toArray()
             .then((_user) => {
                     _env.debug(METHOD_NAME, `Search done. ${_user.length} results found.`);
+                    _env.debug(METHOD_NAME, JSON.stringify(_user));
 
                     let user;
 
                     user = _user[0]; // Use always the first one
 
                     if (user === undefined || _user.length === 0) {
-                        _env.ErrorHandler.throwError(4006);
+                        _env.ErrorHandler.throwError(3002);
                     }
 
                     if (user === undefined) {
@@ -60,7 +73,7 @@ module.exports = {
                     }
 
                     if (_args.password !== user.password) {
-                        _env.ErrorHandler.throwError(4007);
+                        _env.ErrorHandler.throwError(3007);
                     }
 
                     _env.debug(METHOD_NAME, 'Checks done');
