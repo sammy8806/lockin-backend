@@ -41,7 +41,10 @@ const table = {
     // Admins
     5001: 'Access Denied',
     5002: 'NEIN!',
-    5003: 'No active Sessions'
+    5003: 'No active Sessions',
+
+    // Access
+    6001: 'Invalid Arguments'
 };
 
 function setup(__env) {

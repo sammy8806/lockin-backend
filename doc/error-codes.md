@@ -28,6 +28,7 @@
 | 3004 | Password is wrong | |
 | 3005 | Already logged in | |
 | 3006 | Unknown Error | |
+| 3007 | Wrong Password | |
 
 ## Users (4000)
 
@@ -38,6 +39,10 @@
 | 4003 | E-Mail already exists | |
 | 4004 | Unknown registration Error | |
 | 4005 | Access Denied | |
+| 4006 | User not found | |
+| 4007 | Wrong password | |
+| 4008 | Internal error | |
+| 4009 | Please login first | |
 
 ## Admins (5000)
 
@@ -46,3 +51,9 @@
 | 5001 | Access Denied | |
 | 5002 | NEIN! | |
 | 5003 | No active Session | |
+
+## Access (6000)
+
+| Code | Message | Comments |
+| --- | --- | --- |
+| 6001 | Invalid Arguments | |

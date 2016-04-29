@@ -20,7 +20,7 @@ module.exports = {
         const lockId = _args.lockId;
 
         if (key.data === undefined || key.id === undefined || key.owner_id === undefined) {
-            reject({code: 'client', string: 'invalid arguments'});
+            reject(_env.ErrorHandler.returnError(6001));
         }
 
         let res;
@@ -30,10 +30,10 @@ module.exports = {
             lockId === '65456'
         ) {
             res = true;
-            _env.debug(METHOD_NAME, lockId, 'Access Granted!', JSON.stringify(key));
+            _env.debug(METHOD_NAME, `${lockId} Access Granted! ${JSON.stringify(key)}`);
         } else {
             res = false;
-            _env.debug(METHOD_NAME, lockId, 'Access Denied!', JSON.stringify(key));
+            _env.debug(METHOD_NAME, `${lockId} Access Denied! ${JSON.stringify(key)}`);
         }
 
         resolve(res);
