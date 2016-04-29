@@ -33,6 +33,7 @@ module.exports = {
         let session = sessionmanager.getSessionOfSocket(_ws);
 
         if(session === undefined) {
+            _env.error(METHOD_NAME, 'No Session found!');
             reject(_env.ErrorHandler.returnError(4009));
             return;
         }
@@ -42,6 +43,7 @@ module.exports = {
 
             if (user.length === 0) {
                 // Kein Benutzer gefunden
+                _env.error(METHOD_NAME, 'No User found!');
                 reject(_env.ErrorHandler.returnError(4002));
             } else {
                 user = user[0];
