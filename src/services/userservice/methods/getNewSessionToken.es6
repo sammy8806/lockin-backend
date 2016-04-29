@@ -27,7 +27,7 @@ module.exports = {
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
         const lifetime = parseInt(_args.lifetime);
-        if (!(lifetime > -1)) {
+        if (lifetime < 0) {
             reject({code: 'client', string: 'Lifetime is not valid'});
         }
 
