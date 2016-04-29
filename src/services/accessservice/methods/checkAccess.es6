@@ -25,9 +25,9 @@ module.exports = {
 
         let res;
         if (
-            key.id === 789453789543789 &&
-            key.owner_id === 123123123 &&
-            lockId === 65456
+            key.id === '789453789543789' &&
+            key.owner_id === '123123123' &&
+            lockId === '65456'
         ) {
             res = true;
             _env.debug(METHOD_NAME, lockId, 'Access Granted!', JSON.stringify(key));
