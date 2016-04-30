@@ -271,13 +271,6 @@ methods.getDb = function () {
     return __db;
 };
 
-/**
- * set custom db for testing purposes
- * @param db
- */
-methods.setDb = function (db) {
-    __db = db;
-};
 
 //TODO: delete functions below - probably not needed anymore
 
