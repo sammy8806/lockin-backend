@@ -86,6 +86,7 @@ methods.userAddSession = function (_user, _session) {
     );
 };
 
+
 /**
  *
  * @param _user
@@ -216,7 +217,28 @@ methods.invalidateSessionToken = function (_token) {
 };
 
 methods.insertAccess = function(_access) {
-    return __db.collection('accesses').insertOne(_access.toJSON());
+    return __db.collection('accesses').insertOne(_access.toJSON());    
+};
+
+/**
+ *
+ * @param _attr
+ * @returns {Cursor}
+ */
+methods.findAccess = function(_attr) {
+    // if (_attr.hasOwnProperty())
+    //     return __db.collection('accesses').find();
+    // else
+        return __db.collection('accesses').find(_attr);
+};
+
+/**
+ *
+ * @param _keyId
+ * @returns {Cursor}
+ */
+methods.findAccessByKeyId = function(_keyId) {
+    return __db.collection('accesses').find({keyId: _keyId});
 };
 
 /**

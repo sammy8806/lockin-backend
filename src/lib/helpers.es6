@@ -29,6 +29,21 @@ function setupEnv() {
         _env._log(console.log, 'ERROR', _tag, _string);
     };
 
+    /**
+     *
+     * @param _arr Array
+     * @param _obj object
+     * @returns {boolean} true if contains, false if not
+     */
+    _env.contains = function contains(_arr, _obj) {
+        for (var i = 0; i < _arr.length; i++) {
+            if (_arr[i] === _obj) {
+                return true;
+            }
+        }
+        return false;
+    };
+
     _env.random = function (howMany, chars) {
         chars = chars || 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789';
         let rnd = crypto.randomBytes(howMany);

@@ -12,11 +12,11 @@ module.exports = {
     parameterVariations: [
         {
             id: 'exists',
-            key: 'exists',
-            requestor_id: 'exists',
-            time_start: 'exists',
-            time_end: 'exists',
-            state: 'exists'
+            keyId: 'exists',
+            doorlockIds: 'exists',
+            requestorId: 'exists',
+            timeStart: 'exists',
+            timeEnd: 'exists'
         }
     ],
 
@@ -37,25 +37,29 @@ module.exports = {
         //TODO: check if user is authorized to create access
 
         let id = _args.id;
-        let key = _args.key;
-        let requestor_id = _args.requestor_id;
-        let time_start = _args.time_start;
-        let time_end = _args.time_end;
-        let state = _args.state;
+        let keyId = _args.keyId;
+        let requestorId = _args.requestorId;
+        let doorlockIds = _args.doorlockIds;
+
+        console.log("DOORLOCKDIS")
+        console.log(doorlockIds)
+
+        let timeStart = _args.timeStart;
+        let timeEnd = _args.timeEnd;
+
         let newAccess = new Access({
             id: id,
-            key: key,
-            requestor_id: requestor_id,
-            time_start: time_start,
-            time_end: time_end,
-            state: state
+            keyId: keyId,
+            doorlockIds: doorlockIds,
+            requestorId: requestorId,
+            timeStart: timeStart,
+            timeEnd: timeEnd
         });
 
         _env.debug(METHOD_NAME, `Saving access to database`);
 
         return db.insertAccess(newAccess).then(() => {
             return newAccess.toJSON(new SimpleResponse({success: true}));
-
         });
     })
 };

@@ -23,7 +23,14 @@ describe('database', () => {
 
     describe('user', () => {
         let User = objectFactory.get('user');
-        let userJSON = {email: 'test@spamkrake.de', password: 'hallo123'};
+        let userJSON = {
+            email: 'test@spamkrake.de', password: 'hallo123', key: {
+                "id": "123",
+                "owner_id": "456",
+                "data": "hallo123"
+            }
+        };
+
         let user = new User(userJSON);
 
         //used to get a user with _id from database
@@ -40,6 +47,15 @@ describe('database', () => {
 
         it('should find user', (done) => {
             dbDriver.findUser(userJSON).toArray().then(_user => {
+                assert.equal(_user.length, 1);
+                dbUser = _user[0];
+                done();
+            });
+        });
+
+        it('should find user by keyId', (done) => {
+            dbDriver.findUser({'key.id': '123'}).toArray().then(_user => {
+                console.log(_user)
                 assert.equal(_user.length, 1);
                 dbUser = _user[0];
                 done();

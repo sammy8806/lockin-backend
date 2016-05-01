@@ -6,11 +6,11 @@ module.exports = class Access extends ObjectPrototype {
     constructor(_access) {
         const _whitelistedAttributes = [
             'id',
-            'key',
-            'requestor_id',
-            'time_start',
-            'time_end',
-            'state'
+            'keyId',
+            'doorlockIds',
+            'requestorId',
+            'timeStart',
+            'timeEnd'
         ];
 
         super(_access, _whitelistedAttributes);
