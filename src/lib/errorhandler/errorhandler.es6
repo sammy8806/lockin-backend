@@ -46,7 +46,8 @@ const table = {
     // Access
     6001: 'Invalid Arguments',
     6002: 'Doorlock not found',
-    6003: 'No Access found'
+    6003: 'No Access found',
+    6004: 'Doorlock not found'
 };
 
 function setup(__env) {

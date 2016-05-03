@@ -253,7 +253,6 @@ methods.findDoorLock = function (_attr) {
     return __db.collection('doorLocks').find(_attr);
 };
 
-
 /**
  *
  * @param _attr

@@ -24,7 +24,7 @@ module.exports = {
     ],
 
     setup: (_env) => {
-        db = _env.GlobalServiceFactory.getService('DatabaseService');
+        db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
@@ -43,17 +43,9 @@ module.exports = {
             reject(_env.ErrorHandler.returnError(6001));
         }
 
-        let dbDriver = null;
-        try {
-            dbDriver = db.getDriver();
-        } catch (e) {
-            _env.error(METHOD_NAME, 'Please setup this function first!');
-            reject(_env.ErrorHandler.returnError(4006));
-        }
-
         _env.debug(METHOD_NAME, 'Searching User by KeyId');
 
-        return resolve(dbDriver.findUser({'key.id': keyId}).toArray().then((_user) => {
+        return resolve(db.findUser({'key.id': keyId}).toArray().then((_user) => {
                 let user = _user[0];
 
 
@@ -66,7 +58,7 @@ module.exports = {
 
                 _env.debug(METHOD_NAME, 'Searching doorlock');
 
-                return dbDriver.findDoorLock({id: lockId}).toArray().then((_doorLock) => {
+                return db.findDoorLock({id: lockId}).toArray().then((_doorLock) => {
                     let doorLock = _doorLock[0];
 
                     if (!doorLock) {
@@ -76,15 +68,15 @@ module.exports = {
 
                     _env.debug(METHOD_NAME, 'Checking masterkeys');
 
-                    var masterkeys = doorLock.masterKeys;
+                    let masterkeys = doorLock.masterKeys;
 
                     if (isKeyInMasterkeys(key, masterkeys)) {
                         _env.debug(METHOD_NAME, 'key is masterkey, Access granted!');
                         return true;
                     } else {
-                        _env.debug(METHOD_NAME, 'Key is not in mastekeys, searching Access');
+                        _env.debug(METHOD_NAME, 'Key is not in masterkeys, searching Access');
 
-                        return dbDriver.findAccess({keyId: keyId}).toArray().then((_access) => {
+                        return db.findAccess({keyId: keyId}).toArray().then((_access) => {
                             let access = _access[0];
 
                             if (access === undefined || _access.length === 0) {
