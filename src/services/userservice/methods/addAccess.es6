@@ -36,20 +36,7 @@ module.exports = {
 
         //TODO: check if user is authorized to create access
 
-        let id = _args.id;
-        let key = _args.key;
-        let requestor_id = _args.requestor_id;
-        let time_start = _args.time_start;
-        let time_end = _args.time_end;
-        let state = _args.state;
-        let newAccess = new Access({
-            id: id,
-            key: key,
-            requestor_id: requestor_id,
-            time_start: time_start,
-            time_end: time_end,
-            state: state
-        });
+        let newAccess = new Access(_args);
 
         _env.debug(METHOD_NAME, `Saving access to database`);
 

@@ -14,7 +14,12 @@ function callFunc(_method, _args, _env, _ws, _type) {
     return _functions[_method].call(_args, _env, _ws, _type);
 }
 
+function getFunc(_method) {
+    return _functions[_method];
+}
+
 module.exports = {
     setup,
-    callFunc
+    callFunc,
+    getFunc
 };

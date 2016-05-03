@@ -1,16 +1,15 @@
 'use strict';
-let assert = require('assert');
-let wsUri = 'ws://cl2.dark-it.net/';
+let wsUri = 'ws://localhost:8090/';
 let WebSocket = require('ws');
-let ws;
+var assert = require('chai').assert;
 
-// let removeUsers = {
-//     'type': 'jsonwsp/request',
-//     'version': '1.0',
-//     'methodname': 'adminservice/cleanup',
-//     'args': {'collection': 'users'},
-//     'mirror': '-1'
-// };
+ let removeUsers = {
+     'type': 'jsonwsp/request',
+     'version': '1.0',
+     'methodname': 'adminservice/cleanup',
+     'args': {'collection': 'users'},
+     'mirror': '-1'
+ };
 
 let requestId = 0;
 let requests = new Map();
@@ -31,8 +30,10 @@ function setupSocket(_ws) {
 }
 
 function sendMessage(_msg, _cb, _ws) {
+    assert(_ws !== undefined, 'Socket is undefined');
+
     if (_msg === undefined) {
-        console.log('sending not possible', JSON.stringify(_msg));
+        console.log('sending not possible');
         return;
     }
 
@@ -44,12 +45,21 @@ function sendMessage(_msg, _cb, _ws) {
 }
 
 describe('socket', () => {
-    before(done => {
+    let ws;
+
+    beforeEach(done => {
         ws = new WebSocket(wsUri);
         ws.on('open', () => {
             setupSocket(ws);
             done();
         });
+    });
+
+    after(done => {
+        ws.on('close', () => {
+            done();
+        });
+        ws.close();
     });
 
     let users = [];
@@ -59,10 +69,6 @@ describe('socket', () => {
         const pass = `lol_pass_${suffix}`;
         users.push({email: email, pass: pass});
     }
-
-    describe('stub', () => {
-
-    });
 
     describe('api', () => {
         it('version check', (done) => {
@@ -83,6 +89,14 @@ describe('socket', () => {
                 };
 
                 assert.equal(actual, JSON.stringify(expected));
+                done();
+            }, ws);
+        });
+    });
+
+    describe('prequisites', () => {
+        it('clear users', (done) => {
+            sendMessage(removeUsers, (actual, req) => {
                 done();
             }, ws);
         });
@@ -148,10 +162,10 @@ describe('socket', () => {
         });
 
         afterEach(done => {
-            ws.close();
             ws.on('close', () => {
                 done();
             });
+            ws.close();
         });
 
         for (let user of users) {
@@ -159,7 +173,7 @@ describe('socket', () => {
                 let register = {
                     type: 'jsonwsp/request',
                     version: '1.0',
-                    methodname: 'UserService/loginUser',
+                    methodname: 'SessionService/login',
                     args: {user: {email: user.email, password: user.pass}},
                     mirror: -1
                 };
@@ -168,7 +182,7 @@ describe('socket', () => {
                     let expected = {
                         type: 'jsonwsp/response',
                         version: '1.0',
-                        methodname: 'UserService/loginUser',
+                        methodname: 'SessionService/login',
                         result: {success: true},
                         reflection: req.id
                     };
@@ -181,19 +195,28 @@ describe('socket', () => {
     });
 
     describe('session', () => {
+        let wsLogin;
+
         before(done => {
-            ws = new WebSocket(wsUri);
-            ws.on('open', () => {
-                setupSocket(ws);
+            wsLogin = new WebSocket(wsUri);
+            wsLogin.on('open', () => {
+                setupSocket(wsLogin);
                 done();
             });
+        });
+
+        after(done => {
+            wsLogin.on('close', () => {
+                done();
+            });
+            wsLogin.close();
         });
 
         it('should login', (done) => {
             let register = {
                 type: 'jsonwsp/request',
                 version: '1.0',
-                methodname: 'UserService/loginUser',
+                methodname: 'SessionService/login',
                 args: {user: {email: userdata.email, password: userdata.password}},
                 mirror: -1
             };
@@ -202,18 +225,19 @@ describe('socket', () => {
                 let expected = {
                     type: 'jsonwsp/response',
                     version: '1.0',
-                    methodname: 'UserService/loginUser',
+                    methodname: 'SessionService/login',
                     result: {success: true},
                     reflection: req.id
                 };
 
                 assert.equal(actual, JSON.stringify(expected));
                 done();
-            }, ws);
+            }, wsLogin);
         });
 
-        it('should update userdata', (done) => {
-            const newMail = `test+updated-${new Date().getTime()}@spamkrake.de`;
+        it.skip('should update userdata', (done) => {
+            const newMail = 'test+updated-' + new Date().getTime() + '@spamkrake.de';
+
             let register = {
                 'type': 'jsonwsp/request',
                 'version': '1.0',
@@ -233,18 +257,41 @@ describe('socket', () => {
 
                 assert.equal(actual, JSON.stringify(expected));
                 done();
-            }, ws);
+            }, wsLogin);
+        });
+
+        it('should get Userinfo', (done) => {
+            let register = {
+                'type': 'jsonwsp/request',
+                'version': '1.0',
+                'methodname': 'UserService/getUserInfo',
+                'args': {},
+                'mirror': '-1'
+            };
+
+            sendMessage(register, (actual, req) => {
+                let expected = {
+                    'type': 'jsonwsp/response',
+                    'version': '1.0',
+                    'methodname': 'UserService/getUserInfo',
+                    'result': {'email': userdata.email},
+                    'reflection': req.id
+                };
+
+                assert.equal(actual, JSON.stringify(expected));
+                done();
+            }, wsLogin);
         });
     });
 
     // Be called from the lock
-    it('should be granted access', (done) => {
+    it.skip('should be granted access', (done) => {
         let checkAccess = {
             args: {
                 key: {
                     data: 'ichbindata',
-                    id: 789453789543789,
-                    owner_id: 123123123
+                    id: '789453789543789',
+                    owner_id: '123123123'
                 },
                 lockId: 65456
             },

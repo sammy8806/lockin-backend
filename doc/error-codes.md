@@ -29,6 +29,7 @@
 | 3005 | Already logged in | |
 | 3006 | Unknown Error | |
 | 3007 | Wrong Password | |
+| 3008 | Not logged in! | |
 
 ## Users (4000)
 
