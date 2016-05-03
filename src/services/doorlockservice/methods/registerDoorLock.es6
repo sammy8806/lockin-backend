@@ -5,7 +5,6 @@ import Promise from 'promise';
 const METHOD_NAME = 'DoorLockService/registerDoorLock';
 
 let db;
-let SimpleResponse;
 let DoorLock;
 
 module.exports = {
@@ -19,7 +18,6 @@ module.exports = {
     ],
 
     setup: (_env) => {
-        SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
         DoorLock = _env.ObjectFactory.get('DoorLock');
     },
