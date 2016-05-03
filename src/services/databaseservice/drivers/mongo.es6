@@ -36,10 +36,11 @@ methods.setup = function (_env) {
  * @returns {Cursor}
  */
 methods.findUser = function (_attr) {
-    if (_attr.hasOwnProperty('_id'))
+    if (_attr.hasOwnProperty('_id')) {
         return __db.collection('users').find({_id: ObjectID(_attr._id)});
-    else
+    } else {
         return __db.collection('users').find(_attr);
+    }
 };
 
 /**
@@ -216,29 +217,25 @@ methods.invalidateSessionToken = function (_token) {
     throw 'STUB!';
 };
 
-methods.insertAccess = function(_access) {
-    return __db.collection('accesses').insertOne(_access.toJSON());    
+/**
+ *
+ * @param _access
+ * @returns {Promise}
+ */
+methods.insertAccess = function (_access) {
+    return __db.collection('accesses').insertOne(_access.toJSON());
 };
 
 /**
- *
+ * 
  * @param _attr
  * @returns {Cursor}
  */
-methods.findAccess = function(_attr) {
-    // if (_attr.hasOwnProperty())
-    //     return __db.collection('accesses').find();
-    // else
-        return __db.collection('accesses').find(_attr);
-};
-
-/**
- *
- * @param _keyId
- * @returns {Cursor}
- */
-methods.findAccessByKeyId = function(_keyId) {
-    return __db.collection('accesses').find({keyId: _keyId});
+methods.findAccess = function (_attr) {
+    if (_attr.hasOwnProperty())
+        return __db.collection('accesses').find();
+    else
+    return __db.collection('accesses').find(_attr);
 };
 
 /**
@@ -246,7 +243,7 @@ methods.findAccessByKeyId = function(_keyId) {
  * @param _doorLock
  * @returns {Promise}
  */
-methods.insertDoorLock = function(_doorLock) {
+methods.insertDoorLock = function (_doorLock) {
     return __db.collection('doorLocks').insertOne(_doorLock.toJSON());
 };
 
@@ -255,7 +252,7 @@ methods.insertDoorLock = function(_doorLock) {
  * @param _attr
  * @returns {Cursor}
  */
-methods.findDoorLock = function(_attr) {
+methods.findDoorLock = function (_attr) {
     if (_attr.hasOwnProperty('_id'))
         return __db.collection('doorLocks').find({_id: ObjectID(_attr._id)});
     else
@@ -281,7 +278,7 @@ methods.updateDoorLock = function (_attr, _doorLock) {
  * @param _doorLock
  * @returns {Promise}
  */
-methods.removeDoorLock = function(_doorLock) {
+methods.removeDoorLock = function (_doorLock) {
     return __db.collection('doorLocks').deleteOne({id: _doorLock.id});
 };
 
@@ -408,7 +405,7 @@ methods.setMessageDelivered = function (_msg, _session) {
  * @param _find
  * @returns {Cursor}
  */
-methods.getMessages = function(_find) {
+methods.getMessages = function (_find) {
     return __db.collection('messages').find(_find);
 };
 

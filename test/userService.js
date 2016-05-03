@@ -1,6 +1,6 @@
 'use strict';
 let assert = require('assert');
-let wsUri = 'ws://cl2.dark-it.net/';
+let wsUri = 'ws://localhost:8080/';
 let WebSocket = require('ws');
 let ws;
 
@@ -15,7 +15,13 @@ let ws;
 let requestId = 0;
 let requests = new Map();
 
-const userdata = {'email': 'test2@spamkrake.de', 'password': 'hallo123'};
+const userdata = {
+    'email': 'test2@spamkrake.de', 'password': 'hallo123', 'key': {
+        id: '123',
+        owner_id: '456',
+        data: 'hallo123'
+    }
+};
 
 function setupSocket(_ws) {
     _ws.on('message', (_msg) => {
@@ -57,7 +63,12 @@ describe('socket', () => {
         let suffix = `${i}-${(new Date().getTime())}`;
         const email = `test+${suffix}@spamkrake.de`;
         const pass = `lol_pass_${suffix}`;
-        users.push({email: email, pass: pass});
+        const key = {
+            id: i,
+            owner_id: '456',
+            data: 'hallo123'
+        };
+        users.push({email: email, pass: pass, key: key});
     }
 
     describe('stub', () => {
@@ -95,7 +106,7 @@ describe('socket', () => {
                     'type': 'jsonwsp/request',
                     'version': '1.0',
                     'methodname': 'UserService/registerUser',
-                    'args': {user: {'email': user.email, 'password': user.pass}},
+                    'args': {user: {'email': user.email, 'password': user.pass, 'key': user.key}},
                     'mirror': '-1'
                 };
 
@@ -119,7 +130,7 @@ describe('socket', () => {
                 'type': 'jsonwsp/request',
                 'version': '1.0',
                 'methodname': 'UserService/registerUser',
-                'args': {'name': 'admin2', 'email': userdata.email, 'password': userdata.password},
+                'args': {'name': 'admin2', 'email': userdata.email, 'password': userdata.password, 'key': userdata.key},
                 'mirror': '-1'
             };
 
@@ -190,7 +201,7 @@ describe('socket', () => {
         });
 
         it('should login', (done) => {
-            let register = {
+            let login = {
                 type: 'jsonwsp/request',
                 version: '1.0',
                 methodname: 'UserService/loginUser',
@@ -198,7 +209,7 @@ describe('socket', () => {
                 mirror: -1
             };
 
-            sendMessage(register, (actual, req) => {
+            sendMessage(login, (actual, req) => {
                 let expected = {
                     type: 'jsonwsp/response',
                     version: '1.0',
@@ -212,23 +223,94 @@ describe('socket', () => {
             }, ws);
         });
 
-        it('should update userdata', (done) => {
-            const newMail = `test+updated-${new Date().getTime()}@spamkrake.de`;
-            let register = {
-                'type': 'jsonwsp/request',
-                'version': '1.0',
-                'methodname': 'UserService/updateUser',
-                'args': {user: {'email': newMail}},
-                'mirror': '-1'
+        // it('should update userdata', (done) => {
+        //     const newMail = `test+updated-${new Date().getTime()}@spamkrake.de`;
+        //     let register = {
+        //         'type': 'jsonwsp/request',
+        //         'version': '1.0',
+        //         'methodname': 'UserService/updateUser',
+        //         'args': {user: {'email': newMail}},
+        //         'mirror': '-1'
+        //     };
+        //
+        //     sendMessage(register, (actual, req) => {
+        //         let expected = {
+        //             'type': 'jsonwsp/response',
+        //             'version': '1.0',
+        //             'methodname': 'UserService/updateUser',
+        //             'result': {'email': newMail},
+        //             'reflection': req.id
+        //         };
+        //
+        //         assert.equal(actual, JSON.stringify(expected));
+        //         done();
+        //     }, ws);
+        // });
+    });
+
+    describe('access', () => {
+        let timeStart = new Date();
+        let timeEnd = new Date ();
+        timeEnd.setHours (timeEnd.getHours() + 6 );
+
+        it('should add access', (done) => {
+            let addAccess = {
+                type: 'jsonwsp/request',
+                version: '1.0',
+                methodname: 'UserService/addAccess',
+                args: {
+                    id: '1',
+                    keyId: '123',
+                    doorlockIds: ['1', '2'],
+                    requestorId: '572616263da487ad193bdead',
+                    timeStart: timeStart,
+                    timeEnd: timeEnd
+                },
+
+                mirror: '-1'
             };
 
-            sendMessage(register, (actual, req) => {
+            sendMessage(addAccess, (actual, req) => {
                 let expected = {
-                    'type': 'jsonwsp/response',
-                    'version': '1.0',
-                    'methodname': 'UserService/updateUser',
-                    'result': {'email': newMail},
-                    'reflection': req.id
+                    type: "jsonwsp/response",
+                    version: "1.0",
+                    methodname: "UserService/addAccess",
+                    result: {
+                        id: "1",
+                        keyId: "123",
+                        doorlockIds: ["1", "2"],
+                        requestorId: "572616263da487ad193bdead",
+                        timeStart: timeStart,
+                        timeEnd: timeEnd
+                    },
+                    reflection: req.id
+                };
+
+                assert.equal(actual, JSON.stringify(expected));
+                done();
+            }, ws);
+        });
+
+        // called from the lock
+        it('should be granted access', (done) => {
+            let checkAccess = {
+                args: {
+                    keyId: '123',
+                    lockId: '1'
+                },
+                methodname: 'AccessService/checkAccess',
+                mirror: '-1',
+                type: 'jsonwsp/request',
+                version: '1.0'
+            };
+
+            sendMessage(checkAccess, (actual, req) => {
+                let expected = {
+                    type: 'jsonwsp/response',
+                    version: '1.0',
+                    methodname: 'AccessService/checkAccess',
+                    result: true,
+                    reflection: req.id
                 };
 
                 assert.equal(actual, JSON.stringify(expected));
@@ -236,35 +318,5 @@ describe('socket', () => {
             }, ws);
         });
     });
-
-    // Be called from the lock
-    it('should be granted access', (done) => {
-        let checkAccess = {
-            args: {
-                key: {
-                    data: 'ichbindata',
-                    id: 789453789543789,
-                    owner_id: 123123123
-                },
-                lockId: 65456
-            },
-            methodname: 'AccessService/checkAccess',
-            mirror: '-1',
-            type: 'jsonwsp/request',
-            version: '1.0'
-        };
-
-        sendMessage(checkAccess, (actual, req) => {
-            let expected = {
-                'type': 'jsonwsp/response',
-                'version': '1.0',
-                'methodname': 'AccessService/checkAccess',
-                'result': true,
-                'reflection': req.id
-            };
-
-            assert.equal(actual, JSON.stringify(expected));
-            done();
-        }, ws);
-    });
 });
+

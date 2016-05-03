@@ -30,7 +30,7 @@ module.exports = {
 
         //check if logged in
         const session = _env.sessionmanager.getSessionOfSocket(_ws);
-        if(session === undefined) {
+        if (session === undefined) {
             reject({code: 'client', string: 'currently not logged in'});
         }
 
@@ -40,10 +40,6 @@ module.exports = {
         let keyId = _args.keyId;
         let requestorId = _args.requestorId;
         let doorlockIds = _args.doorlockIds;
-
-        console.log("DOORLOCKDIS")
-        console.log(doorlockIds)
-
         let timeStart = _args.timeStart;
         let timeEnd = _args.timeEnd;
 
@@ -58,8 +54,8 @@ module.exports = {
 
         _env.debug(METHOD_NAME, `Saving access to database`);
 
-        return db.insertAccess(newAccess).then(() => {
+        resolve(db.insertAccess(newAccess).then(() => {
             return newAccess.toJSON(new SimpleResponse({success: true}));
-        });
+        }));
     })
 };

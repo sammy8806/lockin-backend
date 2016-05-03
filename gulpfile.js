@@ -20,7 +20,7 @@ const log = (err, stdout, stderr) => {
 //});
 
 function test(string) {
-    return gulp.src('test/database.js')
+    return gulp.src('test/userService.js')
         // gulp-mocha needs filepaths so you can't have any plugins before it
         .pipe(mocha({
             compilers: {

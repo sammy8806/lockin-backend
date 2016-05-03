@@ -49,23 +49,18 @@ module.exports = {
 
 
                 if (!user) {
-                    //reject... requestor does not exist
                     _env.debug(METHOD_NAME, 'user with keyId does not exist');
+                    reject(_env.ErrorHandler.returnError(4006));
                 }
 
                 let key = user.key;
 
-                if (!key) {
-                    //reject... user has no key
-                    _env.debug(METHOD_NAME, 'user has no key');
-                }
 
-                //check masterkeys of doorlock
-                
+                //TODO check Masterkeys of doorlock
 
                 _env.debug(METHOD_NAME, 'Searching Access');
 
-                return dbDriver.findAccessByKeyId(keyId).toArray().then((_access) => {
+                return dbDriver.findAccess({keyId: keyId}).toArray().then((_access) => {
                     let access = _access[0];
 
                     if (access === undefined || _access.length === 0) {
@@ -75,8 +70,23 @@ module.exports = {
                         _env.debug(METHOD_NAME, 'found Access');
                     }
 
+                    _env.debug(METHOD_NAME, 'Checking access time');
+
+                    let now = new Date();
+
+                    let start = Date.parse(access.timeStart);
+                    let end = Date.parse(access.timeEnd);
+
+                    let accessValid = (now >= start && now <= end);
+
+                    if (accessValid) {
+                        _env.debug(METHOD_NAME, 'Access time valid');
+                    } else {
+                        _env.debug(METHOD_NAME, 'Access time invalid');
+                    }
+
                     //is the user authorized?
-                    res = _env.contains(access.doorlockIds, lockId);
+                    res = _env.contains(access.doorlockIds, lockId) && accessValid;
 
                     if (res) {
                         _env.debug(METHOD_NAME, `${lockId} Access Granted! ${JSON.stringify(key)}`);
@@ -88,11 +98,7 @@ module.exports = {
 
                     return res;
                 });
-
-            },
-            (_err) => {
-                reject({code: 'server', string: _err});
-                console.log(_err);
-            }));
+            }
+        ));
     })
 };

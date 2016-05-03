@@ -11,7 +11,7 @@ let User;
 module.exports = {
     parameterVariations: [
         {
-            // 'id' : 'exists'
+            'name' : 'exists'
         }
     ],
     setup: (_env) => {

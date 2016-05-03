@@ -14,7 +14,7 @@ module.exports = {
         {
             password: 'exists',
             email: 'exists',
-            key: '!exists',
+            key: 'exists',
             id: '!exists',
             accesslist: '!exists',
             doorlocklist: '!exists'
@@ -32,6 +32,7 @@ module.exports = {
 
         let email = _args.email;
         let password = _args.password;
+        let key = _args.key;
 
         _env.debug(METHOD_NAME, `Creating User '${email}' with Hash '${password}'`);
 
@@ -42,7 +43,7 @@ module.exports = {
                     _env.debug(METHOD_NAME, 'No old user found');
 
                     // neuen benutzer mit email, passworthash und session(?) anlegen
-                    let newUser = new User({email: email, password: password});
+                    let newUser = new User({email: email, password: password, key: key});
 
                     _env.debug(METHOD_NAME, `Creating new User ${newUser.email} with password: '${newUser.password}'`);
 
@@ -50,7 +51,7 @@ module.exports = {
                     return db.insertUser(newUser).then((_user) => {
                         let user = newUser;
                         user.password = undefined;
-                        user.id = _user._id;
+                        user.key = undefined;
                         return user.toJSON();
                     });
                 } else if (user.length > 0) { // Benutzer bereits vorhanden
