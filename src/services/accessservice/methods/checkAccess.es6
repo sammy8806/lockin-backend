@@ -51,7 +51,7 @@ module.exports = {
 
                 if (!user) {
                     _env.debug(METHOD_NAME, 'user with keyId does not exist');
-                    reject(_env.ErrorHandler.returnError(4006));
+                    _env.ErrorHandler.throwError(4006);
                 }
 
                 let key = user.key;
@@ -63,7 +63,7 @@ module.exports = {
 
                     if (!doorLock) {
                         //Doorlock not found
-                        reject(_env.ErrorHandler.returnError(6002));
+                        _env.ErrorHandler.throwError(6002);
                     }
 
                     _env.debug(METHOD_NAME, 'Checking masterkeys');
@@ -82,7 +82,7 @@ module.exports = {
                             if (access === undefined || _access.length === 0) {
                                 //throw error no access found
                                 _env.debug(METHOD_NAME, 'no Access found');
-                                reject(_env.ErrorHandler.returnError(6003));
+                                _env.ErrorHandler.throwError(6003);
                             } else {
                                 _env.debug(METHOD_NAME, 'found Access');
                             }
