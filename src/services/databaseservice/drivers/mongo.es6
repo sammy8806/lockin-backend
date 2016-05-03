@@ -227,14 +227,11 @@ methods.insertAccess = function (_access) {
 };
 
 /**
- * 
+ *
  * @param _attr
  * @returns {Cursor}
  */
 methods.findAccess = function (_attr) {
-    if (_attr.hasOwnProperty())
-        return __db.collection('accesses').find();
-    else
     return __db.collection('accesses').find(_attr);
 };
 
@@ -253,10 +250,7 @@ methods.insertDoorLock = function (_doorLock) {
  * @returns {Cursor}
  */
 methods.findDoorLock = function (_attr) {
-    if (_attr.hasOwnProperty('_id'))
-        return __db.collection('doorLocks').find({_id: ObjectID(_attr._id)});
-    else
-        return __db.collection('doorLocks').find(_attr);
+    return __db.collection('doorLocks').find(_attr);
 };
 
 

@@ -15,12 +15,14 @@ let ws;
 let requestId = 0;
 let requests = new Map();
 
+const masterkey = {
+    'id': '123',
+    'owner_id': '456',
+    'data': 'hallo123'
+};
+
 const userdata = {
-    'email': 'test2@spamkrake.de', 'password': 'hallo123', 'key': {
-        id: '123',
-        owner_id: '456',
-        data: 'hallo123'
-    }
+    'email': 'test2@spamkrake.de', 'password': 'hallo123', 'key': masterkey
 };
 
 function setupSocket(_ws) {
@@ -248,10 +250,41 @@ describe('socket', () => {
         // });
     });
 
+    describe('doorLock', () => {
+        let registerDoorlock = {
+            type: 'jsonwsp/request',
+            version: '1.0',
+            methodname: 'DoorLockService/registerDoorLock',
+            args: {id: '1', name: 'doorlock1', 'masterKeys': [masterkey], state: 'OPENED'},
+            mirror: -1
+        };
+
+        it('should add doorlock', (done) => {
+
+            sendMessage(registerDoorlock, (actual, req) => {
+                let expected = {
+                    'type': 'jsonwsp/response',
+                    'version': '1.0',
+                    'methodname': 'DoorLockService/registerDoorLock',
+                    'result': {
+                        'id': '1',
+                        'name': 'doorlock1',
+                        'masterKeys': [{'id': '123', 'owner_id': '456', 'data': 'hallo123'}],
+                        'state': 'OPENED'
+                    },
+                    'reflection': 11
+                };
+
+                assert.equal(actual, JSON.stringify(expected));
+                done();
+            }, ws);
+        });
+    });
+
     describe('access', () => {
         let timeStart = new Date();
-        let timeEnd = new Date ();
-        timeEnd.setHours (timeEnd.getHours() + 6 );
+        let timeEnd = new Date();
+        timeEnd.setHours(timeEnd.getHours() + 6);
 
         it('should add access', (done) => {
             let addAccess = {
@@ -272,18 +305,11 @@ describe('socket', () => {
 
             sendMessage(addAccess, (actual, req) => {
                 let expected = {
-                    type: "jsonwsp/response",
-                    version: "1.0",
-                    methodname: "UserService/addAccess",
-                    result: {
-                        id: "1",
-                        keyId: "123",
-                        doorlockIds: ["1", "2"],
-                        requestorId: "572616263da487ad193bdead",
-                        timeStart: timeStart,
-                        timeEnd: timeEnd
-                    },
-                    reflection: req.id
+                    'type': 'jsonwsp/response',
+                    'version': '1.0',
+                    'methodname': 'UserService/addAccess',
+                    'result': {'success': true},
+                    'reflection': 12
                 };
 
                 assert.equal(actual, JSON.stringify(expected));

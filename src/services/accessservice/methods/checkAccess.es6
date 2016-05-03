@@ -6,6 +6,15 @@ const METHOD_NAME = 'AccessService/checkAccess';
 
 let db;
 
+function isKeyInMasterkeys(_key, _masterkeys) {
+    for (let i = 0; i < _masterkeys.length; i++) {
+        if ((_key.id === _masterkeys[i].id) && (_key.data === _masterkeys[i].data)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 module.exports = {
     parameterVariations: [
         {
@@ -55,49 +64,67 @@ module.exports = {
 
                 let key = user.key;
 
+                _env.debug(METHOD_NAME, 'Searching doorlock');
 
-                //TODO check Masterkeys of doorlock
+                return dbDriver.findDoorLock({id: lockId}).toArray().then((_doorLock) => {
+                    let doorLock = _doorLock[0];
 
-                _env.debug(METHOD_NAME, 'Searching Access');
-
-                return dbDriver.findAccess({keyId: keyId}).toArray().then((_access) => {
-                    let access = _access[0];
-
-                    if (access === undefined || _access.length === 0) {
-                        //throw error no access found
-                        _env.debug(METHOD_NAME, 'no Access found');
-                    } else {
-                        _env.debug(METHOD_NAME, 'found Access');
+                    if (!doorLock) {
+                        //Doorlock not found
+                        reject(_env.ErrorHandler.returnError(6002));
                     }
 
-                    _env.debug(METHOD_NAME, 'Checking access time');
+                    _env.debug(METHOD_NAME, 'Checking masterkeys');
 
-                    let now = new Date();
+                    var masterkeys = doorLock.masterKeys;
 
-                    let start = Date.parse(access.timeStart);
-                    let end = Date.parse(access.timeEnd);
-
-                    let accessValid = (now >= start && now <= end);
-
-                    if (accessValid) {
-                        _env.debug(METHOD_NAME, 'Access time valid');
+                    if (isKeyInMasterkeys(key, masterkeys)) {
+                        _env.debug(METHOD_NAME, 'key is masterkey, Access granted!');
+                        return true;
                     } else {
-                        _env.debug(METHOD_NAME, 'Access time invalid');
+                        _env.debug(METHOD_NAME, 'Key is not in mastekeys, searching Access');
+
+                        return dbDriver.findAccess({keyId: keyId}).toArray().then((_access) => {
+                            let access = _access[0];
+
+                            if (access === undefined || _access.length === 0) {
+                                //throw error no access found
+                                _env.debug(METHOD_NAME, 'no Access found');
+                                reject(_env.ErrorHandler.returnError(6003));
+                            } else {
+                                _env.debug(METHOD_NAME, 'found Access');
+                            }
+
+                            _env.debug(METHOD_NAME, 'Checking access time');
+
+                            let now = new Date();
+
+                            let start = Date.parse(access.timeStart);
+                            let end = Date.parse(access.timeEnd);
+
+                            let accessValid = now >= start && now <= end;
+
+                            if (accessValid) {
+                                _env.debug(METHOD_NAME, 'Access time valid');
+                            } else {
+                                _env.debug(METHOD_NAME, 'Access time invalid');
+                            }
+
+                            //is the user authorized?
+                            res = _env.contains(access.doorlockIds, lockId) && accessValid;
+
+                            if (res) {
+                                _env.debug(METHOD_NAME, `${lockId} Access Granted! ${JSON.stringify(key)}`);
+                            } else {
+                                _env.debug(METHOD_NAME, `${lockId} Access Denied! ${JSON.stringify(key)}`);
+                            }
+
+                            _env.debug(METHOD_NAME, 'Done');
+
+                            return res;
+                        });
                     }
-
-                    //is the user authorized?
-                    res = _env.contains(access.doorlockIds, lockId) && accessValid;
-
-                    if (res) {
-                        _env.debug(METHOD_NAME, `${lockId} Access Granted! ${JSON.stringify(key)}`);
-                    } else {
-                        _env.debug(METHOD_NAME, `${lockId} Access Denied! ${JSON.stringify(key)}`);
-                    }
-
-                    _env.debug(METHOD_NAME, 'Done');
-
-                    return res;
-                });
+                })
             }
         ));
     })

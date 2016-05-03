@@ -44,6 +44,8 @@ module.exports = {
         let timeStart = _args.timeStart;
         let timeEnd = _args.timeEnd;
 
+        //TODO check if doorlock exists
+
         let newAccess = new Access({
             id: id,
             keyId: keyId,

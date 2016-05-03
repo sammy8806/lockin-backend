@@ -44,7 +44,9 @@ const table = {
     5003: 'No active Sessions',
 
     // Access
-    6001: 'Invalid Arguments'
+    6001: 'Invalid Arguments',
+    6002: 'Doorlock not found',
+    6003: 'No Access found'
 };
 
 function setup(__env) {
