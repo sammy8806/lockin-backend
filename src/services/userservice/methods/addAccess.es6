@@ -31,7 +31,8 @@ module.exports = {
         //check if logged in
         const session = _env.sessionmanager.getSessionOfSocket(_ws);
         if (session === undefined) {
-            reject({code: 'client', string: 'currently not logged in'});
+            //not logged in -> access denied
+            reject(_env.ErrorHandler.returnError(4005))
         }
 
         //TODO: check if user is authorized to create access
@@ -55,7 +56,7 @@ module.exports = {
         _env.debug(METHOD_NAME, `Saving access to database`);
 
         resolve(db.insertAccess(newAccess).then(() => {
-            return newAccess.toJSON(new SimpleResponse({success: true}));
+            return new SimpleResponse({success: true});
         }));
     })
 };
