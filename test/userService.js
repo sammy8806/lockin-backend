@@ -417,19 +417,19 @@ describe('socket', () => {
             wsLogin.close();
         });
 
-        let timeStart = new Date();
-        let timeEnd = new Date();
-        timeEnd.setHours(timeEnd.getHours() + 6);
-
         it('should add access', (done) => {
+            let timeStart = new Date();
+            let timeEnd = new Date();
+            timeEnd.setHours(timeEnd.getHours() + 6);
             let addAccess = {
                 type: 'jsonwsp/request',
                 version: '1.0',
                 methodname: 'UserService/addAccess',
                 args: {
                     id: '1',
-                    keyId: '123',
+                    keyId: userKey.id,
                     doorlockIds: [doorLock.id],
+                    //will probably be removed
                     requestorId: '572616263da487ad193bdead',
                     timeStart: timeStart,
                     timeEnd: timeEnd
@@ -451,13 +451,13 @@ describe('socket', () => {
                 done();
             }, wsLogin);
         });
+        
 
-        // called from the lock
         it('should be granted access', (done) => {
             let checkAccess = {
                 args: {
-                    keyId: '123',
-                    lockId: '1'
+                    key: userKey,
+                    lockId: doorLock.id
                 },
                 methodname: 'AccessService/checkAccess',
                 mirror: '-1',

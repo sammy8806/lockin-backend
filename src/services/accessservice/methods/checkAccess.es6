@@ -6,19 +6,10 @@ const METHOD_NAME = 'AccessService/checkAccess';
 
 let db;
 
-function isKeyInMasterkeys(_key, _masterkeys) {
-    for (let i = 0; i < _masterkeys.length; i++) {
-        if ((_key.id === _masterkeys[i].id) && (_key.data === _masterkeys[i].data)) {
-            return true;
-        }
-    }
-    return false;
-}
-
 module.exports = {
     parameterVariations: [
         {
-            keyId: 'exists',
+            key: 'exists',
             lockId: 'exists'
         }
     ],
@@ -26,98 +17,77 @@ module.exports = {
     setup: (_env) => {
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
     },
-
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
-        let res = false;
 
         const session = _env.sessionmanager.getSessionOfSocket(_ws);
         if (session === undefined) {
             reject(_env.ErrorHandler.returnError(4005));
         }
 
-        const keyId = _args.keyId;
+        const keyId = _args.key.id;
+        const keyData = _args.key.data;
         const lockId = _args.lockId;
 
-
-        if (keyId === undefined || lockId === undefined) {
-            reject(_env.ErrorHandler.returnError(6001));
-        }
 
         _env.debug(METHOD_NAME, 'Searching User by KeyId');
 
         return resolve(db.findUser({'key.id': keyId}).toArray().then((_user) => {
-                let user = _user[0];
+            let user = _user[0];
 
+            if (!user) {
+                _env.debug(METHOD_NAME, 'user with keyId does not exist');
+                _env.ErrorHandler.throwError(4006);
+            }
 
-                if (!user) {
-                    _env.debug(METHOD_NAME, 'user with keyId does not exist');
-                    _env.ErrorHandler.throwError(4006);
+            //validate key
+            if (user.key.data !== keyData) {
+                _env.debug(METHOD_NAME, 'Key Data invalid');
+                _env.ErrorHandler.throwError(6004);
+            }
+
+            _env.debug(METHOD_NAME, 'Key Data is valid');
+
+            return db.findAccess({keyId: keyId}).toArray().then((_access) => {
+                let res = false;
+
+                let access = _access[0];
+
+                if (access === undefined || _access.length === 0) {
+                    //throw error no access found
+                    _env.debug(METHOD_NAME, 'no Access found');
+                    _env.ErrorHandler.throwError(6003);
+                } else {
+                    _env.debug(METHOD_NAME, 'found Access');
                 }
 
-                let key = user.key;
+                _env.debug(METHOD_NAME, 'Checking access time');
 
-                _env.debug(METHOD_NAME, 'Searching doorlock');
+                let now = new Date();
 
-                return db.findDoorLock({id: lockId}).toArray().then((_doorLock) => {
-                    let doorLock = _doorLock[0];
+                let start = Date.parse(access.timeStart);
+                let end = Date.parse(access.timeEnd);
 
-                    if (!doorLock) {
-                        //Doorlock not found
-                        _env.ErrorHandler.throwError(6002);
-                    }
+                let accessValid = now >= start && now <= end;
 
-                    _env.debug(METHOD_NAME, 'Checking masterkeys');
+                if (accessValid) {
+                    _env.debug(METHOD_NAME, 'Access time valid');
+                } else {
+                    _env.debug(METHOD_NAME, 'Access time invalid');
+                }
 
-                    let masterkeys = doorLock.masterKeys;
+                //is the user authorized?
+                res = _env.contains(access.doorlockIds, lockId) && accessValid;
 
-                    if (isKeyInMasterkeys(key, masterkeys)) {
-                        _env.debug(METHOD_NAME, 'key is masterkey, Access granted!');
-                        return true;
-                    } else {
-                        _env.debug(METHOD_NAME, 'Key is not in masterkeys, searching Access');
+                if (res) {
+                    _env.debug(METHOD_NAME, `${lockId} Access Granted! ${keyId}`);
+                } else {
+                    _env.debug(METHOD_NAME, `${lockId} Access Denied! ${keyId}`);
+                }
 
-                        return db.findAccess({keyId: keyId}).toArray().then((_access) => {
-                            let access = _access[0];
+                _env.debug(METHOD_NAME, 'Done');
 
-                            if (access === undefined || _access.length === 0) {
-                                //throw error no access found
-                                _env.debug(METHOD_NAME, 'no Access found');
-                                _env.ErrorHandler.throwError(6003);
-                            } else {
-                                _env.debug(METHOD_NAME, 'found Access');
-                            }
-
-                            _env.debug(METHOD_NAME, 'Checking access time');
-
-                            let now = new Date();
-
-                            let start = Date.parse(access.timeStart);
-                            let end = Date.parse(access.timeEnd);
-
-                            let accessValid = now >= start && now <= end;
-
-                            if (accessValid) {
-                                _env.debug(METHOD_NAME, 'Access time valid');
-                            } else {
-                                _env.debug(METHOD_NAME, 'Access time invalid');
-                            }
-
-                            //is the user authorized?
-                            res = _env.contains(access.doorlockIds, lockId) && accessValid;
-
-                            if (res) {
-                                _env.debug(METHOD_NAME, `${lockId} Access Granted! ${JSON.stringify(key)}`);
-                            } else {
-                                _env.debug(METHOD_NAME, `${lockId} Access Denied! ${JSON.stringify(key)}`);
-                            }
-
-                            _env.debug(METHOD_NAME, 'Done');
-
-                            return res;
-                        });
-                    }
-                })
-            }
-        ));
+                return res;
+            });
+        }))
     })
 };
