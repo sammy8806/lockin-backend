@@ -86,28 +86,33 @@ module.exports = {
                     let session = new Session({sessionId: sessionId, userId: user._id}, _env);
 
                     // session id hinzufügen
-                    dbDriver.newSession(session, user).then(
-                        () => {
-                            // session im user speichern
-                            dbDriver.userAddSession(user, session);
-
-                            _env.sessionmanager.addSocketSession(_ws, session);
-                            dbDriver.setSessionStatus(session, 'online');
-
-                            _env.debug(METHOD_NAME, 'Online status set');
-                        }
-                    );
+                    return dbDriver.newSession(session, user)
+                        .then(
+                            dbDriver.userAddSession(user, session)
+                        )
+                        .then(
+                            () => {
+                                _env.sessionmanager.addSocketSession(_ws, session);
+                                return dbDriver.setSessionStatus(session, 'online');
+                            }
+                        )
+                        .then(
+                            _env.debug(METHOD_NAME, 'Online status set')
+                        );
+                },
+                (_err) => {
+                    reject({code: 'server', string: _err});
+                    console.log(_err);
+                }).then(
+                () => {
 
                     res.success = true;
 
                     _env.debug(METHOD_NAME, 'Done');
 
                     return res;
-                },
-                (_err) => {
-                    reject({code: 'server', string: _err});
-                    console.log(_err);
-                })
+                }
+            )
         );
     })
 };

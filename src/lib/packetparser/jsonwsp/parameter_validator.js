@@ -6,6 +6,8 @@
 const METHOD_NAME = 'PacketParser/validateParameter';
 let existsValidator = require('./parameter_validators/exists.js');
 
+const DEBUG = false;
+
 let paramValidators = {
     'exists': existsValidator
 };
@@ -17,7 +19,7 @@ function validateParameter(_env, _args, _argName, _validatorName) {
         _validatorName = _validatorName.substr(1);
     }
 
-    _env.debug(
+    if(DEBUG) _env.debug(
         METHOD_NAME,
         `${_argName} => ${JSON.stringify(_args)}`
     );
@@ -26,7 +28,7 @@ function validateParameter(_env, _args, _argName, _validatorName) {
         const valid = (!!paramValidators[_validatorName].validateParameter(_args, _argName));
         const boolExpr = !negated ? valid : !valid;
 
-        _env.debug(
+        if(DEBUG) _env.debug(
             METHOD_NAME,
             `Validated: ${_argName} with${negated ? ' nagated' : ''} '${_validatorName}' => ${valid}/${boolExpr}`
         );

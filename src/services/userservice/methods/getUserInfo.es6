@@ -36,9 +36,6 @@ module.exports = {
 
                 _env.debug(METHOD_NAME, JSON.stringify(user));
 
-                // A bit fixing here
-                user.id = user._id;
-
                 delete user._id;
                 delete user.password;
                 return user;

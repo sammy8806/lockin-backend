@@ -1,30 +1,16 @@
 'use strict';
-let wsUri = 'ws://localhost:8080/';
+let wsUri = 'ws://localhost:8090/';
 let WebSocket = require('ws');
-var assert = require('chai').assert;
+let assert = require('chai').assert;
 
-let removeUsers = {
-    'type': 'jsonwsp/request',
-    'version': '1.0',
-    'methodname': 'adminservice/cleanup',
-    'args': {'collection': 'users'},
-    'mirror': '-1'
-};
-
-let removeDoorLocks = {
-    'type': 'jsonwsp/request',
-    'version': '1.0',
-    'methodname': 'adminservice/cleanup',
-    'args': {'collection': 'doorLocks'},
-    'mirror': '-1'
-};
-
-let removeAccesses = {
-    'type': 'jsonwsp/request',
-    'version': '1.0',
-    'methodname': 'adminservice/cleanup',
-    'args': {'collection': 'accesses'},
-    'mirror': '-1'
+const removeQuery = (_collectionName) => {
+    return {
+        type: 'jsonwsp/request',
+        version: '1.0',
+        methodname: 'adminservice/cleanup',
+        args: {collection: _collectionName},
+        mirror: -1
+    };
 };
 
 let requestId = 0;
@@ -121,10 +107,12 @@ describe('socket', () => {
 
     describe('prequisites', () => {
         it('clear users', (done) => {
-            sendMessage(removeUsers, (actual, req) => {
-                sendMessage(removeDoorLocks, () => {
-                    sendMessage(removeAccesses, () => {
-                        done();
+            sendMessage(removeQuery('users'), (actual, req) => {
+                sendMessage(removeQuery('doorLocks'), () => {
+                    sendMessage(removeQuery('accesses'), () => {
+                        sendMessage(removeQuery('sessions'), () => {
+                            done();
+                        }, ws);
                     }, ws);
                 }, ws);
             }, ws);
@@ -171,7 +159,7 @@ describe('socket', () => {
                     'type': 'jsonwsp/response',
                     'version': '1.0',
                     'methodname': 'UserService/registerUser',
-                    'result': {'email': 'test2@spamkrake.de'},
+                    'result': {'name': 'admin2', 'email': 'test2@spamkrake.de'},
                     'reflection': req.id
                 };
 
@@ -226,6 +214,7 @@ describe('socket', () => {
 
     describe('session', () => {
         let wsLogin;
+        let userId = -1;
 
         before(done => {
             wsLogin = new WebSocket(wsUri);
@@ -242,268 +231,219 @@ describe('socket', () => {
             wsLogin.close();
         });
 
-        it('should login', (done) => {
-            let register = {
-                type: 'jsonwsp/request',
-                version: '1.0',
-                methodname: 'SessionService/login',
-                args: {user: {email: userdata.email, password: userdata.password}},
-                mirror: -1
-            };
+        describe('login', () => {
 
-            sendMessage(register, (actual, req) => {
-                let expected = {
-                    type: 'jsonwsp/response',
+            it('should login', (done) => {
+                let register = {
+                    type: 'jsonwsp/request',
                     version: '1.0',
                     methodname: 'SessionService/login',
-                    result: {success: true},
-                    reflection: req.id
+                    args: {user: {email: userdata.email, password: userdata.password}},
+                    mirror: -1
                 };
 
-                assert.equal(actual, JSON.stringify(expected));
-                done();
-            }, wsLogin);
-        });
+                sendMessage(register, (actual, req) => {
+                    let expected = {
+                        type: 'jsonwsp/response',
+                        version: '1.0',
+                        methodname: 'SessionService/login',
+                        result: {success: true},
+                        reflection: req.id
+                    };
 
-        it.skip('should update userdata', (done) => {
-            const newMail = 'test+updated-' + new Date().getTime() + '@spamkrake.de';
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
 
-            let register = {
-                'type': 'jsonwsp/request',
-                'version': '1.0',
-                'methodname': 'UserService/updateUser',
-                'args': {user: {'email': newMail}},
-                'mirror': '-1'
-            };
-
-            sendMessage(register, (actual, req) => {
-                let expected = {
-                    'type': 'jsonwsp/response',
-                    'version': '1.0',
-                    'methodname': 'UserService/updateUser',
-                    'result': {'email': newMail},
-                    'reflection': req.id
-                };
-
-                assert.equal(actual, JSON.stringify(expected));
-                done();
-            }, wsLogin);
-        });
-
-        it('should get Userinfo', (done) => {
-            let register = {
-                'type': 'jsonwsp/request',
-                'version': '1.0',
-                'methodname': 'UserService/getUserInfo',
-                'args': {},
-                'mirror': '-1'
-            };
-
-            sendMessage(register, (actual, req) => {
-                //get key from actual response since it is unknown before creation
-                let expected = {
-                    'type': 'jsonwsp/response',
+            it('should get Userinfo', (done) => {
+                let register = {
+                    'type': 'jsonwsp/request',
                     'version': '1.0',
                     'methodname': 'UserService/getUserInfo',
-                    'result': {'email': userdata.email, 'key': JSON.parse(actual).result.key},
-                    'reflection': req.id
+                    'args': {},
+                    'mirror': '-1'
                 };
 
-                assert.equal(actual, JSON.stringify(expected));
-
-                //store userkey
-                userKey = expected.result.key;
-
-                done();
-            }, wsLogin);
-        });
-    });
-
-
-    describe('doorLock', () => {
-        let wsLogin;
-
-        before(done => {
-            //login to prevent 'access denied'
-            let login = {
-                type: 'jsonwsp/request',
-                version: '1.0',
-                methodname: 'SessionService/login',
-                args: {user: {email: userdata.email, password: userdata.password}},
-                mirror: -1
-            };
-
-            wsLogin = new WebSocket(wsUri);
-            wsLogin.on('open', () => {
-                setupSocket(wsLogin);
-                sendMessage(login, () => {
-                    done();
-                }, wsLogin);
-            });
-        });
-
-        after(done => {
-            wsLogin.on('close', () => {
-                done();
-            });
-            wsLogin.close();
-        });
-
-
-        let registerDoorlock = {
-            type: 'jsonwsp/request',
-            version: '1.0',
-            methodname: 'DoorLockService/registerDoorLock',
-            args: doorLock,
-            mirror: -1
-        };
-
-
-        it('should add doorlock', (done) => {
-            registerDoorlock.args.masterKeys = [userKey.id];
-
-            sendMessage(registerDoorlock, (actual, req) => {
-                let expected = {
-                    'type': 'jsonwsp/response',
-                    'version': '1.0',
-                    'methodname': 'DoorLockService/registerDoorLock',
-                    'result': {
-                        'id': '01:23:45:67:89:ab',
-                        'name': 'doorlock1',
-                        'masterKeys': [userKey.id],
-                        'state': 'OPENED'
-                    },
-                    'reflection': req.id
-                };
-
-                assert.equal(actual, JSON.stringify(expected));
-                done();
-            }, wsLogin);
-        });
-
-        it('should fail to add doorlock with duplicate id', (done) => {
-            sendMessage(registerDoorlock, (actual, req) => {
-                let expected = {
-                    'type': 'jsonwsp/fault',
-                    'version': '1.0',
-                    'fault': {'code': '7005', 'string': 'Doorlock already exists', 'faulty': ''},
-                    'reflection': req.id
-                };
-
-                assert.equal(actual, JSON.stringify(expected));
-                done();
-
-            }, wsLogin);
-        });
-    });
-
-    describe('access', () => {
-        let wsLogin;
-
-        before(done => {
-            //login to prevent 'access denied'
-            let login = {
-                type: 'jsonwsp/request',
-                version: '1.0',
-                methodname: 'SessionService/login',
-                args: {user: {email: userdata.email, password: userdata.password}},
-                mirror: -1
-            };
-
-            wsLogin = new WebSocket(wsUri);
-            wsLogin.on('open', () => {
-                setupSocket(wsLogin);
-                sendMessage(login, () => {
-                    done();
-                }, wsLogin);
-            });
-        });
-
-        after(done => {
-            wsLogin.on('close', () => {
-                done();
-            });
-            wsLogin.close();
-        });
-
-        let timeStart = new Date();
-        let timeEnd = new Date();
-        timeEnd.setHours(timeEnd.getHours() + 6);
-        let addAccess;
-
-        it('should add access', (done) => {
-            addAccess = {
-                type: 'jsonwsp/request',
-                version: '1.0',
-                methodname: 'UserService/addAccess',
-                args: {
-                    id: '1',
-                    keyId: userKey.id,
-                    doorlockIds: [doorLock.id],
-                    //will probably be removed
-                    requestorId: 'wirdnichtgebraucht',
-                    timeStart: timeStart,
-                    timeEnd: timeEnd
-                },
-                mirror: '-1'
-            };
-
-            sendMessage(addAccess, (actual, req) => {
-                let expected = {
-                    'type': 'jsonwsp/response',
-                    'version': '1.0',
-                    'methodname': 'UserService/addAccess',
-                    'result': {'success': true},
-                    'reflection': req.id
-                };
-
-                assert.equal(actual, JSON.stringify(expected));
-                done();
-            }, wsLogin);
-        });
-
-        it('should fail to add access with duplicate id', (done) => {
-            sendMessage(addAccess, (actual, req) => {
+                sendMessage(register, (actual, req) => {
                     let expected = {
-                        'type': 'jsonwsp/fault',
+                        'type': 'jsonwsp/response',
                         'version': '1.0',
-                        'fault': {'code': '6005', 'string': 'Access already exists', 'faulty': ''},
+                        'methodname': 'UserService/getUserInfo',
+                        'result': {'email': userdata.email},
+                        'reflection': req.id
+                    };
+
+                    let data = JSON.parse(actual);
+                    let expectedEmail = userdata.email;
+
+                    assert.ok(userId !== undefined);
+                    userId = data.result.id;
+
+                    //store userkey
+                    userKey = data.result.key;
+
+                    assert.equal(data.result.email, expectedEmail);
+                    done();
+                }, wsLogin);
+            });
+
+            it('should update userdata', (done) => {
+                const newMail = 'test+updated-' + new Date().getTime() + '@spamkrake.de';
+
+                let updateUser = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'UserService/updateUser',
+                    'args': {user: {'id': userId, 'email': newMail}},
+                    'mirror': '-1'
+                };
+
+                sendMessage(updateUser, (actual, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': '1.0',
+                        'methodname': 'UserService/updateUser',
+                        'result': {'success': true},
                         'reflection': req.id
                     };
 
                     assert.equal(actual, JSON.stringify(expected));
                     done();
-                },
-                wsLogin
-            );
+                }, wsLogin);
+            });
+
         });
 
-
-        it('should be granted access', (done) => {
-            let checkAccess = {
-                args: {
-                    key: userKey,
-                    lockId: doorLock.id
-                },
-                methodname: 'AccessService/checkAccess',
-                mirror: '-1',
+        describe('doorLock', () => {
+            let registerDoorlock = {
                 type: 'jsonwsp/request',
-                version: '1.0'
+                version: '1.0',
+                methodname: 'DoorLockService/registerDoorLock',
+                args: doorLock,
+                mirror: -1
             };
 
-            sendMessage(checkAccess, (actual, req) => {
-                let expected = {
-                    type: 'jsonwsp/response',
+
+            it('should add doorlock', (done) => {
+                registerDoorlock.args.masterKeys = [userKey.id];
+
+                sendMessage(registerDoorlock, (actual, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': '1.0',
+                        'methodname': 'DoorLockService/registerDoorLock',
+                        'result': {
+                            'id': '01:23:45:67:89:ab',
+                            'name': 'doorlock1',
+                            'masterKeys': [userKey.id],
+                            'state': 'OPENED'
+                        },
+                        'reflection': req.id
+                    };
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+            it('should fail to add doorlock with duplicate id', (done) => {
+                sendMessage(registerDoorlock, (actual, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/fault',
+                        'version': '1.0',
+                        'fault': {'code': '7005', 'string': 'Doorlock already exists', 'faulty': ''},
+                        'reflection': req.id
+                    };
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+
+                }, wsLogin);
+            });
+        });
+
+        describe('access', () => {
+            let timeStart = new Date();
+            let timeEnd = new Date();
+            timeEnd.setHours(timeEnd.getHours() + 6);
+            let addAccess;
+
+            it('should add access', (done) => {
+                addAccess = {
+                    type: 'jsonwsp/request',
                     version: '1.0',
-                    methodname: 'AccessService/checkAccess',
-                    result: true,
-                    reflection: req.id
+                    methodname: 'UserService/addAccess',
+                    args: {
+                        id: '1',
+                        keyId: userKey.id,
+                        doorlockIds: [doorLock.id],
+                        //will probably be removed
+                        requestorId: 'wirdnichtgebraucht',
+                        timeStart: timeStart,
+                        timeEnd: timeEnd
+                    },
+                    mirror: '-1'
                 };
 
-                assert.equal(actual, JSON.stringify(expected));
-                done();
-            }, wsLogin);
+                sendMessage(addAccess, (actual, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': '1.0',
+                        'methodname': 'UserService/addAccess',
+                        'result': {'success': true},
+                        'reflection': req.id
+                    };
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+            it('should fail to add access with duplicate id', (done) => {
+                sendMessage(addAccess, (actual, req) => {
+                        let expected = {
+                            'type': 'jsonwsp/fault',
+                            'version': '1.0',
+                            'fault': {'code': '6005', 'string': 'Access already exists', 'faulty': ''},
+                            'reflection': req.id
+                        };
+
+                        assert.equal(actual, JSON.stringify(expected));
+                        done();
+                    },
+                    wsLogin
+                );
+            });
+
+
+            it('should be granted access', (done) => {
+                let checkAccess = {
+                    args: {
+                        key: userKey,
+                        lockId: doorLock.id
+                    },
+                    methodname: 'AccessService/checkAccess',
+                    mirror: '-1',
+                    type: 'jsonwsp/request',
+                    version: '1.0'
+                };
+
+                sendMessage(checkAccess, (actual, req) => {
+                    let expected = {
+                        type: 'jsonwsp/response',
+                        version: '1.0',
+                        methodname: 'AccessService/checkAccess',
+                        result: true,
+                        reflection: req.id
+                    };
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
         });
     });
+
 })
 ;
