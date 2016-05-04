@@ -24,3 +24,5 @@ services:
       - .:/app
     depends_on:
       - cl2-web
+    environment:
+      TEST_URI: ws://cl2-web:8090/

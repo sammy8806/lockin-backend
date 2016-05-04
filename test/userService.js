@@ -1,5 +1,6 @@
 'use strict';
-let wsUri = 'ws://localhost:8090/';
+require('dotenv').config();
+let wsUri = process.env.TEST_URI;
 let WebSocket = require('ws');
 let assert = require('chai').assert;
 

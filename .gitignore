@@ -108,3 +108,4 @@ dist/
 vagrant-config/startup.sh
 
 .vars.local
+.env

@@ -7,6 +7,7 @@ const babel = require('gulp-babel');
 const exec = require('child_process').exec;
 const concat = require('gulp-concat');
 const mocha = require('gulp-mocha');
+const exit = require('gulp-exit');
 
 const log = (err, stdout, stderr) => {
     console.log(stdout);
@@ -27,7 +28,8 @@ function test(string) {
                 js: babel
             },
             grep: string
-        }));
+        }))
+        .pipe(exit());
 }
 
 

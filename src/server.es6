@@ -1,5 +1,6 @@
 'use strict';
 require('babel-polyfill');
+require('dotenv').config();
 let config = require('./lib/config.js');
 let helpers = require('./lib/helpers.js');
 
