@@ -1,15 +1,15 @@
 'use strict';
-let wsUri = 'ws://localhost:8090/';
+let wsUri = 'ws://192.168.99.100:8090/';
 let WebSocket = require('ws');
 var assert = require('chai').assert;
 
- let removeUsers = {
-     'type': 'jsonwsp/request',
-     'version': '1.0',
-     'methodname': 'adminservice/cleanup',
-     'args': {'collection': 'users'},
-     'mirror': '-1'
- };
+let removeUsers = {
+    'type': 'jsonwsp/request',
+    'version': '1.0',
+    'methodname': 'adminservice/cleanup',
+    'args': {'collection': 'users'},
+    'mirror': '-1'
+};
 
 let requestId = 0;
 let requests = new Map();
@@ -196,6 +196,7 @@ describe('socket', () => {
 
     describe('session', () => {
         let wsLogin;
+        let userId = -1;
 
         before(done => {
             wsLogin = new WebSocket(wsUri);
@@ -235,31 +236,6 @@ describe('socket', () => {
             }, wsLogin);
         });
 
-        it.skip('should update userdata', (done) => {
-            const newMail = 'test+updated-' + new Date().getTime() + '@spamkrake.de';
-
-            let register = {
-                'type': 'jsonwsp/request',
-                'version': '1.0',
-                'methodname': 'UserService/updateUser',
-                'args': {user: {'email': newMail}},
-                'mirror': '-1'
-            };
-
-            sendMessage(register, (actual, req) => {
-                let expected = {
-                    'type': 'jsonwsp/response',
-                    'version': '1.0',
-                    'methodname': 'UserService/updateUser',
-                    'result': {'email': newMail},
-                    'reflection': req.id
-                };
-
-                assert.equal(actual, JSON.stringify(expected));
-                done();
-            }, wsLogin);
-        });
-
         it('should get Userinfo', (done) => {
             let register = {
                 'type': 'jsonwsp/request',
@@ -275,6 +251,37 @@ describe('socket', () => {
                     'version': '1.0',
                     'methodname': 'UserService/getUserInfo',
                     'result': {'email': userdata.email},
+                    'reflection': req.id
+                };
+
+                let data = JSON.parse(actual);
+                let expectedEmail = userdata.email;
+
+                assert.ok(userId !== undefined);
+                userId = data.result.id;
+
+                assert.equal(data.result.email, expectedEmail);
+                done();
+            }, wsLogin);
+        });
+
+        it('should update userdata', (done) => {
+            const newMail = 'test+updated-' + new Date().getTime() + '@spamkrake.de';
+
+            let updateUser = {
+                'type': 'jsonwsp/request',
+                'version': '1.0',
+                'methodname': 'UserService/updateUser',
+                'args': {user: {'id': userId, 'email': newMail}},
+                'mirror': '-1'
+            };
+
+            sendMessage(updateUser, (actual, req) => {
+                let expected = {
+                    'type': 'jsonwsp/response',
+                    'version': '1.0',
+                    'methodname': 'UserService/updateUser',
+                    'result': {'success': true},
                     'reflection': req.id
                 };
 

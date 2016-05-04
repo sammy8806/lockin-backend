@@ -22,27 +22,29 @@ module.exports = {
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
+        if(!User.isLoggedIn(_ws)) {
+            reject(_env.ErrorHandler.returnError(3008));
+        }
+
         let res = new SimpleResponse({success: false});
         const session = _env.sessionmanager.getSessionOfSocket(_ws);
-        if(session === undefined) {
-            reject(_env.ErrorHandler.returnError(4005));
-        }
 
         let sessionUserId = session.userId;
         let newUserInfo = _args;
-        
+
         if(newUserInfo.id === undefined) {
             newUserInfo.id = sessionUserId;
         }
 
-        if (newUserInfo.id === sessionUserId) {
+        _env.debug(METHOD_NAME, `Trying to Update ${newUserInfo.id} as ${sessionUserId}`)
 
+        if (newUserInfo.id == sessionUserId) {
             // prüfen ob informationen dabei sind, die nicht verändert werden dürfen
-            if (newUserInfo.mail !== undefined) {
-                reject({code: 'client', string: 'you are not allowed to change the mail-address'});
-            } else if (newUserInfo.displayname !== undefined) {
-                reject({code: 'client', string: 'you are not allowed to change the displayname'});
-            }
+            //if (newUserInfo.mail !== undefined) {
+            //    reject({code: 'client', string: 'you are not allowed to change the mail-address'});
+            //} else if (newUserInfo.displayname !== undefined) {
+            //    reject({code: 'client', string: 'you are not allowed to change the displayname'});
+            //}
 
             // neuen user mit nur zulässigen attributen erzeugen
             let userInfo = new User(newUserInfo);
