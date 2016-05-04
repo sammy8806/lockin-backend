@@ -32,7 +32,9 @@ module.exports = {
 
         let email = _args.email;
         let password = _args.password;
-        let key = _args.key;
+        let key = {id: _env.random(10), data: _env.random(10)};
+
+        //TODO check if keyID exists
 
         _env.debug(METHOD_NAME, `Creating User '${email}' with Hash '${password}'`);
 
