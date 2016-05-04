@@ -1,5 +1,5 @@
 'use strict';
-let wsUri = 'ws://localhost:8090/';
+let wsUri = 'ws://localhost:8080/';
 let WebSocket = require('ws');
 var assert = require('chai').assert;
 
@@ -275,11 +275,12 @@ describe('socket', () => {
             };
 
             sendMessage(register, (actual, req) => {
+                //get key from actual response since it is unknown before creation
                 let expected = {
                     'type': 'jsonwsp/response',
                     'version': '1.0',
                     'methodname': 'UserService/getUserInfo',
-                    'result': {'email': userdata.email},
+                    'result': {'email': userdata.email, 'key': JSON.parse(actual).result.key},
                     'reflection': req.id
                 };
 
@@ -289,34 +290,109 @@ describe('socket', () => {
         });
     });
 
-    // Be called from the lock
-    it.skip('should be granted access', (done) => {
-        let checkAccess = {
-            args: {
-                key: {
-                    data: 'ichbindata',
-                    id: '789453789543789',
-                    owner_id: '123123123'
-                },
-                lockId: 65456
-            },
-            methodname: 'AccessService/checkAccess',
-            mirror: '-1',
+
+    describe('doorLock', () => {
+        let wsLogin;
+
+        before(done => {
+            wsLogin = new WebSocket(wsUri);
+            wsLogin.on('open', () => {
+                setupSocket(wsLogin);
+                done();
+            });
+        });
+
+        let registerDoorlock = {
             type: 'jsonwsp/request',
-            version: '1.0'
+            version: '1.0',
+            methodname: 'DoorLockService/registerDoorLock',
+            args: {id: '1', name: 'doorlock1', 'masterKeys': 'masterkey', state: 'OPENED'},
+            mirror: -1
         };
 
-        sendMessage(checkAccess, (actual, req) => {
-            let expected = {
-                'type': 'jsonwsp/response',
-                'version': '1.0',
-                'methodname': 'AccessService/checkAccess',
-                'result': true,
-                'reflection': req.id
+        it('should add doorlock', (done) => {
+
+            sendMessage(registerDoorlock, (actual, req) => {
+                let expected = {
+                    'type': 'jsonwsp/response',
+                    'version': '1.0',
+                    'methodname': 'DoorLockService/registerDoorLock',
+                    'result': {
+                        'id': '1',
+                        'name': 'doorlock1',
+                        'masterKeys': [{'id': '123', 'owner_id': '456', 'data': 'hallo123'}],
+                        'state': 'OPENED'
+                    },
+                    'reflection': 11
+                };
+
+                assert.equal(actual, JSON.stringify(expected));
+                done();
+            }, ws);
+        });
+    });
+
+    describe('access', () => {
+        let timeStart = new Date();
+        let timeEnd = new Date();
+        timeEnd.setHours(timeEnd.getHours() + 6);
+
+        it('should add access', (done) => {
+            let addAccess = {
+                type: 'jsonwsp/request',
+                version: '1.0',
+                methodname: 'UserService/addAccess',
+                args: {
+                    id: '1',
+                    keyId: '123',
+                    doorlockIds: ['1', '2'],
+                    requestorId: '572616263da487ad193bdead',
+                    timeStart: timeStart,
+                    timeEnd: timeEnd
+                },
+
+                mirror: '-1'
             };
 
-            assert.equal(actual, JSON.stringify(expected));
-            done();
-        }, ws);
+            sendMessage(addAccess, (actual, req) => {
+                let expected = {
+                    'type': 'jsonwsp/response',
+                    'version': '1.0',
+                    'methodname': 'UserService/addAccess',
+                    'result': {'success': true},
+                    'reflection': 12
+                };
+
+                assert.equal(actual, JSON.stringify(expected));
+                done();
+            }, ws);
+        });
+
+        // called from the lock
+        it('should be granted access', (done) => {
+            let checkAccess = {
+                args: {
+                    keyId: '123',
+                    lockId: '1'
+                },
+                methodname: 'AccessService/checkAccess',
+                mirror: '-1',
+                type: 'jsonwsp/request',
+                version: '1.0'
+            };
+
+            sendMessage(checkAccess, (actual, req) => {
+                let expected = {
+                    type: 'jsonwsp/response',
+                    version: '1.0',
+                    methodname: 'AccessService/checkAccess',
+                    result: true,
+                    reflection: req.id
+                };
+
+                assert.equal(actual, JSON.stringify(expected));
+                done();
+            }, ws);
+        });
     });
 });
