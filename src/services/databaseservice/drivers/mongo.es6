@@ -280,8 +280,8 @@ methods.removeDoorLock = function (_doorLock) {
  * @param _ids
  * @returns {Cursor}
  */
-methods.findDoorLocksByIds = function(_ids) {
-    return __db.collection('doorLocks').find( { id: { $in:  _ids } } )
+methods.findDoorLocksByIds = function (_ids) {
+    return __db.collection('doorLocks').find({id: {$in: _ids}})
 };
 
 

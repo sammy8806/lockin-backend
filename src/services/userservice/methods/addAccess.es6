@@ -35,38 +35,31 @@ module.exports = {
             reject(_env.ErrorHandler.returnError(4005))
         }
 
-        let id = _args.id;
-        let keyId = _args.keyId;
-        let requestorId = _args.requestorId;
-        let timeStart = _args.timeStart;
-        let timeEnd = _args.timeEnd;
-
-
-        //check if doorlockIds exist
-        let doorlockIds = _args.doorlockIds;
-
-        resolve(db.findDoorLocksByIds(doorlockIds).toArray().then((_doorLocks) => {
-            if (_doorLocks.length < doorlockIds.length) {
-                _env.debug(METHOD_NAME, 'One or more doorlocks not found');
-                _env.ErrorHandler.throwError(6002);
+        //check if access with id already exists
+        resolve(db.findAccess({id: _args.id}).toArray().then((_accesses) => {
+            console.log("Acccesses");
+            console.log(_accesses)
+            if (_accesses.length > 0) {
+                _env.ErrorHandler.throwError(6005);
             }
 
-            let newAccess = new Access({
-                id: id,
-                keyId: keyId,
-                doorlockIds: doorlockIds,
-                requestorId: requestorId,
-                timeStart: timeStart,
-                timeEnd: timeEnd
-            });
+            //check if doorlockIds exist
+            let doorlockIds = _args.doorlockIds;
 
-            _env.debug(METHOD_NAME, `Saving access to database`);
+            return db.findDoorLocksByIds(_args.doorlockIds).toArray().then((_doorLocks) => {
+                if (_doorLocks.length < doorlockIds.length) {
+                    _env.debug(METHOD_NAME, 'One or more doorlocks not found');
+                    _env.ErrorHandler.throwError(6002);
+                }
 
-            return db.insertAccess(newAccess).then(() => {
-                return new SimpleResponse({success: true});
+                let newAccess = new Access(_args);
+
+                _env.debug(METHOD_NAME, `Saving access to database`);
+
+                return db.insertAccess(newAccess).then(() => {
+                    return new SimpleResponse({success: true});
+                });
             });
         }));
-
-
     })
 };
