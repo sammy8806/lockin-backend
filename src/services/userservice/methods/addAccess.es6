@@ -12,7 +12,7 @@ module.exports = {
     parameterVariations: [
         {
             id: 'exists',
-            key: 'exists',
+            keyId: 'exists',
             doorlockIds: 'exists',
             requestorId: 'exists',
             timeStart: 'exists',
@@ -38,7 +38,7 @@ module.exports = {
         //TODO: check if user is authorized to create access
 
         let id = _args.id;
-        let keyId = _args.key;
+        let keyId = _args.keyId;
         let requestorId = _args.requestorId;
         let doorlockIds = _args.doorlockIds;
         let timeStart = _args.timeStart;

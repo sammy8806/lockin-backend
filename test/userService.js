@@ -294,17 +294,17 @@ describe('socket', () => {
     describe('doorLock', () => {
         let wsLogin;
 
-        //login to prevent 'access denied'
-        let login = {
-            type: 'jsonwsp/request',
-            version: '1.0',
-            methodname: 'SessionService/login',
-            args: {user: {email: userdata.email, password: userdata.password}},
-            mirror: -1
-        };
 
         before(done => {
-            //Login to prevent 'access denied'
+            //login to prevent 'access denied'
+            let login = {
+                type: 'jsonwsp/request',
+                version: '1.0',
+                methodname: 'SessionService/login',
+                args: {user: {email: userdata.email, password: userdata.password}},
+                mirror: -1
+            };
+
             wsLogin = new WebSocket(wsUri);
             wsLogin.on('open', () => {
                 setupSocket(wsLogin);
@@ -331,7 +331,6 @@ describe('socket', () => {
         };
 
         it('should add doorlock', (done) => {
-
             sendMessage(registerDoorlock, (actual, req) => {
                 let expected = {
                     'type': 'jsonwsp/response',
@@ -343,6 +342,21 @@ describe('socket', () => {
 
                 assert.equal(actual, JSON.stringify(expected));
                 done();
+            }, wsLogin);
+        });
+
+        it('should fail to add doorlock with duplicate id', (done) => {
+            sendMessage(registerDoorlock, (actual, req) => {
+                let expected = {
+                    "type": "jsonwsp/fault",
+                    "version": "1.0",
+                    "fault": {"code": "7005", "string": "Doorlock already exists", "faulty": ""},
+                    "reflection": req.id
+                };
+
+                assert.equal(actual, JSON.stringify(expected));
+                done();
+
             }, wsLogin);
         });
     });
