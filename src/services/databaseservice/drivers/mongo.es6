@@ -284,6 +284,22 @@ methods.findDoorLocksByIds = function (_ids) {
     return __db.collection('doorLocks').find({id: {$in: _ids}})
 };
 
+/**
+ * @param _entry
+ * @returns {Promise}
+ */
+methods.addLogEntry = function(_entry) {
+    return __db.collection('logs').insertOne(_entry);
+};
+
+/**
+ *
+ * @param _attribs
+ * @returns {Cursor}
+ */
+methods.findLogEntry = function(_attribs) {
+    return __db.collection('logs').find(_attribs);
+};
 
 /**
  * ONLY FOR DEBUG USE!
