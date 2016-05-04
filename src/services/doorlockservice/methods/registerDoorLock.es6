@@ -31,10 +31,9 @@ module.exports = {
 
         let id = _args.id;
         let name = _args.name;
+        //TODO: check if keyIds exist - later probably only one key
         let masterKeys = _args.masterKeys;
         let state = _args.state;
-
-        //check if keys exist
 
 
         //check if doorlockid already exists
@@ -56,6 +55,6 @@ module.exports = {
             return db.insertDoorLock(newDoorLock).then(() => {
                 return newDoorLock.toJSON();
             });
-        }));       
+        }));
     })
 };

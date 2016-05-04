@@ -11,10 +11,23 @@ let removeUsers = {
     'mirror': '-1'
 };
 
+let removeDoorLocks = {
+    'type': 'jsonwsp/request',
+    'version': '1.0',
+    'methodname': 'adminservice/cleanup',
+    'args': {'collection': 'doorLocks'},
+    'mirror': '-1'
+};
+
 let requestId = 0;
 let requests = new Map();
 
 const userdata = {'email': 'test2@spamkrake.de', 'password': 'hallo123'};
+
+//keyId(s) not known yet
+const doorLock = {id: '01:23:45:67:89:ab', name: 'doorlock1', 'masterKeys': null, state: 'OPENED'};
+//variable to store the key from the actual response of getUserData
+let userKey;
 
 function setupSocket(_ws) {
     _ws.on('message', (_msg) => {
@@ -101,7 +114,9 @@ describe('socket', () => {
     describe('prequisites', () => {
         it('clear users', (done) => {
             sendMessage(removeUsers, (actual, req) => {
-                done();
+                sendMessage(removeDoorLocks, () => {
+                    done();
+                }, ws);
             }, ws);
         });
     });
@@ -285,6 +300,10 @@ describe('socket', () => {
                 };
 
                 assert.equal(actual, JSON.stringify(expected));
+
+                //store userkey
+                userKey = expected.result.key;
+
                 done();
             }, wsLogin);
         });
@@ -293,7 +312,6 @@ describe('socket', () => {
 
     describe('doorLock', () => {
         let wsLogin;
-
 
         before(done => {
             //login to prevent 'access denied'
@@ -326,18 +344,27 @@ describe('socket', () => {
             type: 'jsonwsp/request',
             version: '1.0',
             methodname: 'DoorLockService/registerDoorLock',
-            args: {id: '1', name: 'doorlock1', 'masterKeys': ['masterkey'], state: 'OPENED'},
+            args: doorLock,
             mirror: -1
         };
 
+
         it('should add doorlock', (done) => {
+
+            registerDoorlock.args.masterKeys = [userKey.id];
+
             sendMessage(registerDoorlock, (actual, req) => {
                 let expected = {
-                    'type': 'jsonwsp/response',
-                    'version': '1.0',
-                    'methodname': 'DoorLockService/registerDoorLock',
-                    'result': {'id': '1', 'name': 'doorlock1', 'masterKeys': ['masterkey'], 'state': 'OPENED'},
-                    'reflection': req.id
+                    "type": "jsonwsp/response",
+                    "version": "1.0",
+                    "methodname": "DoorLockService/registerDoorLock",
+                    "result": {
+                        "id": "01:23:45:67:89:ab",
+                        "name": "doorlock1",
+                        "masterKeys": [userKey.id],
+                        "state": "OPENED"
+                    },
+                    "reflection": req.id
                 };
 
                 assert.equal(actual, JSON.stringify(expected));
@@ -362,6 +389,34 @@ describe('socket', () => {
     });
 
     describe('access', () => {
+        let wsLogin;
+
+        before(done => {
+            //login to prevent 'access denied'
+            let login = {
+                type: 'jsonwsp/request',
+                version: '1.0',
+                methodname: 'SessionService/login',
+                args: {user: {email: userdata.email, password: userdata.password}},
+                mirror: -1
+            };
+
+            wsLogin = new WebSocket(wsUri);
+            wsLogin.on('open', () => {
+                setupSocket(wsLogin);
+                sendMessage(login, () => {
+                    done();
+                }, wsLogin);
+            });
+        });
+
+        after(done => {
+            wsLogin.on('close', () => {
+                done();
+            });
+            wsLogin.close();
+        });
+
         let timeStart = new Date();
         let timeEnd = new Date();
         timeEnd.setHours(timeEnd.getHours() + 6);
@@ -374,7 +429,7 @@ describe('socket', () => {
                 args: {
                     id: '1',
                     keyId: '123',
-                    doorlockIds: ['1', '2'],
+                    doorlockIds: [doorLock.id],
                     requestorId: '572616263da487ad193bdead',
                     timeStart: timeStart,
                     timeEnd: timeEnd
@@ -389,12 +444,12 @@ describe('socket', () => {
                     'version': '1.0',
                     'methodname': 'UserService/addAccess',
                     'result': {'success': true},
-                    'reflection': 12
+                    'reflection': req.id
                 };
 
                 assert.equal(actual, JSON.stringify(expected));
                 done();
-            }, ws);
+            }, wsLogin);
         });
 
         // called from the lock
@@ -421,7 +476,7 @@ describe('socket', () => {
 
                 assert.equal(actual, JSON.stringify(expected));
                 done();
-            }, ws);
+            }, wsLogin);
         });
     });
 })

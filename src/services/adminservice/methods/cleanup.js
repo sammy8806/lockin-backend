@@ -15,7 +15,8 @@ module.exports = {
             sessions: true,
             users: true,
             messages: true,
-            rooms: true
+            rooms: true,
+            doorLocks: true
         };
 
         if(collections[_args.collection] !== true) {

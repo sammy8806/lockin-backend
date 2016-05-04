@@ -29,36 +29,44 @@ module.exports = {
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
         //check if logged in   
-        const session = _env.sessionmanager.getSessionOfSocket(_ws); 
+        const session = _env.sessionmanager.getSessionOfSocket(_ws);
         if (session === undefined) {
             //not logged in -> access denied
             reject(_env.ErrorHandler.returnError(4005))
         }
 
-        //TODO: check if user is authorized to create access
-
         let id = _args.id;
         let keyId = _args.keyId;
         let requestorId = _args.requestorId;
-        let doorlockIds = _args.doorlockIds;
         let timeStart = _args.timeStart;
         let timeEnd = _args.timeEnd;
 
-        //TODO check if doorlocks exists
 
-        let newAccess = new Access({
-            id: id,
-            keyId: keyId,
-            doorlockIds: doorlockIds,
-            requestorId: requestorId,
-            timeStart: timeStart,
-            timeEnd: timeEnd
-        });
+        //check if doorlockIds exist
+        let doorlockIds = _args.doorlockIds;
 
-        _env.debug(METHOD_NAME, `Saving access to database`);
+        resolve(db.findDoorLocksByIds(doorlockIds).toArray().then((_doorLocks) => {
+            if (_doorLocks.length < doorlockIds.length) {
+                _env.debug(METHOD_NAME, 'One or more doorlocks not found');
+                _env.ErrorHandler.throwError(6002);
+            }
 
-        db.insertAccess(newAccess).then(() => {
-            return new SimpleResponse({success: true});
-        });
+            let newAccess = new Access({
+                id: id,
+                keyId: keyId,
+                doorlockIds: doorlockIds,
+                requestorId: requestorId,
+                timeStart: timeStart,
+                timeEnd: timeEnd
+            });
+
+            _env.debug(METHOD_NAME, `Saving access to database`);
+
+            return db.insertAccess(newAccess).then(() => {
+                return new SimpleResponse({success: true});
+            });
+        }));
+
+
     })
 };
