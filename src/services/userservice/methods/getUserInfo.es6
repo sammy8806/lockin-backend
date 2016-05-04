@@ -8,6 +8,10 @@ let db;
 let User;
 
 module.exports = {
+    parameterVariations: [
+        {}
+    ],
+
     setup: (_env) => {
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
         User = _env.ObjectFactory.get('User');
@@ -15,18 +19,27 @@ module.exports = {
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
-        let user = _args.user;
-        let search = user;
+        if(!User.isLoggedIn(_ws)) {
+            reject(_env.ErrorHandler.returnError(4005));
+        }
+
+        let user;
 
         // user suchen und zurückgeben
-        resolve(db.findUser(search).toArray()
+        resolve(User.getLoggedIn(_ws, db)
             .then((_user) => {
-                user = _user[0];
+                user = _user;
+
+                if(user === undefined) {
+                    _env.ErrorHandler.throwError(3008);
+                }
+
+                _env.debug(METHOD_NAME, JSON.stringify(user));
 
                 // A bit fixing here
                 user.id = user._id;
-                delete user._id;
 
+                delete user._id;
                 delete user.password;
                 return user;
             }),

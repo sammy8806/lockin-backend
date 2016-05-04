@@ -13,5 +13,7 @@ services:
 
   cl2-mongo:
     image: mongo:latest
+    ports:
+      - 27017:27017
     #volumes:
     # - ./.data/mongo:/data/db

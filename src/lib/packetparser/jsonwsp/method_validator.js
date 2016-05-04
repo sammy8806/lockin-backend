@@ -12,13 +12,13 @@ function validateMethodCall(_env, _servicename, _methodname, _args) {
     let service = _env.ServiceFactory.getService(_servicename);
 
     if (service === undefined) {
-        _env.ErrorHandler.throwError(1004);
+        global._env.ErrorHandler.throwError(1004);
     }
 
     _env.debug(METHOD_NAME, `Searching Method: ${_servicename}/${_methodname}`);
     let method = service.getFunc(_methodname);
     if (method === undefined) {
-        _env.ErrorHandler.throwError(1005);
+        global._env.ErrorHandler.throwError(1005);
     }
 
     let parameterVariations = method.parameterVariations;

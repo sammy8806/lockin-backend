@@ -23,7 +23,7 @@ module.exports = {
         }
 
         _env.debug(METHOD_NAME, `!!! ${_args.collection.toUpperCase()} CLEANUP !!!`);
-        go(db._getDb().collection(_args.collection).removeMany({}));
+        go(db.getDb().collection(_args.collection).removeMany({}));
 
     })
 };
