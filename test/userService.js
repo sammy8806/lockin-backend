@@ -3,13 +3,13 @@ let wsUri = 'ws://localhost:8080/';
 let WebSocket = require('ws');
 var assert = require('chai').assert;
 
- let removeUsers = {
-     'type': 'jsonwsp/request',
-     'version': '1.0',
-     'methodname': 'adminservice/cleanup',
-     'args': {'collection': 'users'},
-     'mirror': '-1'
- };
+let removeUsers = {
+    'type': 'jsonwsp/request',
+    'version': '1.0',
+    'methodname': 'adminservice/cleanup',
+    'args': {'collection': 'users'},
+    'mirror': '-1'
+};
 
 let requestId = 0;
 let requests = new Map();
@@ -294,19 +294,39 @@ describe('socket', () => {
     describe('doorLock', () => {
         let wsLogin;
 
+        //login to prevent 'access denied'
+        let login = {
+            type: 'jsonwsp/request',
+            version: '1.0',
+            methodname: 'SessionService/login',
+            args: {user: {email: userdata.email, password: userdata.password}},
+            mirror: -1
+        };
+
         before(done => {
+            //Login to prevent 'access denied'
             wsLogin = new WebSocket(wsUri);
             wsLogin.on('open', () => {
                 setupSocket(wsLogin);
-                done();
+                sendMessage(login, () => {
+                    done();
+                }, wsLogin);
             });
         });
+
+        after(done => {
+            wsLogin.on('close', () => {
+                done();
+            });
+            wsLogin.close();
+        });
+
 
         let registerDoorlock = {
             type: 'jsonwsp/request',
             version: '1.0',
             methodname: 'DoorLockService/registerDoorLock',
-            args: {id: '1', name: 'doorlock1', 'masterKeys': 'masterkey', state: 'OPENED'},
+            args: {id: '1', name: 'doorlock1', 'masterKeys': ['masterkey'], state: 'OPENED'},
             mirror: -1
         };
 
@@ -317,18 +337,13 @@ describe('socket', () => {
                     'type': 'jsonwsp/response',
                     'version': '1.0',
                     'methodname': 'DoorLockService/registerDoorLock',
-                    'result': {
-                        'id': '1',
-                        'name': 'doorlock1',
-                        'masterKeys': [{'id': '123', 'owner_id': '456', 'data': 'hallo123'}],
-                        'state': 'OPENED'
-                    },
-                    'reflection': 11
+                    'result': {'id': '1', 'name': 'doorlock1', 'masterKeys': ['masterkey'], 'state': 'OPENED'},
+                    'reflection': req.id
                 };
 
                 assert.equal(actual, JSON.stringify(expected));
                 done();
-            }, ws);
+            }, wsLogin);
         });
     });
 
@@ -395,4 +410,5 @@ describe('socket', () => {
             }, ws);
         });
     });
-});
+})
+;

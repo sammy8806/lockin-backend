@@ -23,7 +23,6 @@ module.exports = {
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
-
         const session = _env.sessionmanager.getSessionOfSocket(_ws);
         if (session === undefined) {
             //not logged in -> access denied
@@ -34,6 +33,10 @@ module.exports = {
         let name = _args.name;
         let masterKeys = _args.masterKeys;
         let state = _args.state;
+
+        //check if doorlockid already exists
+        
+        
 
         let newDoorLock = new DoorLock({
             id: id,

@@ -28,8 +28,8 @@ module.exports = {
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
-        //check if logged in
-        const session = _env.sessionmanager.getSessionOfSocket(_ws);
+        //check if logged in   
+        const session = _env.sessionmanager.getSessionOfSocket(_ws); 
         if (session === undefined) {
             //not logged in -> access denied
             reject(_env.ErrorHandler.returnError(4005))
@@ -44,7 +44,7 @@ module.exports = {
         let timeStart = _args.timeStart;
         let timeEnd = _args.timeEnd;
 
-        //TODO check if doorlock exists
+        //TODO check if doorlocks exists
 
         let newAccess = new Access({
             id: id,
@@ -57,8 +57,8 @@ module.exports = {
 
         _env.debug(METHOD_NAME, `Saving access to database`);
 
-        resolve(db.insertAccess(newAccess).then(() => {
+        db.insertAccess(newAccess).then(() => {
             return new SimpleResponse({success: true});
-        }));
+        });
     })
 };
