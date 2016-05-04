@@ -15,14 +15,8 @@ let ws;
 let requestId = 0;
 let requests = new Map();
 
-const masterkey = {
-    'id': '123',
-    'owner_id': '456',
-    'data': 'hallo123'
-};
-
 const userdata = {
-    'email': 'test2@spamkrake.de', 'password': 'hallo123', 'key': masterkey
+    'email': 'test2@spamkrake.de', 'password': 'hallo123'
 };
 
 function setupSocket(_ws) {
@@ -255,7 +249,7 @@ describe('socket', () => {
             type: 'jsonwsp/request',
             version: '1.0',
             methodname: 'DoorLockService/registerDoorLock',
-            args: {id: '1', name: 'doorlock1', 'masterKeys': [masterkey], state: 'OPENED'},
+            args: {id: '1', name: 'doorlock1', 'masterKeys': 'masterkey', state: 'OPENED'},
             mirror: -1
         };
 

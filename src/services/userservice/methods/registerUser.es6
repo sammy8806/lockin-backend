@@ -14,7 +14,7 @@ module.exports = {
         {
             password: 'exists',
             email: 'exists',
-            key: 'exists',
+            key: '!exists',
             id: '!exists',
             accesslist: '!exists',
             doorlocklist: '!exists'
@@ -34,7 +34,7 @@ module.exports = {
         let password = _args.password;
         let key = {id: _env.random(10), data: _env.random(10)};
 
-        //TODO check if keyID exists
+        //TODO check if keyID already exists
 
         _env.debug(METHOD_NAME, `Creating User '${email}' with Hash '${password}'`);
 
