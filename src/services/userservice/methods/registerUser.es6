@@ -41,8 +41,17 @@ module.exports = {
                 if (user.length === 0) { // Kein Benutzer gefunden
                     _env.debug(METHOD_NAME, 'No old user found');
 
+                    let userParams = _args;
+
+                    if(userParams.id !== undefined) {
+                        delete userParams.id;
+                    }
+                    if(userParams._id !== undefined) {
+                        delete userParams._id;
+                    }
+
                     // neuen benutzer mit email, passworthash und session(?) anlegen
-                    let newUser = new User({email: email, password: password});
+                    let newUser = new User(userParams);
 
                     _env.debug(METHOD_NAME, `Creating new User ${newUser.email} with password: '${newUser.password}'`);
 

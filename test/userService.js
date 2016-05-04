@@ -142,7 +142,7 @@ describe('socket', () => {
                     'type': 'jsonwsp/response',
                     'version': '1.0',
                     'methodname': 'UserService/registerUser',
-                    'result': {'email': 'test2@spamkrake.de'},
+                    'result': {'name': 'admin2', 'email': 'test2@spamkrake.de'},
                     'reflection': req.id
                 };
 
