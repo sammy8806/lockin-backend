@@ -20,15 +20,7 @@ job_run:
     - npm install
     - mkdir -p dist
     - node node_modules/gulp/bin/gulp.js compile
-    - npm run start
-
-  only:
-    - devel
-    - /^feature\/.*$/
-
-job_test:
-  stage: test
-  script:
+    - npm run start &
     - sleep 20
     - npm run testing
     - node node_modules/gulp/bin/gulp.js kill_server
