@@ -25,5 +25,5 @@ job_run:
     - npm run testing
 
   only:
-    - devel
+    - develop
     - /^feature\/.*$/
