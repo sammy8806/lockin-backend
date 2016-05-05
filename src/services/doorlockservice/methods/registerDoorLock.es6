@@ -26,7 +26,7 @@ module.exports = {
         const session = _env.sessionmanager.getSessionOfSocket(_ws);
         if (session === undefined) {
             //not logged in -> access denied
-            reject(_env.ErrorHandler.returnError(4005))
+            reject(_env.ErrorHandler.returnError(4005));
         }
 
         let id = _args.id;

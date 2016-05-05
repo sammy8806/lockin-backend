@@ -8,6 +8,8 @@ const _env = helpers.setupEnv();
 
 global._env = _env;
 
+_env.debug('SYSTEM', `Running Node-Version ${process.version}`);
+
 _env.websockethandler.init(_env, config.server.port, config.server.host);
 
 // -------------------
