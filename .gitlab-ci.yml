@@ -23,7 +23,6 @@ job_run:
     - npm run start &
     - sleep 20
     - npm run testing
-    - node node_modules/gulp/bin/gulp.js kill_server
 
   only:
     - devel
