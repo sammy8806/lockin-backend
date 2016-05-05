@@ -4,7 +4,6 @@ services:
   - mongo:3.3
 
 stages:
-  - build
   - test
 
 variables:
@@ -15,15 +14,24 @@ variables:
   DB_PORT: "27017"
   DB_NAME: "contentloops"
 
-job_babel:
-  stage: build
+job_run:
+  stage: test
   script:
     - npm install
     - mkdir -p dist
     - node node_modules/gulp/bin/gulp.js compile
-    - npm run start &
-    - sleep 15
+    - npm run start
+
+  only:
+    - devel
+    - /^feature\/.*$/
+
+job_run:
+  stage: test
+  script:
+    - sleep 20
     - npm run testing
+    - node node_modules/gulp/bin/gulp.js kill_server
 
   only:
     - devel

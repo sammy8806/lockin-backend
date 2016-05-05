@@ -69,5 +69,9 @@ gulp.task('ssh_logwatch', () => {
     exec('vagrant ssh -c "sudo journalctl -ef | grep node"', log);
 });
 
+gulp.task('kill_server', () => {
+    exec('node src/lib/stopServer.js');
+});
+
 gulp.task('compile', ['_es_transpile', '_js_copy']);
 gulp.task('restart', ['docker_restart']);

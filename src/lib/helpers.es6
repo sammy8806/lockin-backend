@@ -1,6 +1,7 @@
 'use strict';
 
 import crypto from 'crypto';
+import dateFormat from 'dateformat';
 
 module.exports = {
     setupEnv: setupEnv
@@ -18,7 +19,13 @@ function setupEnv() {
     };
 
     _env._log = function (_func, _type, _tag, _string) {
-        _func('[%s] [%s] %s', _type, _tag, _string);
+        _func(
+            '%s | [%s] [%s] %s',
+            dateFormat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss.l'),
+            _type,
+            _tag,
+            _string
+        );
     };
 
     _env.debug = function (_tag, _string) {

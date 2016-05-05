@@ -24,6 +24,19 @@ const doorLock = {id: '01:23:45:67:89:ab', name: 'doorlock1', 'masterKeys': null
 //variable to store the key from the actual response of getUserData
 let userKey;
 
+function createSocket() {
+    let ws;
+    let err = null;
+    do {
+        try {
+            ws = new WebSocket(wsUri);
+        } catch (e) {
+            err = e;
+        }
+    } while (err != null);
+    return ws;
+}
+
 function setupSocket(_ws) {
     _ws.on('message', (_msg) => {
         let msg = JSON.parse(_msg);
@@ -56,7 +69,7 @@ describe('socket', () => {
     let ws;
 
     beforeEach(done => {
-        ws = new WebSocket(wsUri);
+        ws = createSocket();
         ws.on('open', () => {
             setupSocket(ws);
             done();
