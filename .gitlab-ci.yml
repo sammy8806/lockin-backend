@@ -10,6 +10,14 @@ stages:
   - run
   - test
 
+variables:
+  TEST_URI: "ws://localhost:8090"
+  SERVER_PORT: 8090
+  SERVER_ADDR: "::"
+  DB_HOST: "mongodb://mongo"
+  DB_PORT: 27017
+  DB_NAME: contentloops
+
 job_start:
   stage: run
   script:

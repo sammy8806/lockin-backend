@@ -1,11 +1,11 @@
 module.exports = {
     server: {
-        host: '::',
-        port: 8090
+        host: process.env.SERVER_ADDR,
+        port: process.env.SERVER_PORT
     },
     database: {
-        host: 'mongodb://cl2-mongo',
-        port: '27017',
-        dbname: 'contentloops'
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        dbname: process.env.DB_NAME
     }
 };
