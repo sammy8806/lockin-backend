@@ -21,14 +21,10 @@ job_babel:
     - npm install
     - mkdir -p dist
     - node node_modules/gulp/bin/gulp.js compile
+    - npm run start &
+    - sleep 15
+    - npm run testing
+
   only:
     - devel
     - /^feature\/.*$/
-
-job_test:
-  stage: test
-  before_script:
-    - npm run start &
-    - sleep 15
-  script:
-    - npm run testing
