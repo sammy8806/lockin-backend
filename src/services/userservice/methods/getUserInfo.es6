@@ -36,12 +36,13 @@ module.exports = {
 
                 _env.debug(METHOD_NAME, JSON.stringify(user));
 
-                if(user._id == undefined || user.password == undefined) {
-                    _env.ErrorHandler.throwError(4008);
+                if(user._id !== undefined) {
+                    delete user._id;
+                }
+                if(user.password !== undefined) {
+                    delete user.password;
                 }
 
-                delete user._id;
-                delete user.password;
                 return user;
             }),
             (_err) => {
