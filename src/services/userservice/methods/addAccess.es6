@@ -37,8 +37,6 @@ module.exports = {
 
         //check if access with id already exists
         resolve(db.findAccess({id: _args.id}).toArray().then((_accesses) => {
-            console.log("Acccesses");
-            console.log(_accesses)
             if (_accesses.length > 0) {
                 _env.ErrorHandler.throwError(6005);
             }
