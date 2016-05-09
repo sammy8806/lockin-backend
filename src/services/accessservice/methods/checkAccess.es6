@@ -47,7 +47,7 @@ module.exports = {
 
             _env.debug(METHOD_NAME, 'Key Data is valid');
 
-            return db.findAccess({keyId: keyId}).toArray().then((_access) => {
+            return db.findAccess({requestorId: keyId}).toArray().then((_access) => {
                 let res = false;
 
                 let access = _access[0];
