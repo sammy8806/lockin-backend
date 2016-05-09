@@ -347,12 +347,7 @@ describe('socket', () => {
                         'type': 'jsonwsp/response',
                         'version': '1.0',
                         'methodname': 'DoorLockService/registerDoorLock',
-                        'result': {
-                            'id': '01:23:45:67:89:ab',
-                            'name': 'doorlock1',
-                            'masterKeys': [userKey.id],
-                            'state': 'OPENED'
-                        },
+                        'result': {'success': true},
                         'reflection': req.id
                     };
 

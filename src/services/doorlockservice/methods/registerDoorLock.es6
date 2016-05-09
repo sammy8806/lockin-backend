@@ -6,6 +6,8 @@ const METHOD_NAME = 'DoorLockService/registerDoorLock';
 
 let db;
 let DoorLock;
+let User;
+let SimpleResponse;
 
 module.exports = {
     parameterVariations: [
@@ -20,41 +22,44 @@ module.exports = {
     setup: (_env) => {
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
         DoorLock = _env.ObjectFactory.get('DoorLock');
+        User = _env.ObjectFactory.get('User');
+        SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
-        const session = _env.sessionmanager.getSessionOfSocket(_ws);
-        if (session === undefined) {
-            //not logged in -> access denied
-            reject(_env.ErrorHandler.returnError(4005));
-        }
+        let user;
 
-        let id = _args.id;
-        let name = _args.name;
-        //TODO: check if keyIds exist - later probably only one key
-        let masterKeys = _args.masterKeys;
-        let state = _args.state;
+        resolve(User.getLoggedIn(_ws, db)
+            .then((_user) => {
 
+                user = _user;
 
-        //check if doorlockid already exists
-        resolve(db.findDoorLock({id: id}).toArray().then(function (_doorLocks) {
-            if (_doorLocks.length !== 0) {
-                _env.debug(METHOD_NAME, 'Doorlock already exists');
-                _env.ErrorHandler.throwError(7005);
-            }
+                if (user === undefined) {
+                    _env.ErrorHandler.throwError(7003);
+                }
 
-            let newDoorLock = new DoorLock({
-                id: id,
-                name: name,
-                masterKeys: masterKeys,
-                state: state
-            });
+                let id = _args.id;
 
-            _env.debug(METHOD_NAME, `Saving doorlock to database`);
+                //add key id of creator to lock
+                _args.keyId = user.key.id;
 
-            return db.insertDoorLock(newDoorLock).then(() => {
-                return newDoorLock.toJSON();
-            });
-        }));
+                console.log(_args);
+
+                //check if doorlockid already exists
+                return db.findDoorLock({id: id}).toArray().then(function (_doorLocks) {
+                    if (_doorLocks.length !== 0) {
+                        _env.debug(METHOD_NAME, 'Doorlock already exists');
+                        _env.ErrorHandler.throwError(7005);
+                    }
+
+                    let newDoorLock = new DoorLock(_args);
+
+                    _env.debug(METHOD_NAME, `Saving doorlock to database`);
+
+                    return db.insertDoorLock(newDoorLock).then(() => {
+                        return new SimpleResponse({success: true});
+                    });
+                });
+            }));
     })
 };

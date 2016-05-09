@@ -54,6 +54,7 @@ const table = {
 
 
     //Doorlock
+    7003: 'User not logged in',
     7004: 'Doorlock not found',
     7005: 'Doorlock already exists'
 };
