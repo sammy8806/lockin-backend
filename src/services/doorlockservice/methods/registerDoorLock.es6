@@ -43,8 +43,6 @@ module.exports = {
                 //add key id of creator to lock
                 _args.keyId = user.key.id;
 
-                console.log(_args);
-
                 //check if doorlockid already exists
                 return db.findDoorLock({id: id}).toArray().then(function (_doorLocks) {
                     if (_doorLocks.length !== 0) {
