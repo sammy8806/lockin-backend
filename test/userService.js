@@ -390,10 +390,8 @@ describe('socket', () => {
                     methodname: 'UserService/addAccess',
                     args: {
                         id: '1',
-                        keyId: userKey.id,
                         doorlockIds: [doorLock.id],
-                        //will probably be removed
-                        requestorId: 'wirdnichtgebraucht',
+                        requestorId: userKey.id,
                         timeStart: timeStart,
                         timeEnd: timeEnd
                     },

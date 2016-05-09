@@ -50,6 +50,7 @@ const table = {
     6003: 'No Access found',
     6004: 'Invalid Key Data',
     6005: 'Access already exists',
+    6006: 'User not logged in',
 
 
     //Doorlock
