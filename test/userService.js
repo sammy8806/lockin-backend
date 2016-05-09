@@ -455,6 +455,100 @@ describe('socket', () => {
                 }, wsLogin);
             });
         });
+
+        describe('buildings', () => {
+
+            let _building = {
+                street: 'Musterweg',
+                houseNumber: '1',
+                zipCode: '12345',
+                town: 'Musterstadt'
+            };
+
+            it('add building', (done) => {
+                let addBuilding = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'UserService/addBuilding',
+                    args: _building
+                };
+
+                sendMessage(addBuilding, (act, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': addBuilding.version,
+                        'methodname': addBuilding.methodname,
+                        'result': _building,
+                        'reflection': req.id
+                    };
+
+                    let parsed = JSON.parse(act);
+
+                    if (parsed.id !== undefined) {
+                        _building.id = parsed.id;
+                        delete parsed.id;
+                    }
+
+                    assert.equal(JSON.stringify(parsed), JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+            it('update building', (done) => {
+                assert.ok(_building.id !== undefined, 'AddBuilding Failed!');
+
+                let updateBuildung = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'UserService/updateBuilding',
+                    args: {}
+                };
+
+                updateBuildung.args.id = _building.id;
+                updateBuildung.args.houseNumber = '120';
+                updateBuildung.args.zipCode = '56789';
+
+                sendMessage(updateBuildung, (act, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': updateBuildung.version,
+                        'methodname': updateBuildung.methodname,
+                        'result': _building,
+                        'reflection': req.id
+                    };
+
+                    assert.equal(act, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+            it('remove building', (done) => {
+                assert.ok(_building.id !== undefined, 'AddBuilding Failed!');
+
+                let removeBuilding = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'UserService/removeBuilding',
+                    args: {
+                        id: _building.id
+                    }
+                };
+
+                sendMessage(removeBuilding, (act, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': removeBuilding.version,
+                        'methodname': removeBuilding.methodname,
+                        'result': {'success': true},
+                        'reflection': req.id
+                    };
+
+                    assert.equal(act, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+        });
     });
 
 })
