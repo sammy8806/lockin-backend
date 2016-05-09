@@ -27,3 +27,4 @@ job_run:
   only:
     - develop
     - /^feature\/.*$/
+    - /^bugfix\/.*$/
