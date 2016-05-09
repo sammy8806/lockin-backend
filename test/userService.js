@@ -370,6 +370,23 @@ describe('socket', () => {
 
                 }, wsLogin);
             });
+
+            it('should get doorlocklist from userInfo', (done) => {
+
+                let getUserInfo = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'UserService/getUserInfo',
+                    'args': {},
+                    'mirror': '-1'
+                };
+
+                sendMessage(getUserInfo, (actual, req) => {
+                    let doorLockId = JSON.parse(actual).result.doorLocks[0].id;
+                    assert.equal(doorLockId, doorLock.id);
+                    done();
+                }, wsLogin)
+            });
         });
 
         describe('access', () => {

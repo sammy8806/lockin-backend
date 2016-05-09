@@ -12,7 +12,7 @@ module.exports = class User extends ObjectPrototype {
             'email',
             'key',
             'accesslist',
-            'doorlocklist'
+            'doorLocks'
         ];
 
         super(_user, _whitelistedAttributes);
