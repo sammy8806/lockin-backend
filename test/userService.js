@@ -125,7 +125,9 @@ describe('socket', () => {
                 sendMessage(removeQuery('doorLocks'), () => {
                     sendMessage(removeQuery('accesses'), () => {
                         sendMessage(removeQuery('sessions'), () => {
-                            done();
+                            sendMessage(removeQuery('buildings'), () => {
+                                done();
+                            }, ws);
                         }, ws);
                     }, ws);
                 }, ws);
@@ -474,6 +476,18 @@ describe('socket', () => {
                 };
 
                 sendMessage(addBuilding, (act, req) => {
+                    let parsed = JSON.parse(act);
+
+                    if (parsed.result.id !== undefined) {
+                        _building = {
+                            id: parsed.result.id,
+                            street: _building.street,
+                            houseNumber: _building.houseNumber,
+                            zipCode: _building.zipCode,
+                            town: _building.town
+                        };
+                    }
+
                     let expected = {
                         'type': 'jsonwsp/response',
                         'version': addBuilding.version,
@@ -481,13 +495,6 @@ describe('socket', () => {
                         'result': _building,
                         'reflection': req.id
                     };
-
-                    let parsed = JSON.parse(act);
-
-                    if (parsed.id !== undefined) {
-                        _building.id = parsed.id;
-                        delete parsed.id;
-                    }
 
                     assert.equal(JSON.stringify(parsed), JSON.stringify(expected));
                     done();
@@ -513,7 +520,7 @@ describe('socket', () => {
                         'type': 'jsonwsp/response',
                         'version': updateBuildung.version,
                         'methodname': updateBuildung.methodname,
-                        'result': _building,
+                        'result': {'success': true},
                         'reflection': req.id
                     };
 

@@ -277,6 +277,46 @@ methods.removeDoorLock = function (_doorLock) {
 
 /**
  *
+ * @param _findAttr
+ * @returns {Promise}
+ */
+methods.findBuilding = function (_findAttr) {
+    return __db.collection('buildings').find(_findAttr).toArray();
+};
+
+/**
+ *
+ * @param _building
+ * @returns {Promise}
+ */
+methods.addBuilding = function (_building) {
+    return __db.collection('buildings').insertOne(_building.toJSON());
+};
+
+/**
+ *
+ * @param _findAttr
+ * @param _building
+ * @returns {Promise}
+ */
+methods.updateBuilding = function (_findAttr, _building) {
+    return __db.collection('buildings').updateOne(
+        _findAttr,
+        {$set: _building}
+    );
+};
+
+/**
+ *
+ * @param _building
+ * @returns {*}
+ */
+methods.removeBuilding = function (_building) {
+    return __db.collection('buildings').removeOne({_id: ObjectID(_building.id)});
+};
+
+/**
+ *
  * @param _ids
  * @returns {Cursor}
  */
@@ -288,7 +328,7 @@ methods.findDoorLocksByIds = function (_ids) {
  * @param _entry
  * @returns {Promise}
  */
-methods.addLogEntry = function(_entry) {
+methods.addLogEntry = function (_entry) {
     return __db.collection('logs').insertOne(_entry);
 };
 
@@ -297,7 +337,7 @@ methods.addLogEntry = function(_entry) {
  * @param _attribs
  * @returns {Cursor}
  */
-methods.findLogEntry = function(_attribs) {
+methods.findLogEntry = function (_attribs) {
     return __db.collection('logs').find(_attribs);
 };
 
