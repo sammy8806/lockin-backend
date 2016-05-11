@@ -19,15 +19,9 @@ module.exports = {
     },
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
-        const session = _env.sessionmanager.getSessionOfSocket(_ws);
-        if (session === undefined) {
-            reject(_env.ErrorHandler.returnError(4005));
-        }
-
         const keyId = _args.key.id;
         const keyData = _args.key.data;
         const lockId = _args.lockId;
-
 
         _env.debug(METHOD_NAME, 'Searching User by KeyId');
 
