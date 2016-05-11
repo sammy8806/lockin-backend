@@ -304,8 +304,9 @@ describe('socket', () => {
                 }, wsLogin);
             });
 
+            const newMail = 'test+updated-' + new Date().getTime() + '@spamkrake.de';
+
             it('should update userdata', (done) => {
-                const newMail = 'test+updated-' + new Date().getTime() + '@spamkrake.de';
 
                 let updateUser = {
                     'type': 'jsonwsp/request',
@@ -321,6 +322,29 @@ describe('socket', () => {
                         'version': '1.0',
                         'methodname': 'UserService/updateUser',
                         'result': {'success': true},
+                        'reflection': req.id
+                    };
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+            it('should find userkey by mail', (done) => {
+                let findUserByMail = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'UserService/findUser',
+                    'args': {email: newMail},
+                    'mirror': '-1'
+                };
+
+                sendMessage(findUserByMail, (actual, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': '1.0',
+                        'methodname': 'UserService/findUser',
+                        'result': userKey.id,
                         'reflection': req.id
                     };
 
