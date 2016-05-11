@@ -19,31 +19,39 @@ module.exports = {
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
-        if(!User.isLoggedIn(_ws)) {
+        if (!User.isLoggedIn(_ws)) {
             reject(_env.ErrorHandler.returnError(4005));
         }
 
         let user;
 
-        // user suchen und zurückgeben
         resolve(User.getLoggedIn(_ws, db)
             .then((_user) => {
                 user = _user;
 
-                if(user === undefined) {
+                if (user === undefined) {
                     _env.ErrorHandler.throwError(3008);
                 }
 
                 _env.debug(METHOD_NAME, JSON.stringify(user));
 
-                if(user._id !== undefined) {
+                if (user._id !== undefined) {
                     delete user._id;
                 }
-                if(user.password !== undefined) {
+                if (user.password !== undefined) {
                     delete user.password;
                 }
 
-                return user;
+                return db.findDoorLock({keyId: user.key.id}).toArray()
+                    .then((_doorLocks)=> {
+                        if (_doorLocks.length === 0) {
+                            _env.debug(METHOD_NAME, 'no Doorlocks found');
+                        }
+
+                        user.doorLocks = _doorLocks;
+
+                        return user;
+                    });
             }),
             (_err) => {
                 reject({code: 'server', string: _err});
