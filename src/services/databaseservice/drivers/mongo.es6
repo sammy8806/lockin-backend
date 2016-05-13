@@ -103,15 +103,6 @@ methods.userDeleteSession = function (_user, _session) {
 
 /**
  *
- * @param _sessionId
- * @returns {*}
- */
-methods.findSessionId = function (_sessionId) {
-    return _sessionId;
-};
-
-/**
- *
  * @param _attr
  * @returns {Promise}
  */
@@ -150,15 +141,6 @@ methods.setSessionAttribute = function (_session, _attrib) {
 methods.setSessionStatus = function (_session, _status) {
     // console.log('----', typeof _session, _session.sessionId);
     return methods.setSessionAttribute(_session, {connectionState: _status});
-};
-
-/**
- *
- * @param _token
- * @returns {Promise}
- */
-methods.findSessionToken = function (_token) {
-    return __db.collection('sessions').find({sessionId: _token}).toArray();
 };
 
 /**

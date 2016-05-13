@@ -231,6 +231,8 @@ describe('socket', () => {
         }
     });
 
+    let sessionToken = null;
+
     describe('session', () => {
         let wsLogin;
         let userId = -1;
@@ -270,6 +272,33 @@ describe('socket', () => {
                         result: {success: true},
                         reflection: req.id
                     };
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+            it('should get session-token', (done) => {
+                let register = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'UserService/getNewSessionToken',
+                    args: {},
+                    mirror: -1
+                };
+
+                sendMessage(register, (actual, req) => {
+                    let expected = {
+                        type: 'jsonwsp/response',
+                        version: '1.0',
+                        methodname: 'UserService/getNewSessionToken',
+                        result: '',
+                        reflection: req.id
+                    };
+
+                    let server = JSON.parse(actual);
+                    expected.result = server.result;
+                    sessionToken = server.result;
 
                     assert.equal(actual, JSON.stringify(expected));
                     done();
@@ -470,7 +499,6 @@ describe('socket', () => {
                 );
             });
 
-
             it('should be granted access', (done) => {
                 let checkAccess = {
                     args: {
@@ -653,6 +681,33 @@ describe('socket', () => {
                     };
 
                     assert.equal(act, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+            it('failing relogin', (done) => {
+                assert.ok(sessionToken !== null, 'Gathering SessionToken failed');
+
+                let register = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'SessionService/authenticate',
+                    args: {
+                        sessionToken: sessionToken
+                    },
+                    mirror: -1
+                };
+
+                sendMessage(register, (actual, req) => {
+                    let expected = {
+                        type: 'jsonwsp/response',
+                        version: '1.0',
+                        methodname: 'SessionService/authenticate',
+                        result: {success: false},
+                        reflection: req.id
+                    };
+
+                    assert.equal(actual, JSON.stringify(expected));
                     done();
                 }, wsLogin);
             });

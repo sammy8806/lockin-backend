@@ -7,6 +7,12 @@ let Session;
 let SimpleResponse;
 
 module.exports = {
+    parameterVariations: [
+        {
+            sessionToken: 'exists'
+        }
+    ],
+
     setup: (_env) => {
         SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         Session = _env.ObjectFactory.get('Session');
@@ -23,15 +29,12 @@ module.exports = {
                         _env.ErrorHandler.throwError(3001);
                     }
 
-                    let sId = _sessions[0].sessionId;
+                    let _session = _sessions[0];
 
-                    _env.debug(METHOD_NAME, 'Token: ' + sId);
-                    return db.findSession({sessionId: sId});
+                    if (_session.logout !== undefined) {
+                        _env.ErrorHandler.throwError(3009);
+                    }
 
-                }, (_err) => {
-                    throw _err;
-                }).then((_session) => {
-                    _session = _session[0];
                     _env.sessionmanager.addSocketSession(_ws, new Session(_session));
                     db.setSessionStatus({sessionId: _session.sessionId}, 'online');
                     res.success = true;
