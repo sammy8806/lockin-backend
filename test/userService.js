@@ -700,10 +700,13 @@ describe('socket', () => {
 
                 sendMessage(register, (actual, req) => {
                     let expected = {
-                        type: 'jsonwsp/response',
+                        type: 'jsonwsp/fault',
                         version: '1.0',
-                        methodname: 'SessionService/authenticate',
-                        result: {success: false},
+                        fault: {
+                            code: '3009',
+                            string: 'Session already loggedOut',
+                            faulty: ''
+                        },
                         reflection: req.id
                     };
 
