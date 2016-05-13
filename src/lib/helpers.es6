@@ -51,6 +51,10 @@ function setupEnv() {
         return false;
     };
 
+    _env.arrayIntersect = function(array1, array2) {
+        return array1.filter((el) => (array2.indexOf(el) !== -1));
+    };
+
     _env.random = function (howMany, chars) {
         chars = chars || 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789';
         let rnd = crypto.randomBytes(howMany);

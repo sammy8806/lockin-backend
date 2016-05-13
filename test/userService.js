@@ -120,19 +120,22 @@ describe('socket', () => {
     });
 
     describe('prequisites', () => {
-        it('clear users', (done) => {
-            sendMessage(removeQuery('users'), (actual, req) => {
-                sendMessage(removeQuery('doorLocks'), () => {
-                    sendMessage(removeQuery('accesses'), () => {
-                        sendMessage(removeQuery('sessions'), () => {
-                            sendMessage(removeQuery('buildings'), () => {
-                                done();
-                            }, ws);
-                        }, ws);
-                    }, ws);
+        const collections = [
+            'accesses',
+            'buildings',
+            'doorLocks',
+            'logs',
+            'sessions',
+            'users'
+        ];
+
+        for (let collection of collections) {
+            it(`clear ${collection}`, (done) => {
+                sendMessage(removeQuery(collection), (actual, req) => {
+                    done();
                 }, ws);
-            }, ws);
-        });
+            });
+        }
     });
 
     describe('registration', () => {
@@ -592,7 +595,42 @@ describe('socket', () => {
             });
 
         });
-    });
 
-})
-;
+        describe('logging', () => {
+            it('find by ownerId', (done) => {
+                let registerDoorlock = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'LogService/findLog',
+                    args: {id: 5, requestorId: userKey.id},
+                    mirror: -1
+                };
+
+                sendMessage(registerDoorlock, (actual, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': '1.0',
+                        'methodname': 'LogService/findLog',
+                        'result': [{
+                            requestorId: userKey.id,
+                            lockId: doorLock.id,
+                            ownerId: null,
+                            date: null,
+                            actionState: 'OK'
+                        }],
+                        reflection: req.id
+                    };
+
+                    let serverEntry = JSON.parse(actual);
+                    const setIt = ['ownerId', 'date'];
+                    for (let it of setIt) {
+                        expected.result[0][it] = serverEntry.result[0][it];
+                    }
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+        });
+    });
+});

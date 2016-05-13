@@ -321,7 +321,7 @@ methods.removeBuilding = function (_building) {
  * @returns {Cursor}
  */
 methods.findDoorLocksByIds = function (_ids) {
-    return __db.collection('doorLocks').find({id: {$in: _ids}})
+    return __db.collection('doorLocks').find({id: {$in: _ids}});
 };
 
 /**
@@ -338,7 +338,7 @@ methods.addLogEntry = function (_entry) {
  * @returns {Cursor}
  */
 methods.findLogEntry = function (_attribs) {
-    return __db.collection('logs').find(_attribs);
+    return __db.collection('logs').find(_attribs).toArray();
 };
 
 /**

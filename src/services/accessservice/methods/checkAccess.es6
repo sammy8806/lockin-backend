@@ -5,6 +5,7 @@ import Promise from 'promise';
 const METHOD_NAME = 'AccessService/checkAccess';
 
 let db;
+let Log;
 
 module.exports = {
     parameterVariations: [
@@ -16,6 +17,7 @@ module.exports = {
 
     setup: (_env) => {
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
+        Log = _env.ObjectFactory.get('Log');
     },
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
@@ -72,11 +74,24 @@ module.exports = {
                 //is the user authorized?
                 res = _env.contains(access.doorlockIds, lockId) && accessValid;
 
+                let logEntry = new Log({
+                    requestorId: keyId,
+                    lockId: lockId,
+                    ownerId: null,
+                    date: new Date().getTime(),
+                    actionState: null
+                });
+
                 if (res) {
+                    logEntry.actionState = 'OK';
                     _env.debug(METHOD_NAME, `${lockId} Access Granted! ${keyId}`);
                 } else {
+                    logEntry.actionState = 'DENIED';
                     _env.debug(METHOD_NAME, `${lockId} Access Denied! ${keyId}`);
                 }
+
+                // Async Insert
+                db.addLogEntry(logEntry.toJSON());
 
                 _env.debug(METHOD_NAME, 'Done');
 
