@@ -13,7 +13,7 @@ module.exports = {
     setup: (_env) => {
         SimpleResponse = _env.ObjectFactory.get('SimpleResponse');
         Session = _env.ObjectFactory.get('Session');
-        db = _env.GlobalServiceFactory.getService('DatabaseService');
+        db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
         sessionmanager = _env.sessionmanager;
     },
 
@@ -21,41 +21,33 @@ module.exports = {
 
         let res = new SimpleResponse({success: false});
 
-        let dbDriver = null;
-        try {
-            dbDriver = db.getDriver();
-        } catch (e) {
-            _env.error(METHOD_NAME, 'Please setup this function first!');
-            reject(_env.ErrorHandler.returnError(4008));
-        }
-
         // session von websocket aus sessionmanager holen
         let session = sessionmanager.getSessionOfSocket(_ws);
 
-        if(session === undefined) {
+        if (session === undefined) {
             _env.error(METHOD_NAME, 'No Session found!');
             reject(_env.ErrorHandler.returnError(4009));
             return;
         }
 
         // user anhand der session in der datenbank finden
-        return dbDriver.findUser({'session': session.sessionId}).toArray().then(function (user) {
+        let ret = db.findUser({'session': session.sessionId}).toArray()
+            .then(function (user) {
+                if (user.length === 0) {
+                    // Kein Benutzer gefunden
+                    _env.error(METHOD_NAME, 'No User found!');
+                    reject(_env.ErrorHandler.returnError(4002));
+                }
 
-            if (user.length === 0) {
-                // Kein Benutzer gefunden
-                _env.error(METHOD_NAME, 'No User found!');
-                reject(_env.ErrorHandler.returnError(4002));
-            } else {
-                user = user[0];
-            }
+                session.endSession();
 
-            session.endSession();
+                // session aus sessionmanager entfernen
+                _env.sessionmanager.socketClosed(_ws);
 
-            // session aus sessionmanager entfernen
-            _env.sessionmanager.socketClosed(_ws);
+                res.success = true;
+                return res;
+            });
 
-            res.success = true;
-            return res;
-        });
+        resolve(ret);
     })
 };

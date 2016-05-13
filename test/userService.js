@@ -245,6 +245,7 @@ describe('socket', () => {
 
         after(done => {
             wsLogin.on('close', () => {
+                console.log('CLOSED!');
                 done();
             });
             wsLogin.close();
@@ -628,6 +629,30 @@ describe('socket', () => {
                     }
 
                     assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+        });
+
+        describe('logout', () => {
+            it('logout user', (done) => {
+                let logout = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'SessionService/logout',
+                    args: {}
+                };
+
+                sendMessage(logout, (act, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': logout.version,
+                        'methodname': logout.methodname,
+                        'result': {'success': true},
+                        'reflection': req.id
+                    };
+
+                    assert.equal(act, JSON.stringify(expected));
                     done();
                 }, wsLogin);
             });
