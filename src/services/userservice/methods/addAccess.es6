@@ -58,7 +58,12 @@ module.exports = {
                             _env.ErrorHandler.throwError(6002);
                         }
 
+
                         let newAccess = new Access(_args);
+
+                        // store dates as dateobjects
+                        newAccess.timeStart = new Date(_args.timeStart);
+                        newAccess.timeEnd =  new Date(_args.timeEnd);
 
                         //add owner-Key-id from logged in user to access-object
                         newAccess.keyId = user.key.id;
