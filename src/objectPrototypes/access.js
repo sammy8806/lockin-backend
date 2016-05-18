@@ -7,7 +7,7 @@ module.exports = class Access extends ObjectPrototype {
         const _whitelistedAttributes = [
             'id',
             'keyId',
-            'doorlockIds',
+            'doorLockIds',
             'requestorId',
             'timeStart',
             'timeEnd'

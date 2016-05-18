@@ -12,9 +12,9 @@ let User;
 module.exports = {
     parameterVariations: [
         {
-            id: 'exists',
+            id: '!exists',
             keyId: '!exists',
-            doorlockIds: 'exists',
+            doorLockIds: 'exists',
             requestorId: 'exists',
             timeStart: 'exists',
             timeEnd: 'exists'
@@ -50,9 +50,9 @@ module.exports = {
                     }
 
                     //check if doorlockIds exist
-                    let doorlockIds = _args.doorlockIds;
+                    let doorlockIds = _args.doorLockIds;
 
-                    return db.findDoorLocksByIds(_args.doorlockIds).toArray().then((_doorLocks) => {
+                    return db.findDoorLocksByIds(_args.doorLockIds).toArray().then((_doorLocks) => {
                         if (_doorLocks.length < doorlockIds.length) {
                             _env.debug(METHOD_NAME, 'One or more doorlocks not found');
                             _env.ErrorHandler.throwError(6002);

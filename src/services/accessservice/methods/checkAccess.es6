@@ -53,7 +53,7 @@ module.exports = {
                 } else {
                     _env.debug(METHOD_NAME, 'found Access');
                     //is the user authorized?
-                    res = _env.contains(access.doorlockIds, lockId);
+                    res = _env.contains(access.doorLockIds, lockId);
                 }
 
                 let logEntry = new Log({

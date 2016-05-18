@@ -460,8 +460,7 @@ describe('socket', () => {
                     version: '1.0',
                     methodname: 'UserService/addAccess',
                     args: {
-                        id: '1',
-                        doorlockIds: [doorLock.id],
+                        doorLockIds: [doorLock.id],
                         requestorId: userKey.id,
                         timeStart: timeStart,
                         timeEnd: timeEnd
@@ -481,22 +480,6 @@ describe('socket', () => {
                     assert.equal(actual, JSON.stringify(expected));
                     done();
                 }, wsLogin);
-            });
-
-            it('should fail to add access with duplicate id', (done) => {
-                sendMessage(addAccess, (actual, req) => {
-                        let expected = {
-                            'type': 'jsonwsp/fault',
-                            'version': '1.0',
-                            'fault': {'code': '6005', 'string': 'Access already exists', 'faulty': ''},
-                            'reflection': req.id
-                        };
-
-                        assert.equal(actual, JSON.stringify(expected));
-                        done();
-                    },
-                    wsLogin
-                );
             });
 
             it('should be granted access', (done) => {
@@ -524,6 +507,23 @@ describe('socket', () => {
                     done();
                 }, wsLogin);
             });
+
+            it('should find access by doorlockId', (done) => {
+                let findAccess = {
+                    args: {
+                        doorLockIds: doorLock.id
+                    },
+                    methodname: 'AccessService/findAccess',
+                    mirror: '-1',
+                    type: 'jsonwsp/request',
+                    version: '1.0'
+                };
+
+                sendMessage(findAccess, (actual, req) => {
+                    assert(JSON.parse(actual).result.length > 0);
+                    done();
+                }, wsLogin);
+            })
         });
 
         describe('buildings', () => {
@@ -716,4 +716,5 @@ describe('socket', () => {
             });
         });
     });
-});
+})
+;
