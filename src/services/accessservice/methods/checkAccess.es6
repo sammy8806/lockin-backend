@@ -43,18 +43,11 @@ module.exports = {
 
             _env.debug(METHOD_NAME, 'Key Data is valid');
             
-            return db.findAccessByRequestorAndTime(keyId, new Date()).toArray().then((_access) => {
-                let res = false;
+            return db.findAccessByRequestorAndTimeAndlockId(keyId, new Date(), lockId).toArray().then((_access) => {
 
                 let access = _access[0];
 
-                if (access === undefined || _access.length === 0) {
-                    _env.debug(METHOD_NAME, 'no Access found');
-                } else {
-                    _env.debug(METHOD_NAME, 'found Access');
-                    //is the user authorized?
-                    res = _env.contains(access.doorLockIds, lockId);
-                }
+                let res = access !== undefined && _access.length > 0;
 
                 let logEntry = new Log({
                     requestorId: keyId,

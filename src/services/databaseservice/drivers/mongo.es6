@@ -223,11 +223,12 @@ methods.findAccess = function (_attr) {
  * @param time
  * @returns {T}
  */
-methods.findAccessByRequestorAndTime = function (requestorId, time) {
+methods.findAccessByRequestorAndTimeAndlockId = function (requestorId, time, lockId) {
     return __db.collection('accesses').find({$and: [
         {timeStart: {$lte: time}},
         {timeEnd: {$gte: time}},
-        {requestorId: requestorId}
+        {requestorId: requestorId},
+        {doorLockIds: lockId}
     ]});
 };
 
