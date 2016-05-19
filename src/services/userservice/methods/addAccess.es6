@@ -43,12 +43,14 @@ module.exports = {
 
                 _env.debug(METHOD_NAME, JSON.stringify(user));
 
+                let id = _env.random(10);
+
                 //check if access with id already exists
-                return db.findAccess({id: _args.id}).toArray().then((_accesses) => {
+                return db.findAccess({id: id}).toArray().then((_accesses) => {
                     if (_accesses.length > 0) {
                         _env.ErrorHandler.throwError(6005);
                     }
-
+                    
                     //check if doorlockIds exist
                     let doorlockIds = _args.doorLockIds;
 
@@ -60,6 +62,8 @@ module.exports = {
 
 
                         let newAccess = new Access(_args);
+                        
+                        newAccess.id = id;
 
                         // store dates as dateobjects
                         newAccess.timeStart = new Date(_args.timeStart);
