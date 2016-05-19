@@ -35,7 +35,7 @@ module.exports = {
                 user = _user;
 
                 if (user === undefined) {
-                    _env.ErrorHandler.throwError(7003);
+                    _env.ErrorHandler.throwError(3002);
                 }
 
                 let id = _args.id;
