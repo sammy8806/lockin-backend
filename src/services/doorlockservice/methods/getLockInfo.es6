@@ -20,13 +20,18 @@ module.exports = {
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
-        let user;
+        resolve(db.findDoorLock({id: _args.id}).toArray()
+            .then((_doorLocks) => {
+                    if (_doorLocks.length === 0) {
+                        _env.ErrorHandler.throwError(7004);
+                    }
 
-        resolve(
-            db.findDoorLock({id: _args.id}).toArray()
-                .then(
-                    (_doorLocks) => new DoorLock(_doorLocks[0]).toJSON()
-                )
+                    _env.debug(METHOD_NAME, 'Found ' + _doorLocks.length + ' DoorLocks');
+                    let lock = new DoorLock(_doorLocks[0]);
+
+                    return lock.toJSON();
+                }
+            )
         )
     })
 };

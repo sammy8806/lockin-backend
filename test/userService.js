@@ -446,6 +446,36 @@ describe('socket', () => {
                     done();
                 }, wsLogin)
             });
+
+            it('getLockInfo', (done) => {
+                let getLockInfo = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'DoorLockService/getLockInfo',
+                    args: {id: doorLock.id},
+                    mirror: -1
+                };
+
+                sendMessage(getLockInfo, (actual, req) => {
+                    let expected = {
+                        type: 'jsonwsp/response',
+                        version: '1.0',
+                        methodname: 'DoorLockService/getLockInfo',
+                        result: {
+                            id: doorLock.id,
+                            name: doorLock.name,
+                            masterKeys: [userKey.id],
+                            state: "OPENED",
+                            keyId: userKey.id
+                        },
+                        reflection: req.id
+                    };
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+
+                }, wsLogin);
+            });
         });
 
         describe('access', () => {
