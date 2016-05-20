@@ -9,7 +9,8 @@ module.exports = class DoorLock extends ObjectPrototype {
             'name',
             'masterKeys',
             'state',
-            'keyId'
+            'keyId',
+            'openingDuration'
         ];
 
         super(_doorLock, _whitelistedAttributes);
