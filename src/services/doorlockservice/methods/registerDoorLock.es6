@@ -52,6 +52,11 @@ module.exports = {
 
                     let newDoorLock = new DoorLock(_args);
 
+                    //set default openingDuration
+                    if (_args.openingDuration === undefined || _args.openingDuration <= 0) {
+                        newDoorLock.openingDuration = 10 * 1000;
+                    }
+
                     _env.debug(METHOD_NAME, `Saving doorlock to database`);
 
                     return db.insertDoorLock(newDoorLock).then(() => {

@@ -42,7 +42,7 @@ module.exports = {
             }
 
             _env.debug(METHOD_NAME, 'Key Data is valid');
-            
+
             return db.findAccessByRequestorAndTimeAndlockId(keyId, new Date(), lockId).toArray().then((_access) => {
 
                 let access = _access[0];
