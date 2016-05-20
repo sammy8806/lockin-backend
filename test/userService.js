@@ -675,7 +675,8 @@ describe('socket', () => {
                             lockId: doorLock.id,
                             ownerId: null,
                             date: null,
-                            actionState: 'OK'
+                            actionState: 'OK',
+                            openingDuration: 10000
                         }],
                         reflection: req.id
                     };
