@@ -230,6 +230,11 @@ methods.updateAccess = function (_findAttr, _access) {
     );
 };
 
+methods.removeAccess = function (_access) {
+    return __db.collection('accesses').removeOne({id: _access.id});
+};
+
+
 /**
  * 
  * @param requestorId
