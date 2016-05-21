@@ -466,7 +466,8 @@ describe('socket', () => {
                             name: doorLock.name,
                             masterKeys: [userKey.id],
                             state: "OPENED",
-                            keyId: userKey.id
+                            keyId: userKey.id,
+                            openingDuration: 10000
                         },
                         reflection: req.id
                     };
@@ -488,12 +489,13 @@ describe('socket', () => {
                 addAccess = {
                     type: 'jsonwsp/request',
                     version: '1.0',
-                    methodname: 'UserService/addAccess',
+                    methodname: 'UserService/addAccessOrRequest',
                     args: {
                         doorLockIds: [doorLock.id],
                         requestorId: userKey.id,
                         timeStart: timeStart,
-                        timeEnd: timeEnd
+                        timeEnd: timeEnd,
+                        type: 'ACCESS'
                     },
                     mirror: '-1'
                 };
@@ -502,7 +504,7 @@ describe('socket', () => {
                     let expected = {
                         'type': 'jsonwsp/response',
                         'version': '1.0',
-                        'methodname': 'UserService/addAccess',
+                        'methodname': 'UserService/addAccessOrRequest',
                         'result': {'success': true},
                         'reflection': req.id
                     };
@@ -553,7 +555,25 @@ describe('socket', () => {
                     assert(JSON.parse(actual).result.length > 0);
                     done();
                 }, wsLogin);
-            })
+            });
+
+            it('should get accessList from userInfo', (done) => {
+
+                let getUserInfo = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'UserService/getUserInfo',
+                    'args': {},
+                    'mirror': '-1'
+                };
+
+                sendMessage(getUserInfo, (actual, req) => {
+                    let accesslist = JSON.parse(actual).result.accesslist;
+                    assert.equal(accesslist.length, 1);
+                    done();
+                }, wsLogin)
+            });
+
         });
 
         describe('buildings', () => {
@@ -579,6 +599,7 @@ describe('socket', () => {
                     if (parsed.result.id !== undefined) {
                         _building = {
                             id: parsed.result.id,
+                            keyId: userKey.id,
                             street: _building.street,
                             houseNumber: _building.houseNumber,
                             zipCode: _building.zipCode,
@@ -626,6 +647,24 @@ describe('socket', () => {
                     done();
                 }, wsLogin);
             });
+
+            it('should get buildings from userInfo', (done) => {
+
+                let getUserInfo = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'UserService/getUserInfo',
+                    'args': {},
+                    'mirror': '-1'
+                };
+
+                sendMessage(getUserInfo, (actual, req) => {
+                    let buildings = JSON.parse(actual).result.buildings;
+                    assert.equal(buildings.length, 1);
+                    done();
+                }, wsLogin)
+            });
+
 
             it('remove building', (done) => {
                 assert.ok(_building.id !== undefined, 'AddBuilding Failed!');
@@ -675,8 +714,7 @@ describe('socket', () => {
                             lockId: doorLock.id,
                             ownerId: null,
                             date: null,
-                            actionState: 'OK',
-                            openingDuration: 10000
+                            actionState: 'OK'
                         }],
                         reflection: req.id
                     };

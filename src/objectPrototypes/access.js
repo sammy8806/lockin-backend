@@ -10,7 +10,8 @@ module.exports = class Access extends ObjectPrototype {
             'doorLockIds',
             'requestorId',
             'timeStart',
-            'timeEnd'
+            'timeEnd',
+            'type'
         ];
 
         super(_access, _whitelistedAttributes);

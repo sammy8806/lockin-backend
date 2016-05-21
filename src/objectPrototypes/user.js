@@ -12,7 +12,8 @@ module.exports = class User extends ObjectPrototype {
             'email',
             'key',
             'accesslist',
-            'doorLocks'
+            'doorLocks',
+            'buildings'
         ];
 
         super(_user, _whitelistedAttributes);
