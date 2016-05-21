@@ -477,6 +477,31 @@ describe('socket', () => {
 
                 }, wsLogin);
             });
+
+            it('should update doorLock', (done) => {
+                doorLock.state = 'CLOSED';
+
+                let updateDoorLock = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'DoorLockService/updateDoorLock',
+                    args: doorLock
+                };
+
+                sendMessage(updateDoorLock, (act, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version':'1.0',
+                        'methodname':'DoorLockService/updateDoorLock',
+                        'result': {'success': true},
+                        'reflection': req.id
+                    };
+
+                    assert.equal(act, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
         });
 
         describe('access', () => {
