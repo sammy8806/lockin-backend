@@ -2,7 +2,7 @@
 
 import Promise from 'promise';
 
-const METHOD_NAME = 'UserService/addAccess';
+const METHOD_NAME = 'UserService/addAccessOrRequest';
 
 let db;
 let SimpleResponse;
@@ -17,7 +17,8 @@ module.exports = {
             doorLockIds: 'exists',
             requestorId: 'exists',
             timeStart: 'exists',
-            timeEnd: 'exists'
+            timeEnd: 'exists',
+            type: 'exists'
         }
     ],
 

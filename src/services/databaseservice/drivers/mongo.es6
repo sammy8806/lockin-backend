@@ -228,7 +228,8 @@ methods.findAccessByRequestorAndTimeAndlockId = function (requestorId, time, loc
         {timeStart: {$lte: time}},
         {timeEnd: {$gte: time}},
         {requestorId: requestorId},
-        {doorLockIds: lockId}
+        {doorLockIds: lockId},
+        {type: 'ACCESS'}
     ]});
 };
 

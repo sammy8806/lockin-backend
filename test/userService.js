@@ -466,7 +466,8 @@ describe('socket', () => {
                             name: doorLock.name,
                             masterKeys: [userKey.id],
                             state: "OPENED",
-                            keyId: userKey.id
+                            keyId: userKey.id,
+                            openingDuration: 10000
                         },
                         reflection: req.id
                     };
@@ -488,12 +489,13 @@ describe('socket', () => {
                 addAccess = {
                     type: 'jsonwsp/request',
                     version: '1.0',
-                    methodname: 'UserService/addAccess',
+                    methodname: 'UserService/addAccessOrRequest',
                     args: {
                         doorLockIds: [doorLock.id],
                         requestorId: userKey.id,
                         timeStart: timeStart,
-                        timeEnd: timeEnd
+                        timeEnd: timeEnd,
+                        type: 'ACCESS'
                     },
                     mirror: '-1'
                 };
@@ -502,7 +504,7 @@ describe('socket', () => {
                     let expected = {
                         'type': 'jsonwsp/response',
                         'version': '1.0',
-                        'methodname': 'UserService/addAccess',
+                        'methodname': 'UserService/addAccessOrRequest',
                         'result': {'success': true},
                         'reflection': req.id
                     };
@@ -675,8 +677,7 @@ describe('socket', () => {
                             lockId: doorLock.id,
                             ownerId: null,
                             date: null,
-                            actionState: 'OK',
-                            openingDuration: 10000
+                            actionState: 'OK'
                         }],
                         reflection: req.id
                     };
