@@ -218,6 +218,19 @@ methods.findAccess = function (_attr) {
 };
 
 /**
+ *
+ * @param _findAttr
+ * @param _access
+ * @returns {Promise}
+ */
+methods.updateAccess = function (_findAttr, _access) {
+    return __db.collection('accesses').updateOne(
+        _findAttr,
+        {$set: _access}
+    );
+};
+
+/**
  * 
  * @param requestorId
  * @param time

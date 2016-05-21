@@ -483,20 +483,21 @@ describe('socket', () => {
             let timeStart = new Date();
             let timeEnd = new Date();
             timeEnd.setHours(timeEnd.getHours() + 6);
-            let addAccess;
+            let access;
 
             it('should add access', (done) => {
-                addAccess = {
+                access = {
+                    doorLockIds: [doorLock.id],
+                    requestorId: userKey.id,
+                    timeStart: timeStart,
+                    timeEnd: timeEnd,
+                    type: 'ACCESS'
+                };
+                let addAccess = {
                     type: 'jsonwsp/request',
                     version: '1.0',
                     methodname: 'UserService/addAccessOrRequest',
-                    args: {
-                        doorLockIds: [doorLock.id],
-                        requestorId: userKey.id,
-                        timeStart: timeStart,
-                        timeEnd: timeEnd,
-                        type: 'ACCESS'
-                    },
+                    args: access,
                     mirror: '-1'
                 };
 
@@ -552,7 +553,34 @@ describe('socket', () => {
                 };
 
                 sendMessage(findAccess, (actual, req) => {
-                    assert(JSON.parse(actual).result.length > 0);
+                    let parsed = JSON.parse(actual);
+                    access.id = parsed.result[0].id;
+                    assert(parsed.result.length > 0);
+                    done();
+                }, wsLogin);
+            });
+
+            it('should update access', (done) => {
+                //change type from ACCESS to REQUEST
+                access.type = 'REQUEST';
+
+                let updateAccess = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'AccessService/updateAccess',
+                    args: access
+                };
+
+                sendMessage(updateAccess, (act, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version':'1.0',
+                        'methodname':'AccessService/updateAccess',
+                        'result': {'success': true},
+                        'reflection': req.id
+                    };
+
+                    assert.equal(act, JSON.stringify(expected));
                     done();
                 }, wsLogin);
             });
