@@ -555,7 +555,25 @@ describe('socket', () => {
                     assert(JSON.parse(actual).result.length > 0);
                     done();
                 }, wsLogin);
-            })
+            });
+
+            it('should get accessList from userInfo', (done) => {
+
+                let getUserInfo = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'UserService/getUserInfo',
+                    'args': {},
+                    'mirror': '-1'
+                };
+
+                sendMessage(getUserInfo, (actual, req) => {
+                    let accesslist = JSON.parse(actual).result.accesslist;
+                    assert.equal(accesslist.length, 1);
+                    done();
+                }, wsLogin)
+            });
+
         });
 
         describe('buildings', () => {

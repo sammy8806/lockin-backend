@@ -6,6 +6,8 @@ const METHOD_NAME = 'UserService/GetUserInfo';
 
 let db;
 let User;
+let DoorLock;
+let Access;
 
 module.exports = {
     parameterVariations: [
@@ -15,6 +17,8 @@ module.exports = {
     setup: (_env) => {
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
         User = _env.ObjectFactory.get('User');
+        DoorLock = _env.ObjectFactory.get('DoorLock');
+        Access = _env.ObjectFactory.get('Access');
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
@@ -42,15 +46,38 @@ module.exports = {
                     delete user.password;
                 }
 
+                //add Doorlocks of user to user object
                 return db.findDoorLock({keyId: user.key.id}).toArray()
                     .then((_doorLocks)=> {
                         if (_doorLocks.length === 0) {
                             _env.debug(METHOD_NAME, 'no Doorlocks found');
                         }
 
-                        user.doorLocks = _doorLocks;
+                        let doorLocks = [];
 
-                        return user;
+                        for (let i = 0; i < _doorLocks.length; i++) {
+                            doorLocks[i] = new DoorLock(_doorLocks[i]).toJSON();
+                        }
+
+                        user.doorLocks = doorLocks;
+
+                        //add Accesses the user created to user object
+                        return db.findAccess({keyId: user.key.id}).toArray()
+                            .then((_accesses) => {
+                                if (_accesses.length === 0) {
+                                    _env.debug(METHOD_NAME, 'no Accesses found');
+                                }
+
+                                let accesses = [];
+
+                                for (let i = 0; i < _accesses.length; i++) {
+                                    accesses[i] = new Access(_accesses[i]).toJSON();
+                                }
+
+                                user.accesslist = accesses;
+
+                                return user;
+                            });
                     });
             }),
             (_err) => {
