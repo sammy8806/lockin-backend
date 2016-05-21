@@ -8,6 +8,7 @@ let db;
 let User;
 let DoorLock;
 let Access;
+let Building;
 
 module.exports = {
     parameterVariations: [
@@ -19,6 +20,7 @@ module.exports = {
         User = _env.ObjectFactory.get('User');
         DoorLock = _env.ObjectFactory.get('DoorLock');
         Access = _env.ObjectFactory.get('Access');
+        Building = _env.ObjectFactory.get('Building');
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
@@ -57,6 +59,7 @@ module.exports = {
 
                         for (let i = 0; i < _doorLocks.length; i++) {
                             doorLocks[i] = new DoorLock(_doorLocks[i]).toJSON();
+                            delete doorLocks[i].keyId;
                         }
 
                         user.doorLocks = doorLocks;
@@ -72,11 +75,29 @@ module.exports = {
 
                                 for (let i = 0; i < _accesses.length; i++) {
                                     accesses[i] = new Access(_accesses[i]).toJSON();
+                                    delete accesses[i].keyId;
                                 }
 
                                 user.accesslist = accesses;
 
-                                return user;
+                                //add buildings the user created to user object
+                                return db.findBuilding({keyId: user.key.id})
+                                    .then((_buildings) => {
+                                        if (_buildings.length === 0) {
+                                            _env.debug(METHOD_NAME, 'no Buildings found');
+                                        }
+
+                                        let buildings = [];
+
+                                        for (let i = 0; i < _buildings.length; i++) {
+                                            buildings[i] = new Building(_buildings[i]).toJSON();
+                                            delete buildings[i].keyId;
+                                        }
+
+                                        user.buildings = buildings;
+
+                                        return user;
+                                    });
                             });
                     });
             }),

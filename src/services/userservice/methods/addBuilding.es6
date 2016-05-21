@@ -25,30 +25,37 @@ module.exports = {
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
+        let user;
 
-        if (!User.isLoggedIn(_ws)) {
-            reject(_env.ErrorHandler.returnError(4005));
-        }
+        resolve(User.getLoggedIn(_ws, db)
+            .then((_user) => {
 
-        let building = new Building(_args);
+                user = _user;
 
-        let ret = db.findBuilding(building).then((_oldBuilding) => {
-            if (_oldBuilding.length !== 0) {
-                _env.debug(METHOD_NAME, `Found ${_oldBuilding.length} old Buildings`);
-                _env.ErrorHandler.throwError(8001);
-            }
+                if (user === undefined) {
+                    _env.ErrorHandler.throwError(3002);
+                }
 
-            _env.debug(METHOD_NAME, 'Found no old Buildings');
+                _args.keyId = user.key.id;
 
-            return db.addBuilding(building)
-                .then((_newBuilding) => {
-                    _env.debug(METHOD_NAME, 'NewBuilding: ' + JSON.stringify(_newBuilding));
-                    // _env.debug(METHOD_NAME, require('util').inspect(_newBuilding));
-                    building.id = _newBuilding.insertedId;
-                    return building.toJSON();
+                let building = new Building(_args);
+
+                return db.findBuilding(building).then((_oldBuilding) => {
+                    if (_oldBuilding.length !== 0) {
+                        _env.debug(METHOD_NAME, `Found ${_oldBuilding.length} old Buildings`);
+                        _env.ErrorHandler.throwError(8001);
+                    }
+
+                    _env.debug(METHOD_NAME, 'Found no old Buildings');
+                    
+                    return db.addBuilding(building)
+                        .then((_newBuilding) => {
+                            _env.debug(METHOD_NAME, 'NewBuilding: ' + JSON.stringify(_newBuilding));
+                            // _env.debug(METHOD_NAME, require('util').inspect(_newBuilding));
+                            building.id = _newBuilding.insertedId;                                
+                            return building.toJSON();
+                        });
                 });
-        });
-
-        resolve(ret);
+            }));
     })
 };

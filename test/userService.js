@@ -599,6 +599,7 @@ describe('socket', () => {
                     if (parsed.result.id !== undefined) {
                         _building = {
                             id: parsed.result.id,
+                            keyId: userKey.id,
                             street: _building.street,
                             houseNumber: _building.houseNumber,
                             zipCode: _building.zipCode,
@@ -646,6 +647,24 @@ describe('socket', () => {
                     done();
                 }, wsLogin);
             });
+
+            it('should get buildings from userInfo', (done) => {
+
+                let getUserInfo = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'UserService/getUserInfo',
+                    'args': {},
+                    'mirror': '-1'
+                };
+
+                sendMessage(getUserInfo, (actual, req) => {
+                    let buildings = JSON.parse(actual).result.buildings;
+                    assert.equal(buildings.length, 1);
+                    done();
+                }, wsLogin)
+            });
+
 
             it('remove building', (done) => {
                 assert.ok(_building.id !== undefined, 'AddBuilding Failed!');
