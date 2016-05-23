@@ -2,7 +2,7 @@
 
 import Promise from 'promise';
 
-const METHOD_NAME = 'UserService/addBuilding';
+const METHOD_NAME = 'BuildingService/addBuilding';
 
 let db;
 let User;

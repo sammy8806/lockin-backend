@@ -728,6 +728,29 @@ describe('socket', () => {
                 }, wsLogin);
             });
 
+            it('should get building info', (done) => {
+                let getBuildingInfo = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'BuildingService/getBuildingInfo',
+                    'args': {id: _building.id},
+                    'mirror': '-1'
+                };
+
+                sendMessage(getBuildingInfo, (actual, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': getBuildingInfo.version,
+                        'methodname': getBuildingInfo.methodname,
+                        'result': _building,
+                        'reflection': req.id
+                    };
+
+                    assert.equal(req, expected);
+                    done();
+                }, wsLogin);
+            });
+
             it('should get buildings from userInfo', (done) => {
 
                 let getUserInfo = {
@@ -742,7 +765,7 @@ describe('socket', () => {
                     let buildings = JSON.parse(actual).result.buildings;
                     assert.equal(buildings.length, 1);
                     done();
-                }, wsLogin)
+                }, wsLogin);
             });
 
 
