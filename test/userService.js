@@ -669,7 +669,7 @@ describe('socket', () => {
                 let addBuilding = {
                     type: 'jsonwsp/request',
                     version: '1.0',
-                    methodname: 'UserService/addBuilding',
+                    methodname: 'BuildingService/addBuilding',
                     args: _building
                 };
 
@@ -706,7 +706,7 @@ describe('socket', () => {
                 let updateBuildung = {
                     type: 'jsonwsp/request',
                     version: '1.0',
-                    methodname: 'UserService/updateBuilding',
+                    methodname: 'BuildingService/updateBuilding',
                     args: {}
                 };
 
@@ -775,7 +775,7 @@ describe('socket', () => {
                 let removeBuilding = {
                     type: 'jsonwsp/request',
                     version: '1.0',
-                    methodname: 'UserService/removeBuilding',
+                    methodname: 'BuildingService/removeBuilding',
                     args: {
                         id: _building.id
                     }
