@@ -739,14 +739,14 @@ describe('socket', () => {
 
                 sendMessage(getBuildingInfo, (actual, req) => {
                     let expected = {
-                        'type': 'jsonwsp/response',
-                        'version': getBuildingInfo.version,
-                        'methodname': getBuildingInfo.methodname,
-                        'result': _building,
-                        'reflection': req.id
+                        type: 'jsonwsp/response',
+                        version: getBuildingInfo.version,
+                        methodname: getBuildingInfo.methodname,
+                        result: _building,
+                        reflection: req.id
                     };
 
-                    assert.equal(req, expected);
+                    assert.equal(req, JSON.parse(expected));
                     done();
                 }, wsLogin);
             });
