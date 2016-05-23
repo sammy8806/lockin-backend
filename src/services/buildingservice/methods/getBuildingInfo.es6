@@ -20,7 +20,7 @@ module.exports = {
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
-        resolve(db.findBuilding({id: _args.id}).toArray()
+        resolve(db.findBuilding({id: _args.id})
             .then((_buildings) => {
                     if (_buildings.length === 0) {
                         _env.ErrorHandler.throwError(8003);
