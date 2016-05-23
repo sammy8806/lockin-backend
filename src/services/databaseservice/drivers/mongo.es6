@@ -297,7 +297,11 @@ methods.removeDoorLock = function (_doorLock) {
  * @returns {Promise}
  */
 methods.findBuilding = function (_findAttr) {
-    return __db.collection('buildings').find(_findAttr).toArray();
+    if (_findAttr.hasOwnProperty('_id')) {
+        return __db.collection('buildings').find({_id: ObjectID(_findAttr._id)}).toArray();
+    } else {
+        return __db.collection('buildings').find(_findAttr).toArray();
+    }
 };
 
 /**

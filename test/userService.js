@@ -491,8 +491,8 @@ describe('socket', () => {
                 sendMessage(updateDoorLock, (act, req) => {
                     let expected = {
                         'type': 'jsonwsp/response',
-                        'version':'1.0',
-                        'methodname':'DoorLockService/updateDoorLock',
+                        'version': '1.0',
+                        'methodname': 'DoorLockService/updateDoorLock',
                         'result': {'success': true},
                         'reflection': req.id
                     };
@@ -599,8 +599,8 @@ describe('socket', () => {
                 sendMessage(updateAccess, (act, req) => {
                     let expected = {
                         'type': 'jsonwsp/response',
-                        'version':'1.0',
-                        'methodname':'AccessService/updateAccess',
+                        'version': '1.0',
+                        'methodname': 'AccessService/updateAccess',
                         'result': {'success': true},
                         'reflection': req.id
                     };
@@ -643,8 +643,8 @@ describe('socket', () => {
                 sendMessage(removeAccess, (act, req) => {
                     let expected = {
                         'type': 'jsonwsp/response',
-                        'version':'1.0',
-                        'methodname':'AccessService/deleteAccess',
+                        'version': '1.0',
+                        'methodname': 'AccessService/deleteAccess',
                         'result': {'success': true},
                         'reflection': req.id
                     };
@@ -669,7 +669,7 @@ describe('socket', () => {
                 let addBuilding = {
                     type: 'jsonwsp/request',
                     version: '1.0',
-                    methodname: 'UserService/addBuilding',
+                    methodname: 'BuildingService/addBuilding',
                     args: _building
                 };
 
@@ -706,7 +706,7 @@ describe('socket', () => {
                 let updateBuildung = {
                     type: 'jsonwsp/request',
                     version: '1.0',
-                    methodname: 'UserService/updateBuilding',
+                    methodname: 'BuildingService/updateBuilding',
                     args: {}
                 };
 
@@ -728,6 +728,29 @@ describe('socket', () => {
                 }, wsLogin);
             });
 
+            it('should get building info', (done) => {
+                let getBuildingInfo = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'BuildingService/getBuildingInfo',
+                    'args': {id: _building.id},
+                    'mirror': '-1'
+                };
+
+                setTimeout(()=> sendMessage(getBuildingInfo, (act, req) => {
+                    let expected = {
+                        type: 'jsonwsp/response',
+                        version: getBuildingInfo.version,
+                        methodname: getBuildingInfo.methodname,
+                        result: _building,
+                        reflection: req.id
+                    };
+
+                    assert.equal(act, JSON.stringify(expected));
+                    done();
+                }, wsLogin), 700);
+            });
+
             it('should get buildings from userInfo', (done) => {
 
                 let getUserInfo = {
@@ -742,7 +765,7 @@ describe('socket', () => {
                     let buildings = JSON.parse(actual).result.buildings;
                     assert.equal(buildings.length, 1);
                     done();
-                }, wsLogin)
+                }, wsLogin);
             });
 
 
@@ -752,7 +775,7 @@ describe('socket', () => {
                 let removeBuilding = {
                     type: 'jsonwsp/request',
                     version: '1.0',
-                    methodname: 'UserService/removeBuilding',
+                    methodname: 'BuildingService/removeBuilding',
                     args: {
                         id: _building.id
                     }

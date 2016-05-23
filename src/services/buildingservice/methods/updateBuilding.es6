@@ -2,7 +2,7 @@
 
 import Promise from 'promise';
 
-const METHOD_NAME = 'UserService/removeBuilding';
+const METHOD_NAME = 'BuildingService/updateBuilding';
 
 let db;
 let SimpleResponse;
@@ -28,20 +28,23 @@ module.exports = {
             reject(_env.ErrorHandler.returnError(3008));
         }
 
-        if (_args.id === undefined) {
-            _env.debug(METHOD_NAME, 'ID for delete was not provided');
+        if(_args.id === undefined) {
+            _env.debug(METHOD_NAME, 'ID for Update was not provided');
             reject(_env.ErrorHandler.returnError(3008));
         }
 
         let res = new SimpleResponse({success: false});
         let building = new Building(_args);
+        let buildingId = building.id;
+        delete building.id;
 
-        resolve(db.removeBuilding(building).then(
-            (result) => {
-                if(result.deletedCount === 0) {
-                    _env.ErrorHandler.throwError(8003);
-                }
+        if(building.length === 0) {
+            _env.debug(METHOD_NAME, 'Not enough Parameters to Update');
+            reject(_env.ErrorHandler.returnError(3008));
+        }
 
+        resolve(db.updateBuilding({id: buildingId}, building.toJSON()).then(
+            () => {
                 res.success = true;
                 return res;
             }, (_err) => {
