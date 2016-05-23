@@ -491,8 +491,8 @@ describe('socket', () => {
                 sendMessage(updateDoorLock, (act, req) => {
                     let expected = {
                         'type': 'jsonwsp/response',
-                        'version':'1.0',
-                        'methodname':'DoorLockService/updateDoorLock',
+                        'version': '1.0',
+                        'methodname': 'DoorLockService/updateDoorLock',
                         'result': {'success': true},
                         'reflection': req.id
                     };
@@ -599,8 +599,8 @@ describe('socket', () => {
                 sendMessage(updateAccess, (act, req) => {
                     let expected = {
                         'type': 'jsonwsp/response',
-                        'version':'1.0',
-                        'methodname':'AccessService/updateAccess',
+                        'version': '1.0',
+                        'methodname': 'AccessService/updateAccess',
                         'result': {'success': true},
                         'reflection': req.id
                     };
@@ -643,8 +643,8 @@ describe('socket', () => {
                 sendMessage(removeAccess, (act, req) => {
                     let expected = {
                         'type': 'jsonwsp/response',
-                        'version':'1.0',
-                        'methodname':'AccessService/deleteAccess',
+                        'version': '1.0',
+                        'methodname': 'AccessService/deleteAccess',
                         'result': {'success': true},
                         'reflection': req.id
                     };
@@ -737,7 +737,7 @@ describe('socket', () => {
                     'mirror': '-1'
                 };
 
-                sendMessage(getBuildingInfo, (actual, req) => {
+                setTimeout(()=> sendMessage(getBuildingInfo, (act, req) => {
                     let expected = {
                         type: 'jsonwsp/response',
                         version: getBuildingInfo.version,
@@ -746,9 +746,9 @@ describe('socket', () => {
                         reflection: req.id
                     };
 
-                    assert.equal(req, JSON.parse(expected));
+                    assert.equal(act, JSON.stringify(expected));
                     done();
-                }, wsLogin);
+                }, wsLogin), 700);
             });
 
             it('should get buildings from userInfo', (done) => {
