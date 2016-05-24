@@ -14,7 +14,6 @@ module.exports = {
         {
             id: 'exists',
             name: 'exists',
-            masterKeys: 'exists',
             state: 'exists'
         }
     ],
@@ -42,6 +41,11 @@ module.exports = {
 
                 //add key id of creator to lock
                 _args.keyId = user.key.id;
+
+                _env.debug(METHOD_NAME, 'Adding user key to masterkeys of doorlock');
+                
+                //add key of creator to masterkeys
+                _args.masterKeys = [user.key];
 
                 //check if doorlockid already exists
                 return db.findDoorLock({id: id}).toArray().then(function (_doorLocks) {

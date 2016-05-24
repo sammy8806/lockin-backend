@@ -20,7 +20,7 @@ let requests = new Map();
 const userdata = {'email': 'test2@spamkrake.de', 'password': 'hallo123'};
 
 //keyId(s) not known yet
-const doorLock = {id: '01:23:45:67:89:ab', name: 'doorlock1', 'masterKeys': null, state: 'OPENED'};
+const doorLock = {id: '01:23:45:67:89:ab', name: 'doorlock1', state: 'OPENED'};
 //variable to store the key from the actual response of getUserData
 let userKey;
 
@@ -399,8 +399,6 @@ describe('socket', () => {
 
 
             it('should add doorlock', (done) => {
-                registerDoorlock.args.masterKeys = [userKey.id];
-
                 sendMessage(registerDoorlock, (actual, req) => {
                     let expected = {
                         'type': 'jsonwsp/response',
@@ -464,7 +462,7 @@ describe('socket', () => {
                         result: {
                             id: doorLock.id,
                             name: doorLock.name,
-                            masterKeys: [userKey.id],
+                            masterKeys: [userKey],
                             state: "OPENED",
                             keyId: userKey.id,
                             openingDuration: 10000
