@@ -58,3 +58,25 @@
 | Code | Message | Comments |
 | --- | --- | --- |
 | 6001 | Invalid Arguments | |
+| 6002 | One or more doorlocks not found | |
+| 6003 | No Access found | |
+| 6004 | Invalid Key Data | |
+| 6005 | Access already exists | |
+
+## Doorlock (7000)
+
+| Code | Message | Comments |
+| --- | --- | --- |
+| 7001 | | |
+| 7002 | | |
+| 7003 | | |
+| 7004 | Doorlock not found | |
+| 7005 | Doorlock already exists | |
+
+## Building (8000)
+
+| Code | Message | Comments |
+| --- | --- | --- |
+| 8001 | Building already exists | |
+| 8002 | Invalid Arguments | |
+| 8003 | Building not found | |
