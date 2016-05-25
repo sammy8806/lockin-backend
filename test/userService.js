@@ -17,7 +17,7 @@ const removeQuery = (_collectionName) => {
 let requestId = 0;
 let requests = new Map();
 
-const userdata = {'email': 'test2@spamkrake.de', 'password': 'hallo123'};
+const userdata = {name: 'admin2', email: 'test2@spamkrake.de', password: 'hallo123'};
 
 //keyId(s) not known yet
 const doorLock = {id: '01:23:45:67:89:ab', name: 'doorlock1', state: 'OPENED'};
@@ -169,7 +169,7 @@ describe('socket', () => {
                 'type': 'jsonwsp/request',
                 'version': '1.0',
                 'methodname': 'UserService/registerUser',
-                'args': {'name': 'admin2', 'email': userdata.email, 'password': userdata.password},
+                'args': {name: userdata.name, email: userdata.email, password: userdata.password},
                 'mirror': '-1'
             };
 
@@ -178,7 +178,7 @@ describe('socket', () => {
                     'type': 'jsonwsp/response',
                     'version': '1.0',
                     'methodname': 'UserService/registerUser',
-                    'result': {'name': 'admin2', 'email': 'test2@spamkrake.de'},
+                    'result': {name: userdata.name, email: userdata.email},
                     'reflection': req.id
                 };
 
@@ -377,7 +377,14 @@ describe('socket', () => {
                         'type': 'jsonwsp/response',
                         'version': '1.0',
                         'methodname': 'UserService/findUser',
-                        'result': userKey.id,
+                        'result': [{
+                            id: userId,
+                            name: userdata.name,
+                            email: newMail,
+                            key: {
+                                id: userKey.id
+                            }
+                        }],
                         'reflection': req.id
                     };
 

@@ -3,14 +3,17 @@
 const METHOD_NAME = 'UserService/findUser';
 
 let db;
+let User;
 
 module.exports = {
     parameterVariations: [
-        {}
+        {email: 'exists'},
+        {name: 'exists'}
     ],
 
     setup: (_env) => {
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
+        User = _env.ObjectFactory.get('User');
     },
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
@@ -27,27 +30,44 @@ module.exports = {
         let query;
 
         if (email) {
-            query = {email: email}
+            query = {email: email};
         } else if (name) {
-            query = {name: name}
+            query = {name: name};
         } else {
             //invalid parameters
             reject(_env.ErrorHandler.returnError(3002));
         }
 
-        resolve(db.findUser(query).toArray().then((_user) => {
-            _env.debug(METHOD_NAME, `Search done. ${_user.length} results found.`);
-            _env.debug(METHOD_NAME, JSON.stringify(_user));
+        resolve(db.findUser(query).toArray().then((_users) => {
+            _env.debug(METHOD_NAME, `Search done. ${_users.length} results found.`);
+            _env.debug(METHOD_NAME, JSON.stringify(_users));
 
-            let user;
-
-            user = _user[0];
-
-            if (user === undefined || _user.length === 0) {
+            if (_users === undefined || _users.length === 0) {
                 _env.ErrorHandler.throwError(3002);
             }
 
-            return user.key.id;
+            let userList = [];
+
+            _users.forEach(function (user) {
+                user = new User(user);
+
+                // Strip sensitive data
+                if(user.key.data !== undefined) {
+                    user.key.data = undefined;
+                }
+
+                if(user.password !== undefined) {
+                    user.password = undefined;
+                }
+
+                if(user.session !== undefined) {
+                    user.session = undefined;
+                }
+
+                userList.push(user.toJSON());
+            });
+
+            return userList;
         }));
     })
 };
