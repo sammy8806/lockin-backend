@@ -178,7 +178,7 @@ describe('socket', () => {
                     'type': 'jsonwsp/response',
                     'version': '1.0',
                     'methodname': 'UserService/registerUser',
-                    'result': {name: userdata.name, email: userdata.email, password: userdata.password},
+                    'result': {name: userdata.name, email: userdata.email},
                     'reflection': req.id
                 };
 
