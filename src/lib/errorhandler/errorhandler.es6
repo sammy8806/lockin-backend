@@ -3,8 +3,6 @@
 let _env = null;
 let errorList = [];
 
-// _env.ErrorHandler.throwError(1003);
-
 const table = {
     // Packet Parser
     1001: 'API-Version mismatch',
