@@ -62,7 +62,7 @@ gulp.task('ssh_restart', () => {
 });
 
 gulp.task('docker_restart', () => {
-    exec('docker-compose restart cl2-web', log);
+    exec('eval $(docker-machine env docker-default) && docker-compose restart cl2-web', log);
 });
 
 gulp.task('ssh_logwatch', () => {

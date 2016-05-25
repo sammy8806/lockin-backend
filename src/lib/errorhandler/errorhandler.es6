@@ -95,6 +95,8 @@ function registerError(_id, _string, _faulty, _comments) {
         }
 
         error.comments = _comments;
+    } else {
+        error.comments = [];
     }
 
     errorList[_id] = error;
@@ -103,11 +105,13 @@ function registerError(_id, _string, _faulty, _comments) {
 function returnError(_id, _comment) {
     let err = errorList[_id];
 
-    //if (_comment !== undefined) {
-    //    err.comments.push(_comment);
-    //}
+    if (_comment !== undefined) {
+        err.comments.push(_comment);
+    } else if(err.comments.length == 0) {
+        err.comments = undefined;
+    }
 
-    _env.debug('Errorhandler', `Error ${_id}`);
+    _env.debug('Errorhandler', `Error ${_id}`, JSON.stringify(_comment));
 
     return err;
 }

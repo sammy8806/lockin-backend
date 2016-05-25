@@ -70,6 +70,8 @@ module.exports = {
 
                     if (user === undefined) {
                         console.trace('User seems to be corrupt!', typeof user, user);
+                        _env.ErrorHandler.throwError(3006, 'Contact Serveradmin!');
+                        return;
                     }
 
                     if (_args.password !== user.password) {
