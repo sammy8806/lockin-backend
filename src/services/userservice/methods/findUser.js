@@ -49,10 +49,25 @@ module.exports = {
             let userList = [];
 
             _users.forEach(function (user) {
-                userList.push((new User(user)).toJSON());
+                user = new User(user);
+
+                // Strip sensitive data
+                if(user.key.data !== undefined) {
+                    user.key.data = undefined;
+                }
+
+                if(user.password !== undefined) {
+                    user.password = undefined;
+                }
+
+                if(user.session !== undefined) {
+                    user.session = undefined;
+                }
+
+                userList.push(user.toJSON());
             });
 
-            return _users;
+            return userList;
         }));
     })
 };
