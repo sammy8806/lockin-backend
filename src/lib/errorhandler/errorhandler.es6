@@ -49,7 +49,7 @@ const table = {
     6001: 'Invalid Arguments',
     6002: 'One or more doorlocks not found',
     6003: 'No Access found',
-    6004: 'Invalid Key Data',
+    6004: 'Invalid Key',
     6005: 'Access already exists',
 
     // Doorlock

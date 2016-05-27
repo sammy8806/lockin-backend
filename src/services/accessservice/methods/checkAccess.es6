@@ -22,55 +22,58 @@ module.exports = {
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
         const keyId = _args.key.id;
-        const keyData = _args.key.data;
         const lockId = _args.lockId;
 
-        _env.debug(METHOD_NAME, 'Searching User by KeyId');
+        _env.debug(METHOD_NAME, 'Searching User by KeyData and keyId');
 
-        return resolve(db.findUser({'key.id': keyId}).toArray().then((_user) => {
+        return resolve(db.findUser({key: _args.key}).toArray().then((_user) => {
             let user = _user[0];
 
             if (!user) {
-                _env.debug(METHOD_NAME, 'user with keyId does not exist');
-                _env.ErrorHandler.throwError(4006);
-            }
-
-            //validate key
-            if (user.key.data !== keyData) {
-                _env.debug(METHOD_NAME, 'Key Data invalid');
+                _env.debug(METHOD_NAME, 'Invalid key');
                 _env.ErrorHandler.throwError(6004);
             }
 
             _env.debug(METHOD_NAME, 'Key Data is valid');
 
-            return db.findAccessByRequestorAndTimeAndlockId(keyId, new Date(), lockId).toArray().then((_access) => {
-
-                let access = _access[0];
-
-                let res = access !== undefined && _access.length > 0;
-
-                let logEntry = new Log({
-                    requestorId: keyId,
-                    lockId: lockId,
-                    ownerId: null,
-                    date: new Date().getTime(),
-                    actionState: null
-                });
-
-                if (res) {
-                    logEntry.actionState = 'OK';
-                    _env.debug(METHOD_NAME, `${lockId} Access Granted! ${keyId}`);
+            //check masterkeys of doorlock
+            return db.findDoorLockByIdAndMasterkey(lockId, _args.key).toArray().then((_doorLocks) => {
+                if (_doorLocks.length > 0) {
+                    _env.debug(METHOD_NAME, `${lockId} Access Granted! With masterkey: ${keyId}`);
+                    return true;
                 } else {
-                    logEntry.actionState = 'DENIED';
-                    _env.debug(METHOD_NAME, `${lockId} Access Denied! ${keyId}`);
+                    _env.debug(METHOD_NAME, 'No masterkey found');
                 }
 
-                // Async Insert
-                db.addLogEntry(logEntry.toJSON());
+                return db.findAccessByRequestorAndTimeAndlockId(keyId, new Date(), lockId).toArray().then((_access) => {
 
-                _env.debug(METHOD_NAME, 'Done');
+                    let access = _access[0];
 
-                return res;
+                    let res = access !== undefined && _access.length > 0;
+
+                    let logEntry = new Log({
+                        requestorId: keyId,
+                        lockId: lockId,
+                        ownerId: null,
+                        date: new Date().getTime(),
+                        actionState: null
+                    });
+
+                    if (res) {
+                        logEntry.actionState = 'OK';
+                        _env.debug(METHOD_NAME, `${lockId} Access Granted! ${keyId}`);
+                    } else {
+                        logEntry.actionState = 'DENIED';
+                        _env.debug(METHOD_NAME, `${lockId} Access Denied! ${keyId}`);
+                    }
+
+                    // Async Insert
+                    db.addLogEntry(logEntry.toJSON());
+
+                    _env.debug(METHOD_NAME, 'Done');
+
+                    return res;
+                });
             });
         }));
     })

@@ -236,19 +236,21 @@ methods.removeAccess = function (_access) {
 
 
 /**
- * 
+ *
  * @param requestorId
  * @param time
  * @returns {T}
  */
 methods.findAccessByRequestorAndTimeAndlockId = function (requestorId, time, lockId) {
-    return __db.collection('accesses').find({$and: [
-        {timeStart: {$lte: time}},
-        {timeEnd: {$gte: time}},
-        {requestorId: requestorId},
-        {doorLockIds: lockId},
-        {type: 'ACCESS'}
-    ]});
+    return __db.collection('accesses').find({
+        $and: [
+            {timeStart: {$lte: time}},
+            {timeEnd: {$gte: time}},
+            {requestorId: requestorId},
+            {doorLockIds: lockId},
+            {type: 'ACCESS'}
+        ]
+    });
 };
 
 /**
@@ -333,6 +335,22 @@ methods.updateBuilding = function (_findAttr, _building) {
  */
 methods.removeBuilding = function (_building) {
     return __db.collection('buildings').removeOne({_id: ObjectID(_building.id)});
+};
+
+/**
+ *
+ * @param _id
+ * @param _key
+ * @returns {Cursor}
+ */
+methods.findDoorLockByIdAndMasterkey = function (_id, _key) {
+    return __db.collection('doorLocks').find(
+        {
+            $and: [
+                {id: _id},
+                {masterKeys: _key}
+            ]
+        })
 };
 
 /**
