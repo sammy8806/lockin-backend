@@ -699,32 +699,32 @@ describe('socket', () => {
                 }, wsLogin)
             });
 
-            //it('should remove access', (done) => {
-            //    //change type from ACCESS to REQUEST
-            //    access.type = 'REQUEST';
-            //
-            //    let removeAccess = {
-            //        type: 'jsonwsp/request',
-            //        version: '1.0',
-            //        methodname: 'AccessService/deleteAccess',
-            //        args: {
-            //            id: access.id
-            //        }
-            //    };
-            //
-            //    sendMessage(removeAccess, (act, req) => {
-            //        let expected = {
-            //            'type': 'jsonwsp/response',
-            //            'version': '1.0',
-            //            'methodname': 'AccessService/deleteAccess',
-            //            'result': {'success': true},
-            //            'reflection': req.id
-            //        };
-            //
-            //        assert.equal(act, JSON.stringify(expected));
-            //        done();
-            //    }, wsLogin);
-            //});
+            it('should remove access', (done) => {
+                //change type from ACCESS to REQUEST
+                access.type = 'REQUEST';
+
+                let removeAccess = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'AccessService/deleteAccess',
+                    args: {
+                        id: access.id
+                    }
+                };
+
+                sendMessage(removeAccess, (act, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': '1.0',
+                        'methodname': 'AccessService/deleteAccess',
+                        'result': {'success': true},
+                        'reflection': req.id
+                    };
+
+                    assert.equal(act, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
 
         });
 
