@@ -37,6 +37,7 @@ module.exports = {
         if(!(queryUser.key === undefined || queryUser.key.id === undefined)) {
             // TODO: This should be generalized
             queryUser['key.id'] = queryUser.key.id;
+            queryUser.key = undefined;
         }
 
         resolve(db.findUser(queryUser.toJSON()).toArray().then((_users) => {
