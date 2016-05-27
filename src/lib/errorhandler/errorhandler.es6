@@ -39,6 +39,7 @@ const table = {
     4007: 'Wrong password',
     4008: 'internal error',
     4009: 'Please login first',
+    4010: 'Wrong search parameters',
 
     // Admins
     5001: 'Access Denied',
