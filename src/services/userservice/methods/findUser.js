@@ -34,6 +34,12 @@ module.exports = {
             return;
         }
 
+        if(!(queryUser.key === undefined || queryUser.key.id === undefined)) {
+            // TODO: This should be generalized
+            queryUser['key.id'] = queryUser.key.id;
+            queryUser.key = undefined;
+        }
+
         resolve(db.findUser(queryUser.toJSON()).toArray().then((_users) => {
             _env.debug(METHOD_NAME, `Search done. ${_users.length} results found.`);
             _env.debug(METHOD_NAME, JSON.stringify(_users));
