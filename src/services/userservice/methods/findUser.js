@@ -27,20 +27,26 @@ module.exports = {
 
         //find userkey by mail or name
         let queryUser = new User(_args);
+        let query = queryUser.toJSON();
 
-        if (queryUser.toJSON().length < 1) {
+        if (query.length < 1) {
             //invalid parameters
             reject(_env.ErrorHandler.returnError(4010));
             return;
         }
 
-        if(!(queryUser.key === undefined || queryUser.key.id === undefined)) {
+        if(!(query.key === undefined || query.key.id === undefined)) {
             // TODO: This should be generalized
-            queryUser['key.id'] = queryUser.key.id;
-            queryUser.key = undefined;
+            const key = query.key.id;
+            delete query.key;
+            query['key.id'] = key;
+
+            _env.debug(METHOD_NAME, `Searching with KeyId: ${key}`);
         }
 
-        resolve(db.findUser(queryUser.toJSON()).toArray().then((_users) => {
+        _env.debug(METHOD_NAME, `Searching with: ${_env.inspect(query)}`);
+
+        resolve(db.findUser(query).toArray().then((_users) => {
             _env.debug(METHOD_NAME, `Search done. ${_users.length} results found.`);
             _env.debug(METHOD_NAME, JSON.stringify(_users));
 

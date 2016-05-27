@@ -36,6 +36,8 @@ function setupEnv() {
         _env._log(console.log, 'ERROR', _tag, _string);
     };
 
+    _env.inspect = require('util').inspect;
+
     /**
      *
      * @param _arr Array
