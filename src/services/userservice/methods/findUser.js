@@ -34,7 +34,7 @@ module.exports = {
             return;
         }
 
-        resolve(db.findUser(queryUser).toArray().then((_users) => {
+        resolve(db.findUser(queryUser.toJSON()).toArray().then((_users) => {
             _env.debug(METHOD_NAME, `Search done. ${_users.length} results found.`);
             _env.debug(METHOD_NAME, JSON.stringify(_users));
 
