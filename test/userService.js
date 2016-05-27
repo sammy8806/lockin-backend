@@ -394,6 +394,36 @@ describe('socket', () => {
                 }, wsLogin);
             });
 
+            it('should find username by keyId', (done) => {
+                let findUserByKeyId = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'UserService/findUser',
+                    'args': {key: {id: userKey.id}},
+                    'mirror': '-1'
+                };
+
+                sendMessage(findUserByKeyId, (actual, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': '1.0',
+                        'methodname': 'UserService/findUser',
+                        'result': [{
+                            id: userId,
+                            name: userdata.name,
+                            email: newMail,
+                            key: {
+                                id: userKey.id
+                            }
+                        }],
+                        'reflection': req.id
+                    };
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
         });
 
         describe('doorLock', () => {
