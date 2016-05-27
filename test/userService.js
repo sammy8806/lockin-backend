@@ -21,6 +21,7 @@ const userdata = {name: 'admin2', email: 'test2@spamkrake.de', password: 'hallo1
 
 //keyId(s) not known yet
 const doorLock = {id: '01:23:45:67:89:ab', name: 'doorlock1', state: 'OPENED'};
+
 //variable to store the key from the actual response of getUserData
 let userKey;
 
@@ -521,13 +522,14 @@ describe('socket', () => {
                     requestorId: userKey.id,
                     timeStart: timeStart,
                     timeEnd: timeEnd,
-                    type: 'ACCESS'
+                    type: 'ACCESS',
+                    buildingId: "123456"
                 };
                 let addAccess = {
                     type: 'jsonwsp/request',
                     version: '1.0',
                     methodname: 'UserService/addAccessOrRequest',
-                    args: access,
+                    args: {"access": access},
                     mirror: '-1'
                 };
 
@@ -545,7 +547,7 @@ describe('socket', () => {
                 }, wsLogin);
             });
 
-            it('should be granted access', (done) => {
+            it('should be granted access via masterkey', (done) => {
                 let checkAccess = {
                     args: {
                         key: userKey,
@@ -569,6 +571,71 @@ describe('socket', () => {
                     assert.equal(actual, JSON.stringify(expected));
                     done();
                 }, wsLogin);
+            });
+
+            it('should be granted access', (done) => {
+                let checkAccess = {
+                    args: {
+                        key: userKey,
+                        lockId: doorLock.id
+                    },
+                    methodname: 'AccessService/checkAccess',
+                    mirror: '-1',
+                    type: 'jsonwsp/request',
+                    version: '1.0'
+                };
+
+                //remove masterkey from doorlock
+                doorLock.masterKeys = null;
+
+                let updateDoorLock = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'DoorLockService/updateDoorLock',
+                    args: doorLock
+                };
+
+                sendMessage(updateDoorLock, () => {
+                    sendMessage(checkAccess, (actual, req) => {
+                        let expected = {
+                            type: 'jsonwsp/response',
+                            version: '1.0',
+                            methodname: 'AccessService/checkAccess',
+                            result: true,
+                            reflection: req.id
+                        };
+                        assert.equal(actual, JSON.stringify(expected));
+                        done();
+                    }, wsLogin);
+
+
+                }, wsLogin);
+            });
+
+            it('should deny access with invalid key', (done) => {
+                let checkAccess = {
+                    args: {
+                        key: {id: userKey.id, data: "invaliddata"},
+                        lockId: doorLock.id
+                    },
+                    methodname: 'AccessService/checkAccess',
+                    mirror: '-1',
+                    type: 'jsonwsp/request',
+                    version: '1.0'
+                };
+
+                sendMessage(checkAccess, (actual, req) => {
+                    let expected = {
+                        "type": "jsonwsp/fault",
+                        "version": "1.0",
+                        "fault": {"code": "6004", "string": "Invalid Key", "faulty": ""},
+                        "reflection": req.id
+                    };
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+
             });
 
             it('should find access by doorlockId', (done) => {

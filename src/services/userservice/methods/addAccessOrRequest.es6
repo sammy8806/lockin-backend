@@ -18,7 +18,8 @@ module.exports = {
             requestorId: 'exists',
             timeStart: 'exists',
             timeEnd: 'exists',
-            type: 'exists'
+            type: 'exists',
+            buildingId: 'exists'
         }
     ],
 
@@ -60,7 +61,6 @@ module.exports = {
                             _env.debug(METHOD_NAME, 'One or more doorlocks not found');
                             _env.ErrorHandler.throwError(6002);
                         }
-
 
                         let newAccess = new Access(_args);
                         

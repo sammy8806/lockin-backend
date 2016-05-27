@@ -8,7 +8,8 @@ let User;
 module.exports = {
     parameterVariations: [
         {email: 'exists'},
-        {name: 'exists'}
+        {name: 'exists'},
+        {key: 'exists'}
     ],
 
     setup: (_env) => {
@@ -25,20 +26,15 @@ module.exports = {
         }
 
         //find userkey by mail or name
-        let email = _args.email;
-        let name = _args.name;
-        let query;
+        let queryUser = new User(_args);
 
-        if (email) {
-            query = {email: email};
-        } else if (name) {
-            query = {name: name};
-        } else {
+        if (queryUser.toJSON().length < 1) {
             //invalid parameters
-            reject(_env.ErrorHandler.returnError(3002));
+            reject(_env.ErrorHandler.returnError(4010));
+            return;
         }
 
-        resolve(db.findUser(query).toArray().then((_users) => {
+        resolve(db.findUser(queryUser.toJSON()).toArray().then((_users) => {
             _env.debug(METHOD_NAME, `Search done. ${_users.length} results found.`);
             _env.debug(METHOD_NAME, JSON.stringify(_users));
 
@@ -52,15 +48,15 @@ module.exports = {
                 user = new User(user);
 
                 // Strip sensitive data
-                if(user.key.data !== undefined) {
+                if (user.key.data !== undefined) {
                     user.key.data = undefined;
                 }
 
-                if(user.password !== undefined) {
+                if (user.password !== undefined) {
                     user.password = undefined;
                 }
 
-                if(user.session !== undefined) {
+                if (user.session !== undefined) {
                     user.session = undefined;
                 }
 
