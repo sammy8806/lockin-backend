@@ -14,16 +14,18 @@ const removeQuery = (_collectionName) => {
     };
 };
 
+
 let requestId = 0;
 let requests = new Map();
 
 const userdata = {name: 'admin2', email: 'test2@spamkrake.de', password: 'hallo123'};
 
-//keyId(s) not known yet
-const doorLock = {id: '01:23:45:67:89:ab', name: 'doorlock1', state: 'OPENED'};
-
-//variable to store the key from the actual response of getUserData
+//objects used throughout the tests
+let doorLock = {id: '01:23:45:67:89:ab', name: 'doorlock1', state: 'OPENED'};
 let userKey;
+let access;
+let building;
+
 
 function createSocket() {
     let ws;
@@ -540,11 +542,155 @@ describe('socket', () => {
 
         });
 
+        describe('buildings', () => {
+
+            let _building = {
+                street: 'Musterweg',
+                houseNumber: '1',
+                zipCode: '12345',
+                town: 'Musterstadt'
+            };
+
+            it('add building', (done) => {
+                let addBuilding = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'BuildingService/addBuilding',
+                    args: _building
+                };
+
+                sendMessage(addBuilding, (act, req) => {
+                    let parsed = JSON.parse(act);
+
+                    if (parsed.result.id !== undefined) {
+                        _building = {
+                            id: parsed.result.id,
+                            keyId: userKey.id,
+                            street: _building.street,
+                            houseNumber: _building.houseNumber,
+                            zipCode: _building.zipCode,
+                            town: _building.town
+                        };
+                    }
+
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': addBuilding.version,
+                        'methodname': addBuilding.methodname,
+                        'result': _building,
+                        'reflection': req.id
+                    };
+
+                    assert.equal(JSON.stringify(parsed), JSON.stringify(expected));
+
+                    //store building for other tests
+                    building = _building;
+
+                    done();
+                }, wsLogin);
+            });
+
+            it('update building', (done) => {
+                assert.ok(_building.id !== undefined, 'AddBuilding Failed!');
+
+                let updateBuildung = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'BuildingService/updateBuilding',
+                    args: {}
+                };
+
+                updateBuildung.args.id = _building.id;
+                updateBuildung.args.houseNumber = '120';
+                updateBuildung.args.zipCode = '56789';
+
+                sendMessage(updateBuildung, (act, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': updateBuildung.version,
+                        'methodname': updateBuildung.methodname,
+                        'result': {'success': true},
+                        'reflection': req.id
+                    };
+
+                    assert.equal(act, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+            it('should get building info', (done) => {
+                let getBuildingInfo = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'BuildingService/getBuildingInfo',
+                    'args': {id: _building.id},
+                    'mirror': '-1'
+                };
+
+                setTimeout(()=> sendMessage(getBuildingInfo, (act, req) => {
+                    let expected = {
+                        type: 'jsonwsp/response',
+                        version: getBuildingInfo.version,
+                        methodname: getBuildingInfo.methodname,
+                        result: _building,
+                        reflection: req.id
+                    };
+
+                    assert.equal(act, JSON.stringify(expected));
+                    done();
+                }, wsLogin), 700);
+            });
+
+            it('should get buildings from userInfo', (done) => {
+
+                let getUserInfo = {
+                    'type': 'jsonwsp/request',
+                    'version': '1.0',
+                    'methodname': 'UserService/getUserInfo',
+                    'args': {},
+                    'mirror': '-1'
+                };
+
+                sendMessage(getUserInfo, (actual, req) => {
+                    let buildings = JSON.parse(actual).result.buildings;
+                    assert.equal(buildings.length, 1);
+                    done();
+                }, wsLogin);
+            });
+
+            //skip to keep the building object for access-tests
+            it.skip('remove building', (done) => {
+                assert.ok(_building.id !== undefined, 'AddBuilding Failed!');
+
+                let removeBuilding = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'BuildingService/removeBuilding',
+                    args: {
+                        id: _building.id
+                    }
+                };
+
+                sendMessage(removeBuilding, (act, req) => {
+                    let expected = {
+                        'type': 'jsonwsp/response',
+                        'version': removeBuilding.version,
+                        'methodname': removeBuilding.methodname,
+                        'result': {'success': true},
+                        'reflection': req.id
+                    };
+
+                    assert.equal(act, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+        });
+
         describe('access', () => {
             let timeStart = new Date();
             let timeEnd = new Date();
             timeEnd.setHours(timeEnd.getHours() + 6);
-            let access;
 
             it('should add access', (done) => {
                 access = {
@@ -553,8 +699,9 @@ describe('socket', () => {
                     timeStart: timeStart,
                     timeEnd: timeEnd,
                     type: 'ACCESS',
-                    buildingId: "123456"
+                    buildingId: building.id
                 };
+
                 let addAccess = {
                     type: 'jsonwsp/request',
                     version: '1.0',
@@ -681,8 +828,25 @@ describe('socket', () => {
 
                 sendMessage(findAccess, (actual, req) => {
                     let parsed = JSON.parse(actual);
+
+                    let expected = {
+                        type: "jsonwsp/response",
+                        version: "1.0",
+                        methodname: "AccessService/findAccess",
+                        result: [{
+                            id: parsed.result[0].id,
+                            keyId: userKey.id,
+                            doorLockIds: [doorLock.id],
+                            requestorId: userKey.id,
+                            timeStart: access.timeStart,
+                            timeEnd: access.timeEnd,
+                            type: access.type,
+                            building: building
+                        }],
+                        reflection: req.id
+                    };
                     access.id = parsed.result[0].id;
-                    assert(parsed.result.length > 0);
+                    assert.equal(actual, JSON.stringify(expected));
                     done();
                 }, wsLogin);
             });
@@ -747,147 +911,6 @@ describe('socket', () => {
                         'type': 'jsonwsp/response',
                         'version': '1.0',
                         'methodname': 'AccessService/deleteAccess',
-                        'result': {'success': true},
-                        'reflection': req.id
-                    };
-
-                    assert.equal(act, JSON.stringify(expected));
-                    done();
-                }, wsLogin);
-            });
-
-        });
-
-        describe('buildings', () => {
-
-            let _building = {
-                street: 'Musterweg',
-                houseNumber: '1',
-                zipCode: '12345',
-                town: 'Musterstadt'
-            };
-
-            it('add building', (done) => {
-                let addBuilding = {
-                    type: 'jsonwsp/request',
-                    version: '1.0',
-                    methodname: 'BuildingService/addBuilding',
-                    args: _building
-                };
-
-                sendMessage(addBuilding, (act, req) => {
-                    let parsed = JSON.parse(act);
-
-                    if (parsed.result.id !== undefined) {
-                        _building = {
-                            id: parsed.result.id,
-                            keyId: userKey.id,
-                            street: _building.street,
-                            houseNumber: _building.houseNumber,
-                            zipCode: _building.zipCode,
-                            town: _building.town
-                        };
-                    }
-
-                    let expected = {
-                        'type': 'jsonwsp/response',
-                        'version': addBuilding.version,
-                        'methodname': addBuilding.methodname,
-                        'result': _building,
-                        'reflection': req.id
-                    };
-
-                    assert.equal(JSON.stringify(parsed), JSON.stringify(expected));
-                    done();
-                }, wsLogin);
-            });
-
-            it('update building', (done) => {
-                assert.ok(_building.id !== undefined, 'AddBuilding Failed!');
-
-                let updateBuildung = {
-                    type: 'jsonwsp/request',
-                    version: '1.0',
-                    methodname: 'BuildingService/updateBuilding',
-                    args: {}
-                };
-
-                updateBuildung.args.id = _building.id;
-                updateBuildung.args.houseNumber = '120';
-                updateBuildung.args.zipCode = '56789';
-
-                sendMessage(updateBuildung, (act, req) => {
-                    let expected = {
-                        'type': 'jsonwsp/response',
-                        'version': updateBuildung.version,
-                        'methodname': updateBuildung.methodname,
-                        'result': {'success': true},
-                        'reflection': req.id
-                    };
-
-                    assert.equal(act, JSON.stringify(expected));
-                    done();
-                }, wsLogin);
-            });
-
-            it('should get building info', (done) => {
-                let getBuildingInfo = {
-                    'type': 'jsonwsp/request',
-                    'version': '1.0',
-                    'methodname': 'BuildingService/getBuildingInfo',
-                    'args': {id: _building.id},
-                    'mirror': '-1'
-                };
-
-                setTimeout(()=> sendMessage(getBuildingInfo, (act, req) => {
-                    let expected = {
-                        type: 'jsonwsp/response',
-                        version: getBuildingInfo.version,
-                        methodname: getBuildingInfo.methodname,
-                        result: _building,
-                        reflection: req.id
-                    };
-
-                    assert.equal(act, JSON.stringify(expected));
-                    done();
-                }, wsLogin), 700);
-            });
-
-            it('should get buildings from userInfo', (done) => {
-
-                let getUserInfo = {
-                    'type': 'jsonwsp/request',
-                    'version': '1.0',
-                    'methodname': 'UserService/getUserInfo',
-                    'args': {},
-                    'mirror': '-1'
-                };
-
-                sendMessage(getUserInfo, (actual, req) => {
-                    let buildings = JSON.parse(actual).result.buildings;
-                    assert.equal(buildings.length, 1);
-                    done();
-                }, wsLogin);
-            });
-
-
-            it('remove building', (done) => {
-                assert.ok(_building.id !== undefined, 'AddBuilding Failed!');
-
-                let removeBuilding = {
-                    type: 'jsonwsp/request',
-                    version: '1.0',
-                    methodname: 'BuildingService/removeBuilding',
-                    args: {
-                        id: _building.id
-                    }
-                };
-
-                sendMessage(removeBuilding, (act, req) => {
-                    let expected = {
-                        'type': 'jsonwsp/response',
-                        'version': removeBuilding.version,
-                        'methodname': removeBuilding.methodname,
                         'result': {'success': true},
                         'reflection': req.id
                     };

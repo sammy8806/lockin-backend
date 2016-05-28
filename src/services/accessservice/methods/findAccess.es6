@@ -7,6 +7,20 @@ const METHOD_NAME = 'AccessService/findAccess';
 let db;
 let User;
 let Access;
+let Building;
+
+//The function to create a hashmap to do the mapping
+function createHashOfResults(results) {
+    let hash = {};
+
+    for (let i = 0; i < results.length; i++) {
+        let item = results[i];
+        let id = item._id;
+        hash[id] = item;
+    }
+    return hash;
+}
+
 
 module.exports = {
     parameterVariations: [
@@ -20,11 +34,12 @@ module.exports = {
         db = _env.GlobalServiceFactory.getService('DatabaseService').getDriver();
         User = _env.ObjectFactory.get('User');
         Access = _env.ObjectFactory.get('Access');
+        Building = _env.ObjectFactory.get('Building');
     },
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
 
-        let data = User.getLoggedIn(_ws, db)
+        resolve(User.getLoggedIn(_ws, db)
             .then((_user) => {
                 let args = Object.keys(_args);
                 _env.debug(METHOD_NAME, 'Got: ' + JSON.stringify(args));
@@ -40,14 +55,32 @@ module.exports = {
 
                 _env.debug(METHOD_NAME, 'Search: ' + JSON.stringify(search));
 
-                return db.findAccess(search).toArray().then(
-                    (_accesses) => _accesses.map((_access) => {
-                            let access = new Access(_access);
-                            return access.toJSON();
+                return db.findAccess(search).toArray().then((_accesses) => {
+                    let buildingIds = [];
+
+                    //get building ids
+                    for (let i = 0; i < _accesses.length; i++) {
+                        buildingIds.push(_accesses[i].buildingId);
+                    }
+                    
+                    return db.findBuildingsByIds(buildingIds).toArray().then((_buildings) => {
+                        let accesses = [];
+
+                        //necessary to make sure the order of building-objects matches the order of buildingIds
+                        let hash = createHashOfResults(_buildings);
+
+                        //add building objects to access objects
+                        for (let i = 0; i < buildingIds.length; i++) {
+                            let buildingId = buildingIds[i];
+                            let building = hash[buildingId];
+                            _accesses[i].building = new Building(building).toJSON();
+                            delete building.keyId;
+                            delete _accesses[i].buildingId;
+                            accesses.push(new Access(_accesses[i]).toJSON());
                         }
-                    )
-                );
-            });
-        resolve(data);
+                        return accesses;
+                    });
+                })
+            }));
     })
 };

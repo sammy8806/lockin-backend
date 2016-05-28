@@ -12,7 +12,8 @@ module.exports = class Access extends ObjectPrototype {
             'timeStart',
             'timeEnd',
             'type',
-            'buildingId'
+            'buildingId',
+            'building'
         ];
 
         super(_access, _whitelistedAttributes);
