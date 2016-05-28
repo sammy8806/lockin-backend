@@ -308,6 +308,19 @@ methods.findBuilding = function (_findAttr) {
 
 /**
  *
+ * @param _ids
+ * @returns {Cursor}
+ */
+methods.findBuildingsByIds = function (_ids) {
+    //convert ids to ObjectID
+    for (let i = 0; i < _ids.length; i++) {
+        _ids[i] = ObjectID(_ids[i]);
+    }
+    return __db.collection('buildings').find({_id: {$in: _ids}});
+};
+
+/**
+ *
  * @param _building
  * @returns {Promise}
  */
