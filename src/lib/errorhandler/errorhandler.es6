@@ -73,46 +73,58 @@ function setup(__env) {
 }
 
 function registerError(_id, _string, _faulty, _comments) {
-    if (errorList[_id] !== undefined) {
-        _env.error(`Error ${_id} already defined as "${errorList[_id].string}"!`);
-    }
-
-    let error = {
-        code: _id,
-        string: _string
-    };
-
-    if (_faulty !== undefined) {
-        error.faulty = _faulty;
-    } else {
-        error.faulty = '';
-    }
-
-    if (_comments !== undefined) {
-        if (typeof _comments !== 'object') {
-            _comments = [_comments];
+    try {
+        if (errorList[_id] !== undefined) {
+            _env.error(`Error ${_id} already defined as "${errorList[_id].string}"!`);
         }
 
-        error.comments = _comments;
-    } else {
-        error.comments = [];
-    }
+        let error = {
+            code: _id,
+            string: _string
+        };
 
-    errorList[_id] = error;
+        if (_faulty !== undefined) {
+            error.faulty = _faulty;
+        } else {
+            error.faulty = '';
+        }
+
+        if (_comments !== undefined) {
+            if (typeof _comments !== 'object') {
+                _comments = [_comments];
+            }
+
+            error.comments = _comments;
+        } else {
+            error.comments = [];
+        }
+
+        errorList[_id] = error;
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 function returnError(_id, _comment) {
-    let err = errorList[_id];
+    try {
+        let err = errorList[_id];
 
-    if (_comment !== undefined) {
-        err.comments.push(_comment);
-    } else if(err.comments.length == 0) {
-        err.comments = undefined;
+        if (err.comments === undefined) {
+            err.comments = [];
+        }
+
+        if (_comment !== undefined) {
+            err.comments.push(_comment);
+        } else if (err.comments.length == 0) {
+            err.comments = undefined;
+        }
+
+        _env.debug('Errorhandler', `Error ${_id}`, JSON.stringify(_comment));
+
+        return err;
+    } catch (e) {
+        console.error(e);
     }
-
-    _env.debug('Errorhandler', `Error ${_id}`, JSON.stringify(_comment));
-
-    return err;
 }
 
 function throwError(_id, _comment) {
