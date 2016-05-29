@@ -6,6 +6,7 @@ module.exports = class Building extends ObjectPrototype {
     constructor(_building) {
         const _whitelistedAttributes = [
             'id',
+            'name',
             'keyId', //KeyId of creator
             'street',
             'houseNumber',
