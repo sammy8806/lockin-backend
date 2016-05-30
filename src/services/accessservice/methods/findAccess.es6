@@ -66,6 +66,8 @@ module.exports = {
                         return [];
                     }
 
+                    _env.debug(METHOD_NAME, 'Found ' + _accesses.length + ' accesses');
+
                     let buildingIds = [];
                     let accesses = [];
 
