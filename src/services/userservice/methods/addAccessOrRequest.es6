@@ -49,8 +49,9 @@ module.exports = {
                     if (_accesses.length > 0) {
                         _env.ErrorHandler.throwError(6005);
                     }
-                    
+
                     //check if doorlockIds exist
+                    _env.debug(METHOD_NAME, 'Checking if doorlocks exists');
                     let doorlockIds = _args.doorLockIds;
 
                     return db.findDoorLocksByIds(_args.doorLockIds).toArray().then((_doorLocks) => {
@@ -59,26 +60,34 @@ module.exports = {
                             _env.ErrorHandler.throwError(6002);
                         }
 
-                        let newAccess = new Access(_args);
-                        
-                        newAccess.id = id;
+                        //check if building exists
+                        _env.debug(METHOD_NAME, 'Checking if building exists');
+                        return db.findBuilding({_id: _args.buildingId}).then((_buildings) => {
 
-                        // store dates as dateobjects
-                        newAccess.timeStart = new Date(_args.timeStart);
-                        newAccess.timeEnd =  new Date(_args.timeEnd);
+                            if (_buildings === undefined || _buildings.length === 0) {
+                                _env.debug(METHOD_NAME, 'Building with ' + _args.buildingId + ' not found');
+                                _env.ErrorHandler.throwError(8003);
+                            }
 
-                        //add owner-Key-id from logged in user to access-object
-                        newAccess.keyId = _user.key.id;
+                            let newAccess = new Access(_args);
 
-                        _env.debug(METHOD_NAME, `Saving access to database`);
+                            newAccess.id = id;
 
-                        return db.insertAccess(newAccess).then(() => {
-                            return new SimpleResponse({success: true});
+                            // store dates as dateobjects
+                            newAccess.timeStart = new Date(_args.timeStart);
+                            newAccess.timeEnd = new Date(_args.timeEnd);
+
+                            //add owner-Key-id from logged in user to access-object
+                            newAccess.keyId = _user.key.id;
+
+                            _env.debug(METHOD_NAME, `Saving access to database`);
+
+                            return db.insertAccess(newAccess).then(() => {
+                                return new SimpleResponse({success: true});
+                            });
                         });
                     });
                 });
-
-
             }),
             (_err) => {
                 reject({code: 'server', string: _err});
