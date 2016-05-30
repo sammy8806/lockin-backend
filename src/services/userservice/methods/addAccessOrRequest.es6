@@ -32,18 +32,15 @@ module.exports = {
 
     call: (_args, _env, _ws, _type) => new Promise((resolve, reject) => {
 
+        if (!User.isLoggedIn(_ws)) {
+            _env.ErrorHandler.throwError(4005);
+        }
 
-        let user;
-        
+
         resolve(User.getLoggedIn(_ws, db)
             .then((_user) => {
-                user = _user;
 
-                if(user === undefined) {
-                    _env.ErrorHandler.throwError(6006);
-                }
-
-                _env.debug(METHOD_NAME, JSON.stringify(user));
+                _env.debug(METHOD_NAME, JSON.stringify(_user));
 
                 let id = _env.random(10);
 
@@ -71,7 +68,7 @@ module.exports = {
                         newAccess.timeEnd =  new Date(_args.timeEnd);
 
                         //add owner-Key-id from logged in user to access-object
-                        newAccess.keyId = user.key.id;
+                        newAccess.keyId = _user.key.id;
 
                         _env.debug(METHOD_NAME, `Saving access to database`);
 

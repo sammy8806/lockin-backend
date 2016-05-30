@@ -41,6 +41,11 @@ module.exports = {
 
         resolve(User.getLoggedIn(_ws, db)
             .then((_user) => {
+
+                if(_user === undefined) {
+                    _env.ErrorHandler.throwError(3002);
+                }
+
                 let args = Object.keys(_args);
                 _env.debug(METHOD_NAME, 'Got: ' + JSON.stringify(args));
                 let intersect = _env.arrayIntersect(args, ['accessId', 'requestorId', 'doorLockIds']);
@@ -56,27 +61,38 @@ module.exports = {
                 _env.debug(METHOD_NAME, 'Search: ' + JSON.stringify(search));
 
                 return db.findAccess(search).toArray().then((_accesses) => {
+                    if (_accesses === undefined || _accesses.length === 0) {
+                        _env.debug(METHOD_NAME, 'No Accesses found');
+                        return [];
+                    }
+
                     let buildingIds = [];
+                    let accesses = [];
 
                     //get building ids
                     for (let i = 0; i < _accesses.length; i++) {
+                        accesses.push(new Access(_accesses[i]).toJSON());
                         buildingIds.push(_accesses[i].buildingId);
                     }
-                    
+
                     return db.findBuildingsByIds(buildingIds).toArray().then((_buildings) => {
-                        let accesses = [];
+                        if (_buildings.length < accesses.length) {
+                            _env.debug(METHOD_NAME, 'One or more buildings not found');
+                            _env.ErrorHandler.throwError(8003);
+                        }
 
                         //necessary to make sure the order of building-objects matches the order of buildingIds
                         let hash = createHashOfResults(_buildings);
+
+                        _env.debug(METHOD_NAME, 'Adding building to access object');
 
                         //add building objects to access objects
                         for (let i = 0; i < buildingIds.length; i++) {
                             let buildingId = buildingIds[i];
                             let building = hash[buildingId];
-                            _accesses[i].building = new Building(building).toJSON();
+                            accesses[i].building = new Building(building).toJSON();
                             delete building.keyId;
-                            delete _accesses[i].buildingId;
-                            accesses.push(new Access(_accesses[i]).toJSON());
+                            delete accesses[i].buildingId;
                         }
                         return accesses;
                     });
