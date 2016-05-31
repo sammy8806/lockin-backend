@@ -841,7 +841,7 @@ describe('socket', () => {
                             timeStart: access.timeStart,
                             timeEnd: access.timeEnd,
                             type: access.type,
-                            buildingId: building
+                            building: building
                         }],
                         reflection: req.id
                     };
