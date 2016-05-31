@@ -92,9 +92,8 @@ module.exports = {
                         for (let i = 0; i < buildingIds.length; i++) {
                             let buildingId = buildingIds[i];
                             let building = hash[buildingId];
-                            accesses[i].building = new Building(building).toJSON();
+                            accesses[i].buildingId = new Building(building).toJSON();
                             delete building.keyId;
-                            delete accesses[i].buildingId;
                         }
                         return accesses;
                     });
