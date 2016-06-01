@@ -497,7 +497,7 @@ describe('socket', () => {
                         reflection: req.id
                     };
 
-                    expected.result[getSessDefault.args.attribute] = getSessDefault.args.value;
+                    expected.result[getSessDefault.args.attribute] = getSessDefault.args.default;
 
                     assert.equal(actual, JSON.stringify(expected));
                     done();
