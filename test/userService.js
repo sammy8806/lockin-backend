@@ -432,7 +432,7 @@ describe('socket', () => {
             let testingAttrib = {attribute: 'test-attribute', value: 'test123'};
 
             it('set session attribute', (done) => {
-                let register = {
+                let setSessionAttrib = {
                     type: 'jsonwsp/request',
                     version: '1.0',
                     methodname: 'SessionService/setSessionAttribute',
@@ -440,7 +440,7 @@ describe('socket', () => {
                     mirror: -1
                 };
 
-                sendMessage(register, (actual, req) => {
+                sendMessage(setSessionAttrib, (actual, req) => {
                     let expected = {
                         type: 'jsonwsp/response',
                         version: '1.0',
@@ -454,7 +454,7 @@ describe('socket', () => {
                 }, wsLogin);
             });
 
-            it('get session attribute', (done) => assert.doesNotThrow(() => {
+            it('get session attribute', (done) => {
                 let getSessionAttrib = {
                     type: 'jsonwsp/request',
                     version: '1.0',
@@ -477,14 +477,9 @@ describe('socket', () => {
                     assert.equal(actual, JSON.stringify(expected));
                     done();
                 }, wsLogin);
-            }), (err) => {
-                if (err) {
-                    throw err;
-                }
-                done();
             });
 
-            it('get session attribute with default', (done) => assert.doesNotThrow(() => {
+            it('get session attribute with default', (done) => {
                 let getSessDefault = {
                     type: 'jsonwsp/request',
                     version: '1.0',
@@ -504,14 +499,9 @@ describe('socket', () => {
 
                     expected.result[getSessDefault.args.attribute] = getSessDefault.args.value;
 
-                    done();
                     assert.equal(actual, JSON.stringify(expected));
+                    done();
                 }, wsLogin);
-            }), (err) => {
-                done();
-                if (err) {
-                    throw err;
-                }
             });
         });
 
