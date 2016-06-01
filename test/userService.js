@@ -454,7 +454,7 @@ describe('socket', () => {
                 }, wsLogin);
             });
 
-            it('get session attribute', (done) => {
+            it('get session attribute', (done) => assert.doesNotThrow(() => {
                 let register = {
                     type: 'jsonwsp/request',
                     version: '1.0',
@@ -477,9 +477,14 @@ describe('socket', () => {
                     assert.equal(actual, JSON.stringify(expected));
                     done();
                 }, wsLogin);
+            }), (err) => {
+                if (err) {
+                    throw err
+                }
+                done();
             });
-
-            it('get session attribute with default', (done) => {
+            
+            it('get session attribute with default', (done) => assert.doesNotThrow(() => {
                 let register = {
                     type: 'jsonwsp/request',
                     version: '1.0',
@@ -502,6 +507,11 @@ describe('socket', () => {
                     assert.equal(actual, JSON.stringify(expected));
                     done();
                 }, wsLogin);
+            }), (err) => {
+                if (err) {
+                    throw err
+                }
+                done();
             });
         });
 
