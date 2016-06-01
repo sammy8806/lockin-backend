@@ -26,6 +26,7 @@ const table = {
     3007: 'Wrong Password',
     3008: 'Not logged in',
     3009: 'Session already loggedOut',
+    3010: 'Session corrupt!',
 
     // Users
     4001: 'Lifetime is not valid',

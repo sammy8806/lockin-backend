@@ -57,6 +57,33 @@ module.exports = class Session extends ObjectPrototype {
             );
     }
 
-    // TODO: setAttribute
-    // TODO: getAttribute
+    getAttribute(_key, _default) {
+        const tag = 'Object/Session.setAttribute';
+        global._env.debug(tag, `Getting Attribute ${_key}`);
+
+        return this._db.findSession({sessionId: this.sessionId})
+            .then(
+                (_sessions) => {
+                    const sessionsLength = _sessions.length;
+                    if(sessionsLength !== 1) {
+                        global._env.error(tag, `Failed! Length: ${sessionsLength}`);
+                        global._env.ErrorHandler.throwError(3010);
+                        return;
+                    }
+
+                    const session = new Session(_sessions[0]);
+                    let sessionData = session[_key];
+
+                    if(sessionData === undefined || sessionData === null) {
+                        global._env.debug(tag, 'Writing Default-Value');
+                        sessionData = _default;
+                    }
+
+                    global._env.debug(tag, 'Success');
+
+                    return sessionData;
+                },
+                (_res) => global._env.debug(tag, 'Failed: ' + _res)
+            );
+    }
 };
