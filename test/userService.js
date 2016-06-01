@@ -478,6 +478,31 @@ describe('socket', () => {
                     done();
                 }, wsLogin);
             });
+
+            it('get session attribute with default', (done) => {
+                let register = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'SessionService/getSessionAttribute',
+                    args: {attribute: 'test-attribute2', default: 'test12345'},
+                    mirror: -1
+                };
+
+                sendMessage(register, (actual, req) => {
+                    let expected = {
+                        type: 'jsonwsp/response',
+                        version: '1.0',
+                        methodname: 'SessionService/getSessionAttribute',
+                        result: {},
+                        reflection: req.id
+                    };
+
+                    expected[register.args.attribute] = register.args.value;
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
         });
 
         describe('doorLock', () => {
