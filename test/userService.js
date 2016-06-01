@@ -472,7 +472,7 @@ describe('socket', () => {
                         reflection: req.id
                     };
 
-                    expected[testingAttrib.attribute] = testingAttrib.value;
+                    expected.result[testingAttrib.attribute] = testingAttrib.value;
 
                     assert.equal(actual, JSON.stringify(expected));
                     done();
@@ -497,7 +497,7 @@ describe('socket', () => {
                         reflection: req.id
                     };
 
-                    expected[register.args.attribute] = register.args.value;
+                    expected.result[register.args.attribute] = register.args.value;
 
                     assert.equal(actual, JSON.stringify(expected));
                     done();
