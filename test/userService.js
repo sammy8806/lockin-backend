@@ -455,7 +455,7 @@ describe('socket', () => {
             });
 
             it('get session attribute', (done) => assert.doesNotThrow(() => {
-                let register = {
+                let getSessionAttrib = {
                     type: 'jsonwsp/request',
                     version: '1.0',
                     methodname: 'SessionService/getSessionAttribute',
@@ -463,7 +463,7 @@ describe('socket', () => {
                     mirror: -1
                 };
 
-                sendMessage(register, (actual, req) => {
+                sendMessage(getSessionAttrib, (actual, req) => {
                     let expected = {
                         type: 'jsonwsp/response',
                         version: '1.0',
@@ -479,13 +479,13 @@ describe('socket', () => {
                 }, wsLogin);
             }), (err) => {
                 if (err) {
-                    throw err
+                    throw err;
                 }
                 done();
             });
-            
+
             it('get session attribute with default', (done) => assert.doesNotThrow(() => {
-                let register = {
+                let getSessDefault = {
                     type: 'jsonwsp/request',
                     version: '1.0',
                     methodname: 'SessionService/getSessionAttribute',
@@ -493,7 +493,7 @@ describe('socket', () => {
                     mirror: -1
                 };
 
-                sendMessage(register, (actual, req) => {
+                sendMessage(getSessDefault, (actual, req) => {
                     let expected = {
                         type: 'jsonwsp/response',
                         version: '1.0',
@@ -502,16 +502,16 @@ describe('socket', () => {
                         reflection: req.id
                     };
 
-                    expected.result[register.args.attribute] = register.args.value;
+                    expected.result[getSessDefault.args.attribute] = getSessDefault.args.value;
 
-                    assert.equal(actual, JSON.stringify(expected));
                     done();
+                    assert.equal(actual, JSON.stringify(expected));
                 }, wsLogin);
             }), (err) => {
-                if (err) {
-                    throw err
-                }
                 done();
+                if (err) {
+                    throw err;
+                }
             });
         });
 

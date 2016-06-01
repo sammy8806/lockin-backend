@@ -29,7 +29,7 @@ function setupEnv() {
     };
 
     _env.debug = function (_tag, _string) {
-        const blacklist = /Websockethandler/;
+        const blacklist = /NN/;
 
         if (!_tag.match(blacklist)) {
             _env._log(console.log, 'DEBUG', _tag, _string);
