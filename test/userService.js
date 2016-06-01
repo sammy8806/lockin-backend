@@ -428,6 +428,58 @@ describe('socket', () => {
 
         });
 
+        describe('login', () => {
+            let testingAttrib = {attribute: 'test-attribute', value: 'test123'};
+
+            it('set session attribute', (done) => {
+                let register = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'SessionService/setSessionAttribute',
+                    args: testingAttrib,
+                    mirror: -1
+                };
+
+                sendMessage(register, (actual, req) => {
+                    let expected = {
+                        type: 'jsonwsp/response',
+                        version: '1.0',
+                        methodname: 'SessionService/setSessionAttribute',
+                        result: {success: true},
+                        reflection: req.id
+                    };
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+
+            it('get session attribute', (done) => {
+                let register = {
+                    type: 'jsonwsp/request',
+                    version: '1.0',
+                    methodname: 'SessionService/getSessionAttribute',
+                    args: {attribute: 'test-attribute'},
+                    mirror: -1
+                };
+
+                sendMessage(register, (actual, req) => {
+                    let expected = {
+                        type: 'jsonwsp/response',
+                        version: '1.0',
+                        methodname: 'SessionService/getSessionAttribute',
+                        result: {},
+                        reflection: req.id
+                    };
+
+                    expected[testingAttrib.attribute] = testingAttrib.value;
+
+                    assert.equal(actual, JSON.stringify(expected));
+                    done();
+                }, wsLogin);
+            });
+        });
+
         describe('doorLock', () => {
             let registerDoorlock = {
                 type: 'jsonwsp/request',

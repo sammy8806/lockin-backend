@@ -29,7 +29,11 @@ function setupEnv() {
     };
 
     _env.debug = function (_tag, _string) {
-        _env._log(console.log, 'DEBUG', _tag, _string);
+        const blacklist = /Websockethandler/;
+
+        if (!_tag.match(blacklist)) {
+            _env._log(console.log, 'DEBUG', _tag, _string);
+        }
     };
 
     _env.error = function (_tag, _string) {
@@ -45,7 +49,7 @@ function setupEnv() {
      * @returns {boolean} true if contains, false if not
      */
     _env.contains = function contains(_arr, _obj) {
-        for (var i = 0; i < _arr.length; i++) {
+        for (let i = 0; i < _arr.length; i++) {
             if (_arr[i] === _obj) {
                 return true;
             }
@@ -53,7 +57,7 @@ function setupEnv() {
         return false;
     };
 
-    _env.arrayIntersect = function(array1, array2) {
+    _env.arrayIntersect = function (array1, array2) {
         return array1.filter((el) => (array2.indexOf(el) !== -1));
     };
 
