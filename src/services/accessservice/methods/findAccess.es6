@@ -98,9 +98,14 @@ module.exports = {
                             _env.debug(METHOD_NAME, 'Adding building to access object');
 
                             //add building objects to access objects
-
                             accesses.forEach((_access) => {
                                 let building = hash[_access.buildingId];
+
+                                if(building === undefined) {
+                                    _access = undefined;
+                                    return;
+                                }
+
                                 _env.debug(METHOD_NAME, `Access: ${_access.id} # Building: ${JSON.stringify(building)}`);
                                 delete _access.buildingId;
 
