@@ -113,7 +113,7 @@ module.exports = {
                                 delete _access.building.keyId;
                             });
 
-                            accesses.filter((_access) => { return _access.deleteMe === undefined; });
+                            accesses = accesses.filter((_access) => { return _access.deleteMe === undefined; });
 
                             return accesses;
                         });
