@@ -77,9 +77,9 @@ module.exports = {
                         buildingIds.push(_accesses[i].buildingId);
                     }
 
-                    _env.debug(METHOD_NAME, 'Raw Accesses Found:',  JSON.stringify(_accesses));
-                    _env.debug(METHOD_NAME, 'Accesses Found:',  JSON.stringify(accesses));
-                    _env.debug(METHOD_NAME, 'Buildings Found:',  JSON.stringify(buildingIds));
+                    _env.debug(METHOD_NAME, `Raw Accesses Found: ${JSON.stringify(_accesses)}`);
+                    _env.debug(METHOD_NAME, `Accesses Found: ${JSON.stringify(accesses)}`);
+                    _env.debug(METHOD_NAME, `Buildings Found: ${JSON.stringify(buildingIds)}`);
 
                     // TODO: in map speichern (dann nur einmalig)
 
