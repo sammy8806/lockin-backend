@@ -77,11 +77,14 @@ module.exports = {
                         buildingIds.push(_accesses[i].buildingId);
                     }
 
-                    _env.debug(METHOD_NAME, 'Accesses Found:',  _env.inspect(accesses));
-                    _env.debug(METHOD_NAME, 'Buildings Found:',  _env.inspect(buildingIds));
+                    _env.debug(METHOD_NAME, 'Raw Accesses Found:',  JSON.stringify(_accesses));
+                    _env.debug(METHOD_NAME, 'Accesses Found:',  JSON.stringify(accesses));
+                    _env.debug(METHOD_NAME, 'Buildings Found:',  JSON.stringify(buildingIds));
+
+                    // TODO: in map speichern (dann nur einmalig)
 
                     return db.findBuildingsByIds(buildingIds).toArray().then((_buildings) => {
-                        if (_buildings.length < accesses.length) {
+                        if (_buildings.length > 0) {
                             _env.debug(METHOD_NAME, 'One or more buildings not found');
                             _env.ErrorHandler.throwError(8003);
                         }
