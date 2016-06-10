@@ -84,7 +84,7 @@ module.exports = {
                     // TODO: in map speichern (dann nur einmalig)
 
                     return db.findBuildingsByIds(buildingIds).toArray().then((_buildings) => {
-                        if (_buildings.length > 0) {
+                        if (_buildings.length < 1) {
                             _env.debug(METHOD_NAME, 'One or more buildings not found');
                             _env.ErrorHandler.throwError(8003);
                         }
