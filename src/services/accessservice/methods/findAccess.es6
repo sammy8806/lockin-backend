@@ -77,6 +77,9 @@ module.exports = {
                         buildingIds.push(_accesses[i].buildingId);
                     }
 
+                    _env.debug(METHOD_NAME, 'Accesses Found:',  _env.inspect(accesses));
+                    _env.debug(METHOD_NAME, 'Buildings Found:',  _env.inspect(buildingIds));
+
                     return db.findBuildingsByIds(buildingIds).toArray().then((_buildings) => {
                         if (_buildings.length < accesses.length) {
                             _env.debug(METHOD_NAME, 'One or more buildings not found');
