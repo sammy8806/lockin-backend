@@ -5,6 +5,8 @@ This nodejs-backend uses some ES6 (not everything is usable yet :/ ) and listen 
 Starting this requires the 'vagrant-triggers' plugin.
 Please install via:
 
+TODO: Docker beschreiben
+
 ```bash
 vagrant plugin install vagrant-triggers
 vagrant plugin install vagrant-docker-compose

@@ -42,7 +42,7 @@ module.exports = {
         resolve(User.getLoggedIn(_ws, db)
             .then((_user) => {
 
-                if(_user === undefined) {
+                if (_user === undefined) {
                     _env.ErrorHandler.throwError(3002);
                 }
 
@@ -83,27 +83,31 @@ module.exports = {
 
                     // TODO: in map speichern (dann nur einmalig)
 
-                    return db.findBuildingsByIds(buildingIds).toArray().then((_buildings) => {
-                        if (_buildings.length < 1) {
-                            _env.debug(METHOD_NAME, 'One or more buildings not found');
-                            _env.ErrorHandler.throwError(8003);
-                        }
+                    return db.findBuildingsByIds(buildingIds).toArray()
+                        .then((_buildings) => {
+                            if (_buildings.length < 1) {
+                                _env.debug(METHOD_NAME, 'One or more buildings not found');
+                                _env.ErrorHandler.throwError(8003);
+                            }
 
-                        //necessary to make sure the order of building-objects matches the order of buildingIds
-                        let hash = createHashOfResults(_buildings);
+                            //necessary to make sure the order of building-objects matches the order of buildingIds
+                            let hash = createHashOfResults(_buildings);
 
-                        _env.debug(METHOD_NAME, 'Adding building to access object');
+                            _env.debug(METHOD_NAME, 'Adding building to access object');
 
-                        //add building objects to access objects
-                        for (let i = 0; i < buildingIds.length; i++) {
-                            let buildingId = buildingIds[i];
-                            let building = hash[buildingId];
-                            accesses[i].building = new Building(building).toJSON();
-                            delete accesses[i].buildingId;
-                            delete building.keyId;
-                        }
-                        return accesses;
-                    });
+                            //add building objects to access objects
+
+                            accesses.forEach((_access) => {
+                                let building = hash[_access.buildingId];
+                                _env.debug(METHOD_NAME, `Access: ${_access.id} # Building: ${JSON.stringify(building)}`);
+                                delete _access.buildingId;
+
+                                _access.building = new Building(building).toJSON();
+                                delete _access.building.keyId
+                            });
+
+                            return accesses;
+                        });
                 })
             }));
     })
