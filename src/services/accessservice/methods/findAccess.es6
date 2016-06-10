@@ -92,6 +92,8 @@ module.exports = {
 
                             //necessary to make sure the order of building-objects matches the order of buildingIds
                             let hash = createHashOfResults(_buildings);
+                            _env.debug(METHOD_NAME, `Found Buildings: ${_env.inspect(_buildings)}`);
+                            _env.debug(METHOD_NAME, `HashMap: ${_env.inspect(hash)}`);
 
                             _env.debug(METHOD_NAME, 'Adding building to access object');
 
