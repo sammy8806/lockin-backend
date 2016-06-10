@@ -102,16 +102,18 @@ module.exports = {
                                 let building = hash[_access.buildingId];
 
                                 if(building === undefined) {
-                                    _access = undefined;
+                                    _access.deleteMe = true;
                                     return;
                                 }
 
                                 _env.debug(METHOD_NAME, `Access: ${_access.id} # Building: ${JSON.stringify(building)}`);
-                                delete _access.buildingId;
+                                delete _access.building.buildingId;
 
                                 _access.building = new Building(building).toJSON();
-                                delete _access.building.keyId
+                                delete _access.building.keyId;
                             });
+
+                            accesses.filter((_access) => { return _access.deleteMe === undefined; });
 
                             return accesses;
                         });
