@@ -107,7 +107,7 @@ module.exports = {
                                 }
 
                                 _env.debug(METHOD_NAME, `Access: ${_access.id} # Building: ${JSON.stringify(building)}`);
-                                delete _access.building.buildingId;
+                                delete _access.buildingId;
 
                                 _access.building = new Building(building).toJSON();
                                 delete _access.building.keyId;
