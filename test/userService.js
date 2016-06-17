@@ -912,7 +912,6 @@ describe('socket', () => {
                         methodname: "AccessService/findAccess",
                         result: [{
                             id: parsed.result[0].id,
-                            keyId: userKey.id,
                             doorLockIds: [doorLock.id],
                             requestorId: userKey.id,
                             timeStart: access.timeStart,
