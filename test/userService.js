@@ -905,6 +905,11 @@ describe('socket', () => {
 
                 sendMessage(findAccess, (actual, req) => {
                     let parsed = JSON.parse(actual);
+                    let tmpBuilding = building;
+                    
+                    if(tmpBuilding.keyId !== undefined) {
+                        delete tmpBuilding.keyId;
+                    }
 
                     let expected = {
                         type: "jsonwsp/response",
@@ -912,12 +917,13 @@ describe('socket', () => {
                         methodname: "AccessService/findAccess",
                         result: [{
                             id: parsed.result[0].id,
+                            keyId: userKey.id,
                             doorLockIds: [doorLock.id],
                             requestorId: userKey.id,
                             timeStart: access.timeStart,
                             timeEnd: access.timeEnd,
                             type: access.type,
-                            building: building
+                            building: tmpBuilding
                         }],
                         reflection: req.id
                     };
